@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fluttersqlite/DB/bluetooth_db.dart';
+import 'DB/sqlhelper.dart';
 import 'package:fluttersqlite/DB/bluetooth_model.dart';
 import 'package:fluttersqlite/DB/employee_model.dart';
 import 'package:fluttersqlite/DB/temperature_model.dart';
@@ -58,16 +58,20 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
 
-      bluetoothsql btsql=new bluetoothsql();
-      employee data=employee(employeeID: "123",name:"張三");
-      await btsql.insertData(data);
-      print(await btsql.showEmployee());
-      bluetooth bluetooth1=bluetooth(id:"123",mac:"mac");
-      await btsql.insertData(bluetooth1);
-      print(await btsql.showBluetooth());
-      temperature data1=temperature(id:"123",temp: "23",time: "2020");
-      btsql.insertData(data1);
-      print(await btsql.showtemperature());
+      sqlhelper btsql = new sqlhelper();
+      // employee data = employee(employeeID: "123", name: "張三");
+      // await btsql.insertData(data);
+      // print(await btsql.showEmployee());
+      // bluetooth bluetooth1 = bluetooth(id: "123", mac: "mac");
+      // await btsql.insertData(bluetooth1);
+      // print(await btsql.showBluetooth());
+      // temperature data1 = temperature(id: "123", temp: "23", time: 1234);
+      // btsql.insertData(data1);
+      // print(await btsql.showtemperature());
+      print(await btsql.showEmployeeJoinBluetooth());
+      print(await btsql.showEmployeeJoinTemp());
+      print(await btsql.showBluetoothJoinTemp());
+      print(await btsql.showAllJoin());
     });
   }
 

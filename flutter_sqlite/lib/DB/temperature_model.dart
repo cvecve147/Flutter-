@@ -1,7 +1,7 @@
 class temperature {
   final String id;
   final String temp;
-  final String time;
+  final int time;
   temperature({this.id, this.temp, this.time});
   Map<String, dynamic> toMap() {
     return {
