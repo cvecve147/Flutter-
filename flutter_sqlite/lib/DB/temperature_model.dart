@@ -1,5 +1,5 @@
 class temperature {
-  final String id;
+  final int id;
   final String temp;
   final int time;
   temperature({this.id, this.temp, this.time});
@@ -12,7 +12,6 @@ class temperature {
   }
 
   String toString() {
-    // TODO: implement toString
     return 'temperature{id: $id, temp: $temp,time: $time,}';
   }
 }

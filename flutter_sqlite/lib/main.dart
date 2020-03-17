@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'DB/sqlhelper.dart';
-import 'package:fluttersqlite/DB/bluetooth_model.dart';
 import 'package:fluttersqlite/DB/employee_model.dart';
 import 'package:fluttersqlite/DB/temperature_model.dart';
 
@@ -58,20 +57,20 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
 
-      sqlhelper btsql = new sqlhelper();
-      // employee data = employee(employeeID: "123", name: "張三");
-      // await btsql.insertData(data);
-      // print(await btsql.showEmployee());
-      // bluetooth bluetooth1 = bluetooth(id: "123", mac: "mac");
-      // await btsql.insertData(bluetooth1);
-      // print(await btsql.showBluetooth());
-      // temperature data1 = temperature(id: "123", temp: "23", time: 1234);
-      // btsql.insertData(data1);
-      // print(await btsql.showtemperature());
-      print(await btsql.showEmployeeJoinBluetooth());
-      print(await btsql.showEmployeeJoinTemp());
-      print(await btsql.showBluetoothJoinTemp());
-      print(await btsql.showAllJoin());
+      sqlhelper sqlhepler = new sqlhelper();
+      // employee data = employee(employeeID: "45678", name: "張三1");
+      // await sqlhepler.insertData(data);
+      // temperature data1 = temperature(id: 7, temp: "23", time: 12343);
+      // sqlhepler.insertData(data1);
+      // print(await sqlhepler.dropAll());
+      // print(await sqlhepler.showtemperature());
+      // employee data =
+      //     employee(id: 8, name: "1234", employeeID: "45678", mac: "123");
+      // temperature data = temperature(id: 7, temp: "23.3", time: 123456);
+      // await sqlhepler.updateData(data);
+
+      print(await sqlhepler.showEmployee());
+      print(await sqlhepler.showtemperature());
     });
   }
 
