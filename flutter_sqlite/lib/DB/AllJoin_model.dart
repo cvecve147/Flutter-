@@ -4,7 +4,7 @@ class AllJoinTable {
   final String employeeID;
   final String mac;
   final String temp;
-  final int time;
+  final String time;
   AllJoinTable(
       {this.id, this.name, this.employeeID, this.mac, this.temp, this.time});
   Map<String, dynamic> toMap() {

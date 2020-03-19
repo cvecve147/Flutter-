@@ -60,7 +60,9 @@ class _MyHomePageState extends State<MyHomePage> {
       sqlhelper sqlhepler = new sqlhelper();
       // employee data = employee(employeeID: "45678", name: "張三1");
       // await sqlhepler.insertData(data);
-      // temperature data1 = temperature(id: 7, temp: "23", time: 12343);
+      // temperature data1 =
+      // temperature(id: 7, temp: "23", time: "2020-01-06 02:34:56");
+
       // sqlhepler.insertData(data1);
       // print(await sqlhepler.dropAll());
       // print(await sqlhepler.showtemperature());
@@ -68,9 +70,10 @@ class _MyHomePageState extends State<MyHomePage> {
       //     employee(id: 8, name: "1234", employeeID: "45678", mac: "123");
       // temperature data = temperature(id: 7, temp: "23.3", time: 123456);
       // await sqlhepler.updateData(data);
-
+      print(await sqlhepler.searchTemp());
       print(await sqlhepler.showEmployee());
       print(await sqlhepler.showtemperature());
+      print(await sqlhepler.showEmployeeJoinTemp());
     });
   }
 

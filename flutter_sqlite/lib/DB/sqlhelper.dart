@@ -7,7 +7,7 @@ import 'package:sqflite/sqflite.dart';
 
 class sqlhelper {
   String _DbDir;
-  String _Dbname = "NewApp02.db";
+  String _Dbname = "NewApp03.db";
   Database _DB;
   initDB() async {
     _DbDir = await getDatabasesPath();
@@ -17,7 +17,7 @@ class sqlhelper {
             CREATE TABLE employees(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,employeeID TEXT, name TEXT,mac TEXT DEFAULT NULL);
           ''');
       await database.execute('''
-            CREATE TABLE temperatures(id INTEGER, temp TEXT,time INTEGER);
+            CREATE TABLE temperatures(id INTEGER, temp TEXT,time TEXT);
           ''');
     }, version: 4);
   }
@@ -72,13 +72,20 @@ class sqlhelper {
     });
   }
 
+  searchTemp() async {
+    await initDB();
+    final List<Map<String, dynamic>> maps = await _DB.rawQuery(
+        "SELECT * FROM temperatures WHERE time BETWEEN '2020-01-01' AND '2020-01-05'");
+    return List.generate(maps.length, (i) {
+      return temperature(
+          id: maps[i]['id'], temp: maps[i]['temp'], time: maps[i]['time']);
+    });
+  }
+
   updateData(dynamic data) async {
     await initDB();
     if (data is employee) {
       await _DB.update("employees", data.toMap(),
-          where: "id=?", whereArgs: [data.id]);
-    } else {
-      await _DB.update("temperatures", data.toMap(),
           where: "id=?", whereArgs: [data.id]);
     }
   }
