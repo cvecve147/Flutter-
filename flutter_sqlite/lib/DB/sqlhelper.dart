@@ -4,6 +4,8 @@ import 'package:fluttersqlite/DB/AllJoin_model.dart';
 import 'package:fluttersqlite/DB/temperature_model.dart';
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:csv/csv.dart';
 
 class sqlhelper {
   String _DbDir;
@@ -105,7 +107,8 @@ class sqlhelper {
   }
 
   readCsvToEmployee() async {
-      
+    String _path = await FilePicker.getFilePath();
+    print(_path);
   }
 
   writeEmployeeToCsv() async {}

@@ -47,10 +47,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //delete
       // sqlhepler.deleteEmployee(1);
-
-      print(await sqlhepler.showEmployee());
-      print(await sqlhepler.showtemperature());
-      print(await sqlhepler.showEmployeeJoinTemp());
+      await sqlhepler.readCsvToEmployee();
+      // print(await sqlhepler.showEmployee());
+      // print(await sqlhepler.showtemperature());
+      // print(await sqlhepler.showEmployeeJoinTemp());
     });
   }
 
