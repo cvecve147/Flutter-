@@ -72,10 +72,24 @@ class sqlhelper {
     });
   }
 
-  searchTemp() async {
+  searchEmployee(int id) async {
+    await initDB();
+    final List<Map<String, dynamic>> maps =
+        await _DB.query('employees', where: "id=?", whereArgs: [id]);
+    return List.generate(maps.length, (i) {
+      return employee(
+        id: maps[i]['id'],
+        name: maps[i]['name'],
+        employeeID: maps[i]['employeeID'],
+        mac: maps[i]['mac'],
+      );
+    });
+  }
+
+  searchTemp(String startData, String endData) async {
     await initDB();
     final List<Map<String, dynamic>> maps = await _DB.rawQuery(
-        "SELECT * FROM temperatures WHERE time BETWEEN '2020-01-01' AND '2020-01-05'");
+        "SELECT * FROM temperatures WHERE time BETWEEN '${startData}' AND '${endData}'"); //2020-01-01
     return List.generate(maps.length, (i) {
       return temperature(
           id: maps[i]['id'], temp: maps[i]['temp'], time: maps[i]['time']);
@@ -90,9 +104,16 @@ class sqlhelper {
     }
   }
 
-  readCsvToEmployee() async {}
+  readCsvToEmployee() async {
+      
+  }
 
   writeEmployeeToCsv() async {}
+
+  deleteEmployee(int id) async {
+    await initDB();
+    await _DB.delete('employees', where: "id=?", whereArgs: [id]);
+  }
 
   dropAll() async {
     await initDB();
