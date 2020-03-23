@@ -35,7 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
       sqlhelper sqlhepler = new sqlhelper();
       // insert
       // employee data = new employee(name: "張三", employeeID: "12");
-      // temperature data = new temperature(time: "2020-01-01", temp: "23");
+      // temperature data = new temperature(time: "2020-02-05", temp: "23",id: 1);
       // await sqlhepler.insertData(data);
       // update
       // employee data = new employee(id: 1,name: "張三", employeeID: "12",mac: "123");
@@ -47,9 +47,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
       //delete
       // sqlhepler.deleteEmployee(1);
-      await sqlhepler.readCsvToEmployee();
+      // await sqlhepler.readCsvToEmployee();
       // print(await sqlhepler.showEmployee());
-      // print(await sqlhepler.showtemperature());
+      // print(await sqlhepler.deleteOverDay("2020-01-03"));
+      print(await sqlhepler.showtemperature());
       // print(await sqlhepler.showEmployeeJoinTemp());
     });
   }
