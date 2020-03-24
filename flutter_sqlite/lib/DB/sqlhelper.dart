@@ -126,81 +126,59 @@ class sqlhelper {
   }
 
   readCsvToEmployee() async {
-    String _path = await FilePicker.getFilePath();
-    final input = new File(_path).openRead();
-    final fields = await input
-        .transform(utf8.decoder)
-        .transform(new CsvToListConverter())
-        .toList();
-    for (int i = 0; i < fields.length; i++) {
-      if (fields[i][0] == "人員編號") {
-        continue;
+    try {
+      String _path = await FilePicker.getFilePath();
+      final input = new File(_path).openRead();
+      final fields = await input
+          .transform(utf8.decoder)
+          .transform(new CsvToListConverter())
+          .toList();
+      for (int i = 0; i < fields.length; i++) {
+        if (fields[i][0] == "人員編號") {
+          continue;
+        }
+        employee data = employee(
+            name: fields[i][1].toString(),
+            employeeID: fields[i][0].toString(),
+            mac: fields[i].length > 2 ? fields[i][2] : null);
+        await insertData(data);
       }
-      employee data = employee(
-          name: fields[i][1].toString(),
-          employeeID: fields[i][0].toString(),
-          mac: fields[i].length > 2 ? fields[i][2] : null);
-      await insertData(data);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
     }
   }
 
-  searchDateEmployee(List date, [int id]) async {
-    await initDB();
-    List<Map<String, dynamic>> maps = [];
+  writeEmployeeToCsv(List date, [int id]) async {
+    dynamic data;
     if (id != null) {
-      maps = await _DB.rawQuery('''select * from employees         
+      data = await _DB.rawQuery('''select * from employees         
         INNER JOIN temperatures 
         on temperatures.id= employees.id
         WHERE employees.id = ${id}
         and WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
         ''');
     } else {
-      maps = await _DB.rawQuery('''select * from employees 
+      data = await _DB.rawQuery('''select * from employees 
         INNER JOIN temperatures 
         on temperatures.id= employees.id
         WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
         ''');
     }
-    return List.generate(maps.length, (i) {
-      return AllJoinTable(
-        id: maps[i]['id'],
-        employeeID: maps[i]['employeeID'],
-        name: maps[i]['name'],
-        mac: maps[i]['mac'],
-        temp: maps[i]['temp'],
-        time: maps[i]['time'],
-      );
-    });
-  }
-
-  writeEmployeeToCsv(List date, [int id]) async {
-    dynamic data;
-    // if (id != null) {
-    //   data = searchDateEmployee(date, id);
-    // } else {
-    //   data = searchDateEmployee(date);
-    // }
-    data = await _DB.query('employees');
     print(data);
-    var csv = mapListToCsv(data);
-
-    Directory directory = await getExternalStorageDirectory();
-    print(csv);
-    print(directory.path);
-    final File file = File('${directory.path}/my_file.csv');
-    await file.writeAsString(csv);
-  }
-
-  Future<String> read() async {
-    String text;
     try {
-      final Directory directory = await getExternalStorageDirectory();
-      final File file = File('${directory.path}/my_file.csv');
-      text = await file.readAsString();
+      var csv = mapListToCsv(data);
+      Directory directory = await getExternalStorageDirectory();
+      print(csv);
+      print(directory.path);
+      final File file = File('${directory.path}/${date[0]}_${date[1]}.csv');
+      await file.writeAsString(csv);
+      return true;
     } catch (e) {
-      print("Couldn't read file");
+      print(e);
+      return false;
     }
-    return text;
   }
 
   String mapListToCsv(List<Map<String, dynamic>> mapList,
