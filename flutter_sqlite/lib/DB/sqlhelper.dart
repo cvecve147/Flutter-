@@ -8,8 +8,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
 import 'dart:convert' show utf8;
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
-import 'employee_model.dart';
 import 'employee_model.dart';
 
 class sqlhelper {
@@ -175,12 +175,76 @@ class sqlhelper {
 
   writeEmployeeToCsv(List date, [int id]) async {
     dynamic data;
-    if (id != null) {
-      data = searchDateEmployee(date, id);
-    } else {
-      data = searchDateEmployee(date);
-    }
+    // if (id != null) {
+    //   data = searchDateEmployee(date, id);
+    // } else {
+    //   data = searchDateEmployee(date);
+    // }
+    data = await _DB.query('employees');
     print(data);
+    var csv = mapListToCsv(data);
+
+    Directory directory = await getApplicationDocumentsDirectory();
+    print(csv);
+    print(directory.path);
+    final File file = File('${directory.path}/my_file.csv');
+    await file.writeAsString(csv);
+  }
+
+  Future<String> read() async {
+    String text;
+    try {
+      final Directory directory = await getApplicationDocumentsDirectory();
+      final File file = File('${directory.path}/my_file.csv');
+      text = await file.readAsString();
+    } catch (e) {
+      print("Couldn't read file");
+    }
+    return text;
+  }
+
+  String mapListToCsv(List<Map<String, dynamic>> mapList,
+      {ListToCsvConverter converter}) {
+    if (mapList == null) {
+      return null;
+    }
+    converter ??= const ListToCsvConverter();
+    var data = <List>[];
+    var keys = <String>[];
+    var keyIndexMap = <String, int>{};
+
+    // Add the key and fix previous records
+    int _addKey(String key) {
+      var index = keys.length;
+      keyIndexMap[key] = index;
+      keys.add(key);
+      for (var dataRow in data) {
+        dataRow.add(null);
+      }
+      return index;
+    }
+
+    for (var map in mapList) {
+      // This list might grow if a new key is found
+      var dataRow = List(keyIndexMap.length);
+      // Fix missing key
+      map.forEach((key, value) {
+        var keyIndex = keyIndexMap[key];
+        if (keyIndex == null) {
+          // New key is found
+          // Add it and fix previous data
+          keyIndex = _addKey(key);
+          // grow our list
+          dataRow = List.from(dataRow, growable: true)..add(value);
+        } else {
+          dataRow[keyIndex] = value;
+        }
+      });
+      data.add(dataRow);
+    }
+    return converter.convert(<List>[]
+      ..add(keys)
+      ..addAll(data));
   }
 
   deleteOverDay(String date) async {
