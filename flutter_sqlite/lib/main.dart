@@ -30,29 +30,18 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() async {
-      sqlhelper sqlhepler = new sqlhelper();
-      // insert
-      // employee data = new employee(name: "張三", employeeID: "12");
-      // temperature data = new temperature(time: "2020-02-05", temp: "23",id: 1);
-      // await sqlhepler.insertData(data);
-      // update
-      // employee data = new employee(id: 1,name: "張三", employeeID: "12",mac: "123");
-      // sqlhepler.updateData(data);
+  void _incrementCounter() async {
+    sqlhelper sqlhepler = new sqlhelper();
+    employee data=employee(name:"123",employeeID: "123");
+    await sqlhepler.insertData(data);
+    print(await sqlhepler.showEmployee());
 
-      //search
-      // print(await sqlhepler.searchEmployee(1));
-      // print(await sqlhepler.searchTemp("2020-01-01", "2020-01-07"));
 
-      //delete
-      // sqlhepler.deleteEmployee(1);
-      // await sqlhepler.readCsvToEmployee();
-      // print(await sqlhepler.showEmployee());
-      // print(await sqlhepler.deleteOverDay("2020-01-03"));
-      print(await sqlhepler.showtemperature());
-      // print(await sqlhepler.showEmployeeJoinTemp());
-    });
+    await sqlhepler.readCsvToEmployee();
+    print(await sqlhepler.showEmployee());
+//    dynamic map = sqlhepler.searchEmployeeMAC("");
+//    print(map);
+//    await sqlhepler.readCsvToEmployee();
   }
 
   @override

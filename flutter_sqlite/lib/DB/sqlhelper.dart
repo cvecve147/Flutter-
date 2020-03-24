@@ -93,6 +93,20 @@ class sqlhelper {
     });
   }
 
+  searchEmployeeMAC(String mac) async {
+    await initDB();
+    final List<Map<String, dynamic>> maps =
+        await _DB.query('employees', where: "mac=?", whereArgs: [mac]);
+    return List.generate(maps.length, (i) {
+      return employee(
+        id: maps[i]['id'],
+        name: maps[i]['name'],
+        employeeID: maps[i]['employeeID'],
+        mac: maps[i]['mac'],
+      );
+    });
+  }
+
   searchTemp(String startData, String endData) async {
     await initDB();
     final List<Map<String, dynamic>> maps = await _DB.rawQuery(
@@ -114,59 +128,69 @@ class sqlhelper {
   readCsvToEmployee() async {
     String _path = await FilePicker.getFilePath();
     final input = new File(_path).openRead();
-    final fields = await input.transform(utf8.decoder).transform(new CsvToListConverter()).toList();
-    for(int i=0;i<fields.length;i++){
-      if(fields[i][0]=="人員編號"){
+    final fields = await input
+        .transform(utf8.decoder)
+        .transform(new CsvToListConverter())
+        .toList();
+    for (int i = 0; i < fields.length; i++) {
+      if (fields[i][0] == "人員編號") {
         continue;
       }
-      employee data=employee(name: fields[i][1].toString(),employeeID: fields[i][0].toString());
+      employee data = employee(
+          name: fields[i][1].toString(),
+          employeeID: fields[i][0].toString(),
+          mac: fields[i].length > 2 ? fields[i][2] : null);
       await insertData(data);
     }
   }
-  searchDateEmployee(List date,[int id]) async {
+
+  searchDateEmployee(List date, [int id]) async {
     await initDB();
-    List<Map<String, dynamic>> maps=[];
-    if(id!=null){
-      maps =await _DB.rawQuery('''select * from employees 
-        WHERE employees.id = ${id};
+    List<Map<String, dynamic>> maps = [];
+    if (id != null) {
+      maps = await _DB.rawQuery('''select * from employees         
         INNER JOIN temperatures 
         on temperatures.id= employees.id
+        WHERE employees.id = ${id}
+        and WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
         ''');
-    }else{
-      maps =await _DB.rawQuery('''select * from employees 
+    } else {
+      maps = await _DB.rawQuery('''select * from employees 
         INNER JOIN temperatures 
         on temperatures.id= employees.id
-        ''');      
+        WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
+        ''');
     }
     return List.generate(maps.length, (i) {
-        return AllJoinTable(
-          id: maps[i]['id'],
-          employeeID: maps[i]['employeeID'],
-          name: maps[i]['name'],
-          mac: maps[i]['mac'],
-          temp: maps[i]['temp'],
-          time: maps[i]['time'],
-        );
-      });
+      return AllJoinTable(
+        id: maps[i]['id'],
+        employeeID: maps[i]['employeeID'],
+        name: maps[i]['name'],
+        mac: maps[i]['mac'],
+        temp: maps[i]['temp'],
+        time: maps[i]['time'],
+      );
+    });
   }
 
-  writeEmployeeToCsv(List date,[int id]) async {
+  writeEmployeeToCsv(List date, [int id]) async {
     dynamic data;
-    if(id!=null){
-      data=searchDateEmployee(date,id);
-    }else{
-      data=searchDateEmployee(date);
+    if (id != null) {
+      data = searchDateEmployee(date, id);
+    } else {
+      data = searchDateEmployee(date);
     }
     print(data);
   }
 
-  deleteOverDay(String date) async{
+  deleteOverDay(String date) async {
     await initDB();
     final List<Map<String, dynamic>> maps = await _DB.rawQuery(
         "SELECT * FROM temperatures WHERE time BETWEEN '2020-01-01' AND '${date}'"); //2020-01-01
     print(maps);
-    List.generate(maps.length, (i) async{
-      await _DB.delete("temperatures",where:"time=?",whereArgs: [maps[i]['time'].toString()]);
+    List.generate(maps.length, (i) async {
+      await _DB.delete("temperatures",
+          where: "time=?", whereArgs: [maps[i]['time'].toString()]);
     });
   }
 
