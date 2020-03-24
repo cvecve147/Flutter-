@@ -184,7 +184,7 @@ class sqlhelper {
     print(data);
     var csv = mapListToCsv(data);
 
-    Directory directory = await getApplicationDocumentsDirectory();
+    Directory directory = await getExternalStorageDirectory();
     print(csv);
     print(directory.path);
     final File file = File('${directory.path}/my_file.csv');
@@ -194,7 +194,7 @@ class sqlhelper {
   Future<String> read() async {
     String text;
     try {
-      final Directory directory = await getApplicationDocumentsDirectory();
+      final Directory directory = await getExternalStorageDirectory();
       final File file = File('${directory.path}/my_file.csv');
       text = await file.readAsString();
     } catch (e) {
