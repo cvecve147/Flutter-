@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:fluttersqlite/DB/employee_model.dart';
-import 'package:fluttersqlite/DB/AllJoin_model.dart';
-import 'package:fluttersqlite/DB/temperature_model.dart';
+import 'package:newapp1/pages/DB/AllJoin_model.dart';
+import 'package:newapp1/pages/DB/employee_model.dart';
+import 'package:newapp1/pages/DB/temperature_model.dart';
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
 import 'package:file_picker/file_picker.dart';
@@ -20,13 +20,13 @@ class sqlhelper {
     _DbDir = await getDatabasesPath();
     _DB = await openDatabase(path.join(_DbDir, _Dbname),
         onCreate: (database, version) async {
-      await database.execute('''
+          await database.execute('''
             CREATE TABLE employees(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,employeeID TEXT, name TEXT,mac TEXT DEFAULT NULL);
           ''');
-      await database.execute('''
+          await database.execute('''
             CREATE TABLE temperatures(id INTEGER, temp TEXT,time TEXT);
           ''');
-    }, version: 4);
+        }, version: 4);
   }
 
   insertData(dynamic data) async {
@@ -63,7 +63,7 @@ class sqlhelper {
   showEmployeeJoinTemp() async {
     await initDB();
     final List<Map<String, dynamic>> maps =
-        await _DB.rawQuery('''select * from employees 
+    await _DB.rawQuery('''select * from employees 
         INNER JOIN temperatures 
         on temperatures.id= employees.id
         ''');
@@ -82,7 +82,7 @@ class sqlhelper {
   searchEmployee(int id) async {
     await initDB();
     final List<Map<String, dynamic>> maps =
-        await _DB.query('employees', where: "id=?", whereArgs: [id]);
+    await _DB.query('employees', where: "id=?", whereArgs: [id]);
     return List.generate(maps.length, (i) {
       return employee(
         id: maps[i]['id'],
@@ -96,7 +96,7 @@ class sqlhelper {
   searchEmployeeMAC(String mac) async {
     await initDB();
     final List<Map<String, dynamic>> maps =
-        await _DB.query('employees', where: "mac=?", whereArgs: [mac]);
+    await _DB.query('employees', where: "mac=?", whereArgs: [mac]);
     return List.generate(maps.length, (i) {
       return employee(
         id: maps[i]['id'],

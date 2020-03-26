@@ -32,18 +32,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() async {
     sqlhelper sqlhepler = new sqlhelper();
-    // employee data=employee(name:"123",employeeID: "123");
+    // employee data = employee(name: "124", employeeID: "125");
+    // temperature data = temperature(id: 68, time: "2020-02-08", temp: "25.6");
     // await sqlhepler.insertData(data);
     // print(await sqlhepler.showEmployee());
 
-
     // await sqlhepler.readCsvToEmployee();
-    print(await sqlhepler.showEmployee());
-    List data=[];
+    // print(await sqlhepler.showEmployee());
+    // List data=[];
 
-    await sqlhepler.writeEmployeeToCsv(data);
-    print("read");
-    print(await sqlhepler.read());
+    // await sqlhepler.writeEmployeeToCsv(data);
+    // print("read");
+    print(await sqlhepler.showLastTemp());
+    print(await sqlhepler.showEmployee());
+    print(await sqlhepler.showtemperature());
 //    dynamic map = sqlhepler.searchEmployeeMAC("");
 //    print(map);
 //    await sqlhepler.readCsvToEmployee();
