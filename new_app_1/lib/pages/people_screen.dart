@@ -1,66 +1,98 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:newapp1/pages/DB/sqlhelper.dart';
+import 'package:newapp1/pages/DB/employee_model.dart';
 
 Color appColor = Color(0xFF2A6FDB);
 
-Widget getTextWidgets(
-    List<String> nameL, List<String> addressL, List<String> numberL) {
-  List<Widget> list = new List<Widget>();
-  for (var i = 0; i < nameL.length; i++) {
-    list.add(
-      new Slidable(
-        actionPane: SlidableDrawerActionPane(),
-        actionExtentRatio: 0.25,
-        child: Container(
-          color: Colors.white,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.indigoAccent,
-              child: Icon(Icons.person),
-              foregroundColor: Colors.white,
-            ),
-            trailing: Text(
-              addressL[i],
-              style: TextStyle(
-                fontSize: 20,
-              ),
-              textAlign: TextAlign.right,
-            ),
-            title: Text(
-              nameL[i],
-              style: TextStyle(
-                fontSize: 20,
-              ),
-              textAlign: TextAlign.left,
-            ),
-            subtitle: Text(
-              numberL[i],
-              style: TextStyle(
-                fontSize: 16,
-              ),
-              textAlign: TextAlign.left,
-            ),
-          ),
-        ),
-        secondaryActions: <Widget>[
-          IconSlideAction(
-            caption: '配對',
-            color: Colors.blue,
-            icon: Icons.settings_ethernet,
+getData() async {
+  sqlhelper helper = new sqlhelper();
+//  employee data=new employee(employeeID: "12",name: "123");
+//  temperature data=new temperature(id:1,time: "2020-01-12",temp: "25.6");
+//  helper.insertData(data);
+//  print(await helper.showEmployee());
+  return await helper.showEmployee();
+}
+
+class content extends StatelessWidget {
+  List data;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+      future: downloadData(), // function where you call your api
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {  // AsyncSnapshot<Your object type>
+        List<Widget> list;
+        if (snapshot.hasData) {
+          list = new List<Widget>();
+          for (var i = 0; i < data.length; i++) {
+            list.add(
+              new Slidable(
+                actionPane: SlidableDrawerActionPane(),
+                actionExtentRatio: 0.25,
+                child: Container(
+                  color: Colors.white,
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.indigoAccent,
+                      child: Icon(Icons.person),
+                      foregroundColor: Colors.white,
+                    ),
+                    trailing: Text(
+                      data[i].mac.toString(),
+                      style: TextStyle(
+                        fontSize: 24,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                    title: Text(
+                      data[i].name.toString(),
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                    subtitle: Text(
+                      data[i].employeeID.toString(),
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ),
+                secondaryActions: <Widget>[
+                  IconSlideAction(
+                    caption: '配對',
+                    color: Colors.blue,
+                    icon: Icons.settings_ethernet,
 //              onTap: () => _showSnackBar('Archive'),
-          ),
-          IconSlideAction(
-            caption: '刪除',
-            color: Colors.red,
-            icon: Icons.delete,
+                  ),
+                  IconSlideAction(
+                    caption: '刪除',
+                    color: Colors.red,
+                    icon: Icons.delete,
 //                onTap: () => _showSnackBar('Delete'),
-          ),
-        ],
-      ),
+                  ),
+                ],
+              ),
+            );
+          }
+          return new Column(children: list);
+        }else{
+          return Text('無資料');
+        }
+      },
+
     );
   }
-  return new Column(children: list);
+  Future<String> downloadData() async {
+    data = await getData();
+    sqlhelper helper=new sqlhelper();
+    print(await helper.showEmployee());
+    return Future.value("Get Data");
+  }
 }
 
 // ignore: must_be_immutable
@@ -157,7 +189,9 @@ class PeopleScreen extends StatelessWidget {
                   new FlatButton(
                     child: Text('確認'),
                     // ignore: missing_return
-                    onPressed: () {
+                    onPressed: () async{
+                      sqlhelper helper=new sqlhelper();
+
                       String name = nameController.text;
                       String num = numController.text;
                       String macAddress = _maccontroller[0].text.toUpperCase() +
@@ -171,7 +205,10 @@ class PeopleScreen extends StatelessWidget {
                           _maccontroller[4].text.toUpperCase() +
                           "-" +
                           _maccontroller[5].text.toUpperCase();
+                      employee data=new employee(employeeID: num,name:name,mac:  macAddress);
+                      await helper.insertData(data);
                       if (name != "") {
+                        Navigator.of(context).pop();
                         debugPrint(name);
                         if (num != "") {
                           return showDialog(
@@ -244,24 +281,6 @@ class PeopleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> nameList = [
-      'Izaan',
-      'Charlize',
-      'Madihah',
-      'Rian',
-      'Ellisha',
-      'Farhan'
-    ];
-    List<String> macList = [
-      '53-A9-A3-FE-A3-95',
-      '6A-8B-6E-FD-34-3F',
-      '18-7B-E3-65-A6-59',
-      'F3-04-32-25-8F-8F',
-      '59-72-03-83-A8-67',
-      '1E-28-95-A6-57-D7'
-    ];
-
-    List<String> numList = ['1', '2', '3', '4', '5', '6'];
 
     return Scaffold(
         appBar: AppBar(
@@ -280,7 +299,7 @@ class PeopleScreen extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              getTextWidgets(nameList, macList, numList),
+              content()
             ],
           ),
         ));

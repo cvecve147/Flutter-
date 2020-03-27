@@ -318,15 +318,14 @@ class ScanResultTile extends StatelessWidget {
 
   Future<void> searchData(List<String> nameL, List<String> tempL, List<String> numberL) async {
       sqlhelper sqlhepler = new sqlhelper();
-      employee data = employee(name:nameL.toString(),employeeID: numberL.toString(),mac:"");
-      await sqlhepler.insertData(data);
-      print(await sqlhepler.showEmployee());
-      await sqlhepler.readCsvToEmployee();
+      List a = await sqlhepler.showEmployee();
+      return a;
   }
 
   Future<void> insertData(List<String> nameL, List<String> tempL, List<String> numberL,int i) async {
     sqlhelper sqlhepler = new sqlhelper();
-    temperature  data=new temperature (id:i,temp:tempL[i],time:"2020-01-23 19:00:00");
+    var a= await sqlhepler.searchEmployeeMAC(nameL[i]);
+    temperature  data=new temperature (id:a[0].id,temp:tempL[i],time:"2020-01-23 19:00:00");
     await sqlhepler.insertData(data);
     print(await sqlhepler.showtemperature());
   }
@@ -389,6 +388,8 @@ class ScanResultTile extends StatelessWidget {
                       // ignore: missing_return
                       onPressed: () {
                         insertData(nameList,tempList,numList,i);
+                        Navigator.of(context).pop();
+
                         return showDialog(
                           context: context,
                           builder: (context) {

@@ -11,8 +11,8 @@ Color primaryColor = Color(0xFF122C91);
 getData() async {
   sqlhelper helper = new sqlhelper();
 //  employee data=new employee(employeeID: "12",name: "123");
-  temperature data=new temperature(id:1,time: "2020-01-12",temp: "25.6");
-  helper.insertData(data);
+//  temperature data = new temperature(id: 1, time: "2020-01-12", temp: "25.6");
+//  helper.insertData(data);
   print(await helper.showEmployee());
   return await helper.showLastTemp();
 }
@@ -24,66 +24,70 @@ class content extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<String>(
       future: downloadData(), // function where you call your api
-      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {  // AsyncSnapshot<Your object type>
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        // AsyncSnapshot<Your object type>
         List<Widget> list;
-        print("123"+data.toString());
-        list = new List<Widget>();
-        for (var i = 0; i < data.length; i++) {
-          list.add(
-            new Slidable(
-              actionPane: SlidableDrawerActionPane(),
-              actionExtentRatio: 0.25,
-              child: Container(
-                color: Colors.white,
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.indigoAccent,
-                    child: Icon(Icons.person),
-                    foregroundColor: Colors.white,
-                  ),
-                  trailing: Text(
-                    data[i].temp.toString(),
-                    style: TextStyle(
-                      fontSize: 32,
+        if (snapshot.hasData) {
+          list = new List<Widget>();
+          for (var i = 0; i < data.length; i++) {
+            list.add(
+              new Slidable(
+                actionPane: SlidableDrawerActionPane(),
+                actionExtentRatio: 0.25,
+                child: Container(
+                  color: Colors.white,
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.indigoAccent,
+                      child: Icon(Icons.person),
+                      foregroundColor: Colors.white,
                     ),
-                    textAlign: TextAlign.right,
-                  ),
-                  title: Text(
-                    data[i].name.toString(),
-                    style: TextStyle(
-                      fontSize: 20,
+                    trailing: Text(
+                      data[i].temp.toString(),
+                      style: TextStyle(
+                        fontSize: 32,
+                      ),
+                      textAlign: TextAlign.right,
                     ),
-                    textAlign: TextAlign.left,
-                  ),
-                  subtitle: Text(
-                    data[i].employeeID.toString(),
-                    style: TextStyle(
-                      fontSize: 16,
+                    title: Text(
+                      data[i].name.toString(),
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                      textAlign: TextAlign.left,
                     ),
-                    textAlign: TextAlign.left,
+                    subtitle: Text(
+                      data[i].employeeID.toString(),
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
                   ),
                 ),
-              ),
-              secondaryActions: <Widget>[
-                IconSlideAction(
-                  caption: '匯出',
-                  color: Color(0xFFFEFCBF),
-                  icon: Icons.share,
+                secondaryActions: <Widget>[
+                  IconSlideAction(
+                    caption: '匯出',
+                    color: Color(0xFFFEFCBF),
+                    icon: Icons.share,
 //                onTap: () => _showSnackBar('Delete'),
-                ),
-              ],
-            ),
-          );
+                  ),
+                ],
+              ),
+            );
+          }
+          return new Column(children: list);
+        } else {
+          return Text('無資料');
         }
-        return new Column(children: list);
       },
-    );;
+    );
   }
+
 //  new Column(children: list);
   Future<String> downloadData() async {
     data = await getData();
-    //   var response =  await http.get('https://getProjectList');
-    return Future.value("Data download successfully"); // return your response
+    return Future.value("Get Data"); // return your response
   }
 }
 
@@ -156,9 +160,9 @@ class ShareScreen extends StatelessWidget {
                           Future<DateTime> selectedDate = showDatePicker(
                             context: context,
                             initialDate:
-                                DateTime.now().add(new Duration(days: -15)),
+                            DateTime.now().add(new Duration(days: -15)), 
                             firstDate:
-                                DateTime.now().add(new Duration(days: -30)),
+                            DateTime.now().add(new Duration(days: -30)),
                             lastDate: DateTime.now(),
                             builder: (BuildContext context, Widget child) {
                               return Theme(
