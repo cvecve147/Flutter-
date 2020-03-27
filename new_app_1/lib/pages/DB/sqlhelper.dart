@@ -199,10 +199,10 @@ class sqlhelper {
       print(directory.path);
       final File file = File('${directory.path}/${date[0]}_${date[1]}.csv');
       await file.writeAsString(csv);
-      return true;
+      return "${directory.path}/${date[0]}_${date[1]}.csv";
     } catch (e) {
       print(e);
-      return false;
+      return "false";
     }
   }
 
