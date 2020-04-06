@@ -3,8 +3,8 @@ import 'dart:convert' show utf8;
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:newapp1/pages/package.dart';
-
+import 'package:newapp1/pages/bluetooth/package.dart';
+import 'package:newapp1/pages/people_screen.dart';
 
 Color appColor = Color(0xFF2A6FDB);
 
@@ -46,28 +46,63 @@ Widget getTimeWidgets(String date, String time) {
   return new Column(children: list);
 }
 
+showCurrentDate(BuildContext context) {
+  var now = new DateTime.now();
+  String nowYear = now.year.toString();
+  String nowMonth, nowDay;
+  if (now.month < 10) {
+    nowMonth = "0" + now.month.toString();
+  }
+  if (now.day < 10) {
+    nowDay = "0" + now.day.toString();
+  }
+
+  String nowHour;
+  String nowMin;
+  String nowSec;
+
+  if (now.hour < 10) {
+    nowHour = "0" + now.hour.toString();
+  }
+  if (now.minute < 10) {
+    nowMin = "0" + now.minute.toString();
+  }
+  if (now.second < 10) {
+    nowSec = "0" + now.month.toString();
+  }
+
+  String currentDate = nowYear + "-" + nowMonth + "-" + nowDay;
+  String currentTime = nowHour + "-" + nowMin + "-" + nowSec;
+
+  Scaffold.of(context).showSnackBar(SnackBar(
+    content: Text("測量時間：" + currentDate + " " + currentTime),
+  ));
+}
 
 class ScanScreen extends StatelessWidget {
   @override
-//  WidgetsFlutterBinding.ensureInitialized();
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("體溫量測"),
+        centerTitle: true,
         backgroundColor: appColor,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          getTimeWidgets("2020-03-18", "01:15:47"),
+          getTimeWidgets(currentDate, currentTime),
           Padding(
               padding: new EdgeInsets.only(top: 0),
               child: new RaisedButton(
                 onPressed: () {
-                  FlutterBlue.instance.startScan(timeout: Duration(seconds:10));
+//                  showCurrentDate(context);
+                  FlutterBlue.instance
+                      .startScan(timeout: Duration(seconds: 10));
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => FindDevicesScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => FindDevicesScreen()),
                   );
                 },
                 textColor: Colors.white,
@@ -90,75 +125,16 @@ class ScanScreen extends StatelessWidget {
   }
 }
 
-//Widget getTempWidgets(List<String> nameL, List<String> tempL, List<String> numberL) {
-//  List<Widget> list = new List<Widget>();
-//  for (var i = 0; i < nameL.length; i++) {
-//    list.add(
-//      new Slidable(
-//        actionPane: SlidableDrawerActionPane(),
-//        actionExtentRatio: 0.25,
-//        child: Container(
-//          color: Colors.white,
-//          child: ListTile(
-//            leading: CircleAvatar(
-//              backgroundColor: Colors.indigoAccent,
-//              child: Icon(Icons.person),
-//              foregroundColor: Colors.white,
-//            ),
-//            trailing: Text(
-//              tempL[i],
-//              style: TextStyle(
-//                fontSize: 32,
-//              ),
-//              textAlign: TextAlign.right,
-//            ),
-//            title: Text(
-//              nameL[i],
-//              style: TextStyle(
-//                fontSize: 20,
-//              ),
-//              textAlign: TextAlign.left,
-//            ),
-//            subtitle: Text(
-//              numberL[i],
-//              style: TextStyle(
-//                fontSize: 16,
-//              ),
-//              textAlign: TextAlign.left,
-//            ),
-//          ),
-//        ),
-//        secondaryActions: <Widget>[
-//          IconSlideAction(
-//            caption: '確認',
-//            color: Color(0xFF81E9E6),
-//            icon: Icons.check_circle,
-////              onTap: () => _showSnackBar('Archive'),
-//          ),
-//          IconSlideAction(
-//            caption: '刪除',
-//            color: Colors.red,
-//            icon: Icons.delete,
-////                onTap: () => _showSnackBar('Delete'),
-//          ),
-//        ],
-//      ),
-//    );
-//  }
-//  return new Column(children: list);
-//}
-
 class FlutterBlueApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
     //確認是否開啟藍芽，若未開顯示藍芽未開的畫面
     return MaterialApp(
       color: Colors.white,
       //StreamBuilder本身是一個Widget，會監聽一個Stream，只要這個Stream有數據變化，
       //它內部的UI就會根據這個新的數據進行變化，完全不需要setState((){})
       home: StreamBuilder<BluetoothState>(
-        //負責監聽的Stream
+          //負責監聽的Stream
           stream: FlutterBlue.instance.state,
           //初始化值
           initialData: BluetoothState.unknown,
@@ -209,6 +185,15 @@ class BluetoothOffScreen extends StatelessWidget {
   }
 }
 
+var now = new DateTime.now();
+String currentDate =
+    now.year.toString() + "-" + now.month.toString() + "-" + now.day.toString();
+String currentTime = now.hour.toString() +
+    "-" +
+    now.minute.toString() +
+    "-" +
+    now.second.toString();
+
 //初始首頁
 class FindDevicesScreen extends StatelessWidget {
   @override
@@ -221,7 +206,8 @@ class FindDevicesScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.search),
             tooltip: '重新掃描',
-            onPressed: () => FlutterBlue.instance.startScan(timeout: Duration(seconds:10)),
+            onPressed: () =>
+                FlutterBlue.instance.startScan(timeout: Duration(seconds: 10)),
           ),
         ],
       ),
@@ -230,7 +216,8 @@ class FindDevicesScreen extends StatelessWidget {
       body: RefreshIndicator(
         onRefresh: () =>
             FlutterBlue.instance.startScan(timeout: Duration(seconds: 4)),
-        child: SingleChildScrollView( //SingleChildScrollView滾動條
+        child: SingleChildScrollView(
+          //SingleChildScrollView滾動條
           child: Column(
             children: <Widget>[
               //當已經connect上後才顯示的部分，少了RSSI與詳細資訊，多了open按鍵//
@@ -242,42 +229,42 @@ class FindDevicesScreen extends StatelessWidget {
                 initialData: [],
                 builder: (c, snapshot) => Column(
                   //ListTile 通常用於在 Flutter 中填充 ListView
-                  children: snapshot.data.map((d) =>
+                  children: snapshot.data
+                      .map((d) =>
 //                      getTempWidgets(nameList, tempList, numList)
-                      ListTile(
-                    //名稱
-                    title: Text(d.name),
-                    //mac
-                    subtitle: Text(d.id.toString()),
+                          ListTile(
+                            //名稱
+                            title: Text(d.name),
+                            //mac
+                            subtitle: Text(d.id.toString()),
 
-                    //trailing設置拖尾將在列表的末尾放置一個圖像
-                    trailing: StreamBuilder<BluetoothDeviceState>(
-                      stream: d.state,
-                      //預設未連接
-                      initialData: BluetoothDeviceState.disconnected,
-                      builder: (c, snapshot) {
-                        if (snapshot.data == BluetoothDeviceState.connected) {
-                          return RaisedButton(
-                            child: Text('OPEN'),
-                            //跳頁
-                            onPressed: () => Navigator.of(context).push(
-                              //跳頁到DeviceScreen並攜帶device
-                                MaterialPageRoute(
+                            //trailing設置拖尾將在列表的末尾放置一個圖像
+                            trailing: StreamBuilder<BluetoothDeviceState>(
+                              stream: d.state,
+                              //預設未連接
+                              initialData: BluetoothDeviceState.disconnected,
+                              builder: (c, snapshot) {
+                                if (snapshot.data ==
+                                    BluetoothDeviceState.connected) {
+                                  return RaisedButton(
+                                    child: Text('OPEN'),
+                                    //跳頁
+                                    onPressed: () => Navigator.of(context).push(
+                                        //跳頁到DeviceScreen並攜帶device
+                                        MaterialPageRoute(
 //                                    builder: (context) =>
 //                                        DeviceScreen(device: d)
-                                )),
-                          );
-                        }
-                        //如果未連線，則顯示未連線資訊
-                        return Text(snapshot.data.toString());
-                      },
-                    ),
-                  )
-                  ).toList(),
+                                            )),
+                                  );
+                                }
+                                //如果未連線，則顯示未連線資訊
+                                return Text(snapshot.data.toString());
+                              },
+                            ),
+                          ))
+                      .toList(),
                 ),
               ),
-
-
 
 //              所有搜尋到的結果列表
               StreamBuilder<List<ScanResult>>(
@@ -286,11 +273,11 @@ class FindDevicesScreen extends StatelessWidget {
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
                       .map(
-                        (r) =>
-                            ScanResultTile(
+                        (r) => ScanResultTile(
                           result: r,
-                    ),
-                  ).toList(),
+                        ),
+                      )
+                      .toList(),
                 ),
               ),
             ],
@@ -322,34 +309,3 @@ class FindDevicesScreen extends StatelessWidget {
     );
   }
 }
-
-//class ScanResult1 extends StatelessWidget {
-//  List<String> nameList = [
-//    'Izaan',
-//    'Charlize',
-//    'Madihah',
-//    'Rian',
-//    'Ellisha',
-//    'Farhan'
-//  ];
-//  List<String> tempList = ['36.5', '36.7', '35.6', '36.2', '36.5', '37.2'];
-//  List<String> numList = ['1', '2', '3', '4', '5', '6'];
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return Scaffold(
-//      appBar: AppBar(
-//        title: Text("量測結果"),
-//        backgroundColor: Color(0xFF2A6FDB),
-//        actions: <Widget>[
-//          IconButton(
-//            icon: const Icon(Icons.search),
-//            tooltip: '重新掃描',
-//            onPressed: () {},
-//          ),
-//        ],
-//      ),
-//      body: Center(child: getTempWidgets(nameList, tempList, numList)),
-//    );
-//  }
-//}

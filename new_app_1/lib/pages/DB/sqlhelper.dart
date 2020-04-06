@@ -184,6 +184,7 @@ class sqlhelper {
         WHERE employees.id = ${id}
         and WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
         ''');
+      print(data);
     } else {
       data = await _DB.rawQuery('''select * from employees 
         INNER JOIN temperatures 
