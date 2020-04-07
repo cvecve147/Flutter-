@@ -1,11 +1,12 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:newapp1/pages/bluetooth/package.dart';
+import 'package:flutter/foundation.dart';
+import 'package:newapp1/pages/DB/sqlhelper.dart';
+import 'package:newapp1/pages/DB/employee_model.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 
-import 'DB/employee_model.dart';
-import 'DB/sqlhelper.dart';
+//import 'package:newapp1/pages/bluetooth/onlyMacPackage.dart';
+import 'package:newapp1/pages/bluetooth/package.dart';
 
 Color appColor = Color(0xFF2A6FDB);
 Color cashColor = Color(0xFFFEFCBF);
@@ -516,8 +517,7 @@ class PeopleScreenState extends State<PeopleScreen> {
                         Navigator.of(context).pop();
                         debugPrint(name);
                         if (num != "") {
-                          employee data = new employee(
-                              employeeID: num, name: name, mac: macAddress);
+                          employee data = new employee(employeeID: num, name: name, mac: macAddress);
                           await helper.insertData(data);
                           setState(() {});
                           return showDialog(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'homeWidget.dart';
 
 void main() => runApp(MyApp());
@@ -17,6 +16,7 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
+
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -27,7 +27,10 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('New APP'),
       ),
       body: Center(
-        child: Column(),
+
+        child: Column(
+          
+        ),  
       ),
     );
   }
