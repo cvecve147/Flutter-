@@ -79,7 +79,7 @@ createSelectShareDateAlertDialog(BuildContext context) {
                               "-" +
                               date.month.toString() +
                               "-" +
-                              (date.day+1).toString();
+                              (date.day + 1).toString();
                           ;
                         }, currentTime: DateTime.now(), locale: LocaleType.zh);
                       },
@@ -283,7 +283,21 @@ class ShareScreen extends StatelessWidget {
         ],
       ),
       body: Column(
-        children: <Widget>[content()],
+        children: <Widget>[
+          content(),
+          RaisedButton(
+            onPressed: () async {
+              sqlhelper helper = sqlhelper();
+              // await helper.dropTemp();
+              print(await helper.showLastTemp());
+              // temperature data =
+              //     temperature(id: 1, temp: "25.7", time: "2020-01-07 12:00:01");
+              // await helper.insertData(data);
+              List date = ["2020-01-01", "2020-01-06"];
+              await helper.writeEmployeeToCsv(date);
+            },
+          )
+        ],
       ),
     );
   }

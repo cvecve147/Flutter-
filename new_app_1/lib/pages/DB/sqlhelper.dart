@@ -20,13 +20,13 @@ class sqlhelper {
     _DbDir = await getDatabasesPath();
     _DB = await openDatabase(path.join(_DbDir, _Dbname),
         onCreate: (database, version) async {
-          await database.execute('''
+      await database.execute('''
             CREATE TABLE employees(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,employeeID TEXT, name TEXT,mac TEXT DEFAULT NULL);
           ''');
-          await database.execute('''
+      await database.execute('''
             CREATE TABLE temperatures(id INTEGER, temp TEXT,time TEXT);
           ''');
-        }, version: 4);
+    }, version: 4);
   }
 
   insertData(dynamic data) async {
@@ -63,7 +63,7 @@ class sqlhelper {
   showEmployeeJoinTemp() async {
     await initDB();
     final List<Map<String, dynamic>> maps =
-    await _DB.rawQuery('''select * from employees 
+        await _DB.rawQuery('''select * from employees 
         INNER JOIN temperatures 
         on temperatures.id= employees.id
         ''');
@@ -82,7 +82,21 @@ class sqlhelper {
   searchEmployee(int id) async {
     await initDB();
     final List<Map<String, dynamic>> maps =
-    await _DB.query('employees', where: "id=?", whereArgs: [id]);
+        await _DB.query('employees', where: "id=?", whereArgs: [id]);
+    return List.generate(maps.length, (i) {
+      return employee(
+        id: maps[i]['id'],
+        name: maps[i]['name'],
+        employeeID: maps[i]['employeeID'],
+        mac: maps[i]['mac'],
+      );
+    });
+  }
+
+  searchEmployeeID(String id) async {
+    await initDB();
+    final List<Map<String, dynamic>> maps =
+        await _DB.query('employees', where: "employeeID=?", whereArgs: [id]);
     return List.generate(maps.length, (i) {
       return employee(
         id: maps[i]['id'],
@@ -96,7 +110,7 @@ class sqlhelper {
   searchEmployeeMAC(String mac) async {
     await initDB();
     final List<Map<String, dynamic>> maps =
-    await _DB.query('employees', where: "mac=?", whereArgs: [mac]);
+        await _DB.query('employees', where: "mac=?", whereArgs: [mac]);
     return List.generate(maps.length, (i) {
       return employee(
         id: maps[i]['id'],
@@ -127,6 +141,7 @@ class sqlhelper {
 
   readCsvToEmployee() async {
     try {
+      List repeat = [];
       String _path = await FilePicker.getFilePath();
       final input = new File(_path).openRead();
       final fields = await input
@@ -137,13 +152,22 @@ class sqlhelper {
         if (fields[i][0] == "人員編號") {
           continue;
         }
-        employee data = employee(
-            name: fields[i][1].toString(),
-            employeeID: fields[i][0].toString(),
-            mac: fields[i].length > 2 ? fields[i][2] : null);
-        await insertData(data);
+        List data = await searchEmployeeID(fields[i][0].toString());
+        if (data.length > 0) {
+          repeat.add(fields[i][0].toString());
+        } else {
+          employee data = employee(
+              name: fields[i][1].toString(),
+              employeeID: fields[i][0].toString(),
+              mac: fields[i].length > 2 ? fields[i][2] : null);
+          await insertData(data);
+        }
       }
-      return true;
+      if (repeat.length > 0) {
+        return repeat.join("、") + "有重複 請檢察列表中的資料";
+      } else {
+        return "匯入成功";
+      }
     } catch (e) {
       print(e);
       return false;
@@ -158,7 +182,7 @@ class sqlhelper {
       (
         select * from
         (select * from temperatures
-          ORDER BY time DESC)          
+          ORDER BY temperatures.time)          
           GROUP BY  id      
       )as temperatures
       on temperatures.id= employees.id
@@ -176,7 +200,8 @@ class sqlhelper {
   }
 
   writeEmployeeToCsv(List date, [int id]) async {
-    dynamic data;
+    await initDB();
+    List<Map<String, dynamic>> data;
     if (id != null) {
       data = await _DB.rawQuery('''select * from employees         
         INNER JOIN temperatures 
@@ -192,15 +217,22 @@ class sqlhelper {
         WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
         ''');
     }
-    print(data);
+    String csvFormat = "";
+    List dataFormat = await List.generate(data.length, (i) {
+      csvFormat += data[i]['time'] +
+          "," +
+          data[i]['name'] +
+          "," +
+          data[i]['temp'] +
+          "\n";
+      return data[i]['time'] + "," + data[i]['name'] + "," + data[i]['temp'];
+    });
     try {
-      var csv = mapListToCsv(data);
       Directory directory = await getExternalStorageDirectory();
-      print(csv);
-      print(directory.path);
-      final File file = File('${directory.path}/${date[0]}_${date[1]}.csv');
-      await file.writeAsString(csv);
-      return "${directory.path}/${date[0]}_${date[1]}.csv";
+      final File file = new File('${directory.path}/NewApp.csv');
+      await file.writeAsString(csvFormat);
+      print("${directory.path}/NewApp.csv");
+      return "${directory.path}/NewApp.csv";
     } catch (e) {
       print(e);
       return "false";
@@ -265,6 +297,16 @@ class sqlhelper {
   deleteEmployee(int id) async {
     await initDB();
     await _DB.delete('employees', where: "id=?", whereArgs: [id]);
+  }
+
+  dropEmployee() async {
+    await initDB();
+    await _DB.delete('employees');
+  }
+
+  dropTemp() async {
+    await initDB();
+    await _DB.delete('temperatures');
   }
 
   dropAll() async {
