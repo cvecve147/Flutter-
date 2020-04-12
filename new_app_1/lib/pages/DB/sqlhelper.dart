@@ -79,6 +79,18 @@ class sqlhelper {
     });
   }
 
+  showLastDate() async {
+    await initDB();
+    final List<Map<String, dynamic>> maps = await _DB.rawQuery('''
+      select * from temperatures
+          ORDER BY temperatures.time DESC
+    ''');
+    return List.generate(maps.length, (i) {
+      return temperature(
+          id: maps[i]['id'], temp: maps[i]['temp'], time: maps[i]['time']);
+    });
+  }
+
   searchEmployee(int id) async {
     await initDB();
     final List<Map<String, dynamic>> maps =
@@ -139,7 +151,7 @@ class sqlhelper {
     }
   }
 
-  readCsvToEmployee() async {
+  Future<String> readCsvToEmployee() async {
     try {
       List repeat = [];
       String _path = await FilePicker.getFilePath();
@@ -170,7 +182,7 @@ class sqlhelper {
       }
     } catch (e) {
       print(e);
-      return false;
+      return "匯入失敗";
     }
   }
 
@@ -186,6 +198,7 @@ class sqlhelper {
           GROUP BY  id      
       )as temperatures
       on temperatures.id= employees.id
+      ORDER BY temperatures.time  DESC
     ''');
     return List.generate(maps.length, (i) {
       return AllJoinTable(
@@ -199,11 +212,11 @@ class sqlhelper {
     });
   }
 
-  writeEmployeeToCsv(List date, [int id]) async {
+  Future<String> writeEmployeeToCsv(List date, [int id]) async {
     await initDB();
     List<Map<String, dynamic>> data;
     if (id != null) {
-      data = await _DB.rawQuery('''select * from employees         
+      data = await _DB.rawQuery('''select * from employees 
         INNER JOIN temperatures 
         on temperatures.id= employees.id
         WHERE employees.id = ${id}
@@ -218,69 +231,22 @@ class sqlhelper {
         ''');
     }
     String csvFormat = "";
-    List dataFormat = await List.generate(data.length, (i) {
+    await List.generate(data.length, (i) {
       csvFormat += data[i]['time'] +
           "," +
           data[i]['name'] +
           "," +
           data[i]['temp'] +
           "\n";
-      return data[i]['time'] + "," + data[i]['name'] + "," + data[i]['temp'];
     });
     try {
       Directory directory = await getExternalStorageDirectory();
       final File file = new File('${directory.path}/NewApp.csv');
       await file.writeAsString(csvFormat);
-      print("${directory.path}/NewApp.csv");
       return "${directory.path}/NewApp.csv";
     } catch (e) {
-      print(e);
-      return "false";
+      return "${e}匯出失敗";
     }
-  }
-
-  String mapListToCsv(List<Map<String, dynamic>> mapList,
-      {ListToCsvConverter converter}) {
-    if (mapList == null) {
-      return null;
-    }
-    converter ??= const ListToCsvConverter();
-    var data = <List>[];
-    var keys = <String>[];
-    var keyIndexMap = <String, int>{};
-
-    // Add the key and fix previous records
-    int _addKey(String key) {
-      var index = keys.length;
-      keyIndexMap[key] = index;
-      keys.add(key);
-      for (var dataRow in data) {
-        dataRow.add(null);
-      }
-      return index;
-    }
-
-    for (var map in mapList) {
-      // This list might grow if a new key is found
-      var dataRow = List(keyIndexMap.length);
-      // Fix missing key
-      map.forEach((key, value) {
-        var keyIndex = keyIndexMap[key];
-        if (keyIndex == null) {
-          // New key is found
-          // Add it and fix previous data
-          keyIndex = _addKey(key);
-          // grow our list
-          dataRow = List.from(dataRow, growable: true)..add(value);
-        } else {
-          dataRow[keyIndex] = value;
-        }
-      });
-      data.add(dataRow);
-    }
-    return converter.convert(<List>[]
-      ..add(keys)
-      ..addAll(data));
   }
 
   deleteOverDay(String date) async {
