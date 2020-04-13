@@ -3,13 +3,20 @@ import 'dart:convert' show utf8;
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:newapp1/pages/bluetooth/package.dart';
+import 'package:newapp1/pages/bluetooth/package2.dart';
 import 'package:newapp1/pages/people_screen.dart';
+
+import 'DB/sqlhelper.dart';
 
 Color appColor = Color(0xFF2A6FDB);
 
-Widget getTimeWidgets(String date, String time) {
+Widget getTimeWidgets(String all) {
   WidgetsFlutterBinding.ensureInitialized();
+  var data = all.split(" ");
+
+  String date = data[0];
+  String time = data[1];
+
   List<Widget> list = new List<Widget>();
   list.add(
     new Padding(
@@ -46,41 +53,49 @@ Widget getTimeWidgets(String date, String time) {
   return new Column(children: list);
 }
 
+
+
+class statefulScanScreen extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _ScanScreenState();
+  }
+}
+
 showCurrentDate(BuildContext context) {
   var now = new DateTime.now();
-  String nowYear = now.year.toString();
-  String nowMonth, nowDay;
-  if (now.month < 10) {
-    nowMonth = "0" + now.month.toString();
-  }
-  if (now.day < 10) {
-    nowDay = "0" + now.day.toString();
+  String twoDigit(int n) {
+    if (n >= 10) return "$n";
+    return "0$n";
   }
 
-  String nowHour;
-  String nowMin;
-  String nowSec;
-
-  if (now.hour < 10) {
-    nowHour = "0" + now.hour.toString();
-  }
-  if (now.minute < 10) {
-    nowMin = "0" + now.minute.toString();
-  }
-  if (now.second < 10) {
-    nowSec = "0" + now.month.toString();
-  }
-
-  String currentDate = nowYear + "-" + nowMonth + "-" + nowDay;
-  String currentTime = nowHour + "-" + nowMin + "-" + nowSec;
+  String currentDate = twoDigit(now.year) + "-" + twoDigit(now.month) + "-" + twoDigit(now.day);
+  String currentTime = twoDigit(now.hour) + "-" + twoDigit(now.minute) + "-" + twoDigit(now.second);
 
   Scaffold.of(context).showSnackBar(SnackBar(
     content: Text("測量時間：" + currentDate + " " + currentTime),
   ));
 }
 
-class ScanScreen extends StatelessWidget {
+class _ScanScreenState extends State<statefulScanScreen> {
+
+  String lastScanDate = "尚未量測 無上次量測時間";
+
   @override
+  void initState() {
+    super.initState();
+    (() async {
+      sqlhelper helper = sqlhelper();
+      List temp = await helper.showLastDate();
+      print(await helper.showLastDate());
+      if (temp.length > 0) {
+        lastScanDate = temp[0].time;
+      }
+      print(temp);
+      setState(() {});
+    })();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -91,7 +106,7 @@ class ScanScreen extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          getTimeWidgets(currentDate, currentTime),
+          getTimeWidgets(lastScanDate),
           Padding(
               padding: new EdgeInsets.only(top: 0),
               child: new RaisedButton(
@@ -124,6 +139,52 @@ class ScanScreen extends StatelessWidget {
     );
   }
 }
+
+//class ScanScreen extends StatelessWidget {
+//  @override
+//  Widget build(BuildContext context) {
+//    return Scaffold(
+//      appBar: AppBar(
+//        title: Text("體溫量測"),
+//        centerTitle: true,
+//        backgroundColor: appColor,
+//      ),
+//      body: Column(
+//        mainAxisAlignment: MainAxisAlignment.center,
+//        children: <Widget>[
+//          getTimeWidgets(currentDate, currentTime),
+//          Padding(
+//              padding: new EdgeInsets.only(top: 0),
+//              child: new RaisedButton(
+//                onPressed: () {
+////                  showCurrentDate(context);
+//                  FlutterBlue.instance
+//                      .startScan(timeout: Duration(seconds: 10));
+//                  Navigator.push(
+//                    context,
+//                    MaterialPageRoute(
+//                        builder: (context) => FindDevicesScreen()),
+//                  );
+//                },
+//                textColor: Colors.white,
+//                splashColor: appColor,
+//                padding: const EdgeInsets.all(0.0),
+//                color: Color(0xFF122C91),
+//                shape: new RoundedRectangleBorder(
+//                  borderRadius: new BorderRadius.circular(25.0),
+////                side: BorderSide(color: Color(0xFF122C91))
+//                ),
+//                child: Container(
+//                  padding: const EdgeInsets.symmetric(
+//                      vertical: 20.0, horizontal: 90.0),
+//                  child: const Text('開始量測', style: TextStyle(fontSize: 30)),
+//                ),
+//              ))
+//        ],
+//      ),
+//    );
+//  }
+//}
 
 class FlutterBlueApp extends StatelessWidget {
   @override
@@ -184,15 +245,6 @@ class BluetoothOffScreen extends StatelessWidget {
     );
   }
 }
-
-var now = new DateTime.now();
-String currentDate =
-    now.year.toString() + "-" + now.month.toString() + "-" + now.day.toString();
-String currentTime = now.hour.toString() +
-    "-" +
-    now.minute.toString() +
-    "-" +
-    now.second.toString();
 
 //初始首頁
 class FindDevicesScreen extends StatelessWidget {
@@ -273,7 +325,7 @@ class FindDevicesScreen extends StatelessWidget {
                 builder: (c, snapshot) => Column(
                   children: snapshot.data
                       .map(
-                        (r) => ScanResultTile(
+                        (r) => Scan(
                           result: r,
                         ),
                       )

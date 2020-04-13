@@ -14,6 +14,11 @@ Color primaryColor = Color(0xFF122C91);
 String startDate;
 String endDate;
 
+String twoDigit(int n) {
+  if (n >= 10) return "$n";
+  return "0$n";
+}
+
 createSelectShareDateAlertDialog(BuildContext context) {
   return showDialog(
       context: context,
@@ -21,7 +26,7 @@ createSelectShareDateAlertDialog(BuildContext context) {
         startDate = "";
         endDate = "";
         return AlertDialog(
-          title: Text("匯出"),
+          title: Text("全體匯出"),
           content: SingleChildScrollView(
             child: Column(
               children: <Widget>[
@@ -42,22 +47,15 @@ createSelectShareDateAlertDialog(BuildContext context) {
                             minTime:
                                 DateTime.now().add(new Duration(days: -30)),
                             maxTime: DateTime.now(), onConfirm: (date) {
-                          startDate = date.year.toString() +
+                          startDate = twoDigit(date.year) +
                               "-" +
-                              date.month.toString() +
+                              twoDigit(date.month) +
                               "-" +
-                              date.day.toString();
+                              twoDigit(date.day);
                           print('confirm $date');
                         }, currentTime: DateTime.now(), locale: LocaleType.zh);
                       },
                     )),
-//                Padding(
-//                    padding: EdgeInsets.only(top: 16),
-//                    child: Text("起始日期:" + startDate)),
-//                Padding(padding: EdgeInsets.only(top: 16), child: Text('|')),
-//                Padding(
-//                    padding: EdgeInsets.only(top: 16),
-//                    child: Text("結束日期:" + endDate)),
                 Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: RaisedButton(
@@ -75,11 +73,11 @@ createSelectShareDateAlertDialog(BuildContext context) {
                             minTime:
                                 DateTime.now().add(new Duration(days: -30)),
                             maxTime: DateTime.now(), onConfirm: (date) {
-                          endDate = date.year.toString() +
+                          endDate = twoDigit(date.year) +
                               "-" +
-                              date.month.toString() +
+                              twoDigit(date.month) +
                               "-" +
-                              (date.day + 1).toString();
+                              twoDigit(date.day + 1);
                           ;
                         }, currentTime: DateTime.now(), locale: LocaleType.zh);
                       },
@@ -128,10 +126,219 @@ createSelectShareDateAlertDialog(BuildContext context) {
                                     onPressed: () async {
                                       Navigator.of(context).pop();
                                       List data = [startDate, endDate];
-                                      int id = 0;
+                                      sqlhelper helpler = new sqlhelper();
+                                      await helpler.writeEmployeeToCsv(data);
+
+                                      String result = await helpler
+                                          .writeEmployeeToCsv(data);
+                                      print(result);
+
+                                      Navigator.of(context).pop();
+
+                                      if (result == "匯出失敗") {
+                                        print("匯出失敗");
+                                        return showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return SimpleDialog(
+                                              title: Text("匯出失敗"),
+                                              children: <Widget>[
+                                                Column(
+                                                  children: <Widget>[
+                                                    Padding(
+                                                        padding: EdgeInsets.only(
+                                                            top: 16),
+                                                        child: Text("匯出失敗")),
+                                                  ],
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        print("匯出成功");
+                                        return showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return SimpleDialog(
+                                              title: Text("匯出成功"),
+                                              children: <Widget>[
+                                                Column(
+                                                  children: <Widget>[
+                                                    Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                top: 16),
+                                                        child:
+                                                            Text("匯出成功 路徑為")),
+                                                    Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                          top: 16,
+                                                          left: 8,
+                                                          right: 4,
+                                                        ),
+                                                        child: Text(result)),
+                                                  ],
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    },
+                                    color: appColor,
+                                  ),
+                                  new FlatButton(
+                                    child: Text(
+                                      '取消',
+                                      style: new TextStyle(color: appColor),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  )
+                                ],
+                              ),
+                            ],
+                          );
+                        });
+                  },
+                  color: appColor,
+                ),
+                new FlatButton(
+                  child: Text(
+                    '取消',
+                    style: new TextStyle(color: appColor),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ),
+          ],
+        );
+      });
+}
+
+createSelectPersonalShareDateAlertDialog(
+    BuildContext context, int num, String name) {
+  return showDialog(
+      context: context,
+      builder: (context) {
+        startDate = "";
+        endDate = "";
+        return AlertDialog(
+          title: Text("個人匯出"),
+          content: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Text("匯出" + name + "的資料")),
+                Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: RaisedButton(
+                      color: appColor,
+                      splashColor: Color(0xFF122C91),
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 40.0),
+                          child: const Text('設定起始日期',
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 20))),
+                      onPressed: () {
+                        DatePicker.showDatePicker(context,
+                            showTitleActions: true,
+                            minTime:
+                                DateTime.now().add(new Duration(days: -30)),
+                            maxTime: DateTime.now(), onConfirm: (date) {
+                          startDate = twoDigit(date.year) +
+                              "-" +
+                              twoDigit(date.month) +
+                              "-" +
+                              twoDigit(date.day);
+                          print('confirm $date');
+                        }, currentTime: DateTime.now(), locale: LocaleType.zh);
+                      },
+                    )),
+                Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: RaisedButton(
+                      color: appColor,
+                      splashColor: Color(0xFF122C91),
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 40.0),
+                          child: const Text('設定結束日期',
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 20))),
+                      onPressed: () {
+                        DatePicker.showDatePicker(context,
+                            showTitleActions: true,
+                            minTime:
+                                DateTime.now().add(new Duration(days: -30)),
+                            maxTime: DateTime.now(), onConfirm: (date) {
+                          endDate = twoDigit(date.year) +
+                              "-" +
+                              twoDigit(date.month) +
+                              "-" +
+                              twoDigit(date.day + 1);
+                        }, currentTime: DateTime.now(), locale: LocaleType.zh);
+                      },
+                    )),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            new ButtonBar(
+              children: <Widget>[
+                new FlatButton(
+                  child: Text('確認'),
+                  // ignore: missing_return
+                  onPressed: () {
+                    print("startDate:" + startDate);
+                    print("endDate:" + endDate);
+                    return showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text("匯出日期確認"),
+                            content: SingleChildScrollView(
+                              child: Column(
+                                children: <Widget>[
+                                  Padding(
+                                      padding: EdgeInsets.only(top: 16),
+                                      child: Text("確定要匯出" + name + "的資料嗎？")),
+                                  Padding(
+                                      padding: EdgeInsets.only(top: 16),
+                                      child: Text("起始日期:" + startDate)),
+                                  Padding(
+                                      padding: EdgeInsets.only(top: 16),
+                                      child: Text('|')),
+                                  Padding(
+                                      padding: EdgeInsets.only(top: 16),
+                                      child: Text("結束日期:" + endDate)),
+                                ],
+                              ),
+                            ),
+                            actions: <Widget>[
+                              new ButtonBar(
+                                children: <Widget>[
+                                  new FlatButton(
+                                    child: Text('確認'),
+                                    // ignore: missing_return
+                                    onPressed: () async {
+                                      Navigator.of(context).pop();
+                                      List data = [startDate, endDate];
                                       sqlhelper helpler = new sqlhelper();
                                       await helpler.writeEmployeeToCsv(
-                                          data, id);
+                                          data, num);
+                                      Scaffold.of(context)
+                                          .showSnackBar(SnackBar(
+                                        content: Text("匯出成功 路徑為"),
+                                      ));
                                     },
                                     color: appColor,
                                   ),
@@ -199,7 +406,8 @@ class content extends StatelessWidget {
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundColor: Colors.indigoAccent,
-                      child: Icon(Icons.person),
+//                      child: Icon(Icons.person),
+                      child: Text(data[i].employeeID.toString()),
                       foregroundColor: Colors.white,
                     ),
                     trailing: Text(
@@ -217,7 +425,7 @@ class content extends StatelessWidget {
                       textAlign: TextAlign.left,
                     ),
                     subtitle: Text(
-                      data[i].employeeID.toString(),
+                      data[i].time.toString(),
                       style: TextStyle(
                         fontSize: 16,
                       ),
@@ -230,7 +438,8 @@ class content extends StatelessWidget {
                     caption: '匯出',
                     color: Color(0xFFFEFCBF),
                     icon: Icons.share,
-                    onTap: () => createSelectShareDateAlertDialog(context),
+                    onTap: () => createSelectPersonalShareDateAlertDialog(
+                        context, data[i].id, data[i].name.toString()),
                   ),
                 ],
               ),
@@ -249,19 +458,6 @@ class content extends StatelessWidget {
     data = await getData();
     return Future.value("Get Data"); // return your response
   }
-}
-
-class fulShareScreen extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return null;
-  }
-}
-
-class _shareScreenState extends State<fulShareScreen> {
-  @override
-  Widget build(BuildContext context) {}
 }
 
 class ShareScreen extends StatelessWidget {
@@ -283,21 +479,7 @@ class ShareScreen extends StatelessWidget {
         ],
       ),
       body: Column(
-        children: <Widget>[
-          content(),
-          RaisedButton(
-            onPressed: () async {
-              sqlhelper helper = sqlhelper();
-              // await helper.dropTemp();
-              print(await helper.showLastTemp());
-              // temperature data =
-              //     temperature(id: 1, temp: "25.7", time: "2020-01-07 12:00:01");
-              // await helper.insertData(data);
-              List date = ["2020-01-01", "2020-01-06"];
-              await helper.writeEmployeeToCsv(date);
-            },
-          )
-        ],
+        children: <Widget>[content()],
       ),
     );
   }

@@ -3,9 +3,12 @@ import 'homeWidget.dart';
 
 void main() => runApp(MyApp());
 
+List<String> checkData =[];
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    checkData.clear();
     return MaterialApp(
       title: 'New App for NurseMaid',
       home: Home(),
