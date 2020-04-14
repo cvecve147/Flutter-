@@ -695,7 +695,7 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
-                                  title: Text('Result'),
+                                  title: Text('未配對成功'),
                                   content: SingleChildScrollView(
                                     child: ListBody(
                                       children: <Widget>[
@@ -943,6 +943,7 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
                                 border: OutlineInputBorder(),
                                 labelText: '編號',
                               ),
+                              keyboardType: TextInputType.number,
                               controller: editNumController,
                               style: Theme.of(context).textTheme.body1,
                             ),
@@ -1042,7 +1043,7 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text('Result'),
+              title: Text('人員已配對'),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[

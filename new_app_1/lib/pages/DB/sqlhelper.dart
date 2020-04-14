@@ -16,6 +16,7 @@ class sqlhelper {
   String _DbDir;
   String _Dbname = "NewApp05.db";
   Database _DB;
+
   initDB() async {
     _DbDir = await getDatabasesPath();
     _DB = await openDatabase(path.join(_DbDir, _Dbname),
@@ -176,7 +177,7 @@ class sqlhelper {
         }
       }
       if (repeat.length > 0) {
-        return repeat.join("、") + "有重複 請檢察列表中的資料";
+        return repeat.join("、") + "有重複 請檢查列表中的資料";
       } else {
         return "匯入成功";
       }
@@ -216,11 +217,13 @@ class sqlhelper {
     await initDB();
     List<Map<String, dynamic>> data;
     if (id != null) {
-      data = await _DB.rawQuery('''select * from employees 
-        INNER JOIN temperatures 
-        on temperatures.id= employees.id
-        WHERE employees.id = ${id}
-        and WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
+      data = await _DB.rawQuery('''
+      select * from
+      (select * from employees WHERE employees.id = ${id})
+      as employees
+      INNER JOIN temperatures
+      on temperatures.id= employees.id
+      WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
         ''');
       print(data);
     } else {

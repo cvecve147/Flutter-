@@ -146,8 +146,9 @@ createSelectShareDateAlertDialog(BuildContext context) {
                                                 Column(
                                                   children: <Widget>[
                                                     Padding(
-                                                        padding: EdgeInsets.only(
-                                                            top: 16),
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                top: 16),
                                                         child: Text("匯出失敗")),
                                                   ],
                                                 ),
@@ -333,12 +334,66 @@ createSelectPersonalShareDateAlertDialog(
                                       Navigator.of(context).pop();
                                       List data = [startDate, endDate];
                                       sqlhelper helpler = new sqlhelper();
-                                      await helpler.writeEmployeeToCsv(
-                                          data, num);
-                                      Scaffold.of(context)
-                                          .showSnackBar(SnackBar(
-                                        content: Text("匯出成功 路徑為"),
-                                      ));
+//                                      await helpler.writeEmployeeToCsv(data,num);
+
+                                      String result = await helpler
+                                          .writeEmployeeToCsv(data, num);
+                                      print(result);
+
+                                      Navigator.of(context).pop();
+
+                                      if (result == "匯出失敗") {
+                                        print("匯出失敗");
+                                        return showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return SimpleDialog(
+                                              title: Text("匯出失敗"),
+                                              children: <Widget>[
+                                                Column(
+                                                  children: <Widget>[
+                                                    Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                top: 16),
+                                                        child: Text("匯出失敗")),
+                                                  ],
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        print("匯出成功");
+                                        return showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return SimpleDialog(
+                                              title: Text("匯出成功"),
+                                              children: <Widget>[
+                                                Column(
+                                                  children: <Widget>[
+                                                    Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                top: 16),
+                                                        child:
+                                                            Text("匯出成功 路徑為")),
+                                                    Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                          top: 16,
+                                                          left: 8,
+                                                          right: 4,
+                                                        ),
+                                                        child: Text(result)),
+                                                  ],
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
                                     },
                                     color: appColor,
                                   ),
