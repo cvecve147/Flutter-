@@ -257,7 +257,6 @@ class sqlhelper {
     String csvFormat = "";
     String idAndName = "";
     if (id != null) {
-<<<<<<< HEAD
       try {
         data = await _DB.rawQuery('''
                   select * from
@@ -272,14 +271,6 @@ class sqlhelper {
       } catch (e) {
         return "${e}匯出失敗";
       }
-=======
-      data = await _DB.rawQuery('''select * from employees 
-        INNER JOIN temperatures 
-        on temperatures.id= employees.id
-        WHERE employees.id = ${id}
-        and WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
-        ''');
->>>>>>> parent of 53537db... add new version
       print(data);
     } else {
       try {

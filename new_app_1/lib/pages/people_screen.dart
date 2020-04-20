@@ -431,7 +431,6 @@ class ContentState extends State<Content> {
                       ),
                       textAlign: TextAlign.right,
                     ),
-<<<<<<< HEAD
                     IconSlideAction(
                       caption: '配對',
                       color: Colors.blue,
@@ -441,14 +440,6 @@ class ContentState extends State<Content> {
                       (context,data[i].name,data[i].id,data[i].employeeID.toString()),
                        await setState((){}),
                       },
-=======
-                    title: Text(
-                      data[i].name.toString(),
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                      textAlign: TextAlign.left,
->>>>>>> parent of 53537db... add new version
                     ),
                     subtitle: Text(
                       data[i].employeeID.toString(),
@@ -481,7 +472,6 @@ class ContentState extends State<Content> {
                     icon: Icons.delete,
                     onTap: () => createDeletePeopleAlertDialog(
                         context,
-<<<<<<< HEAD
                         data[i],
                       ),
                     ),
@@ -520,16 +510,6 @@ class ContentState extends State<Content> {
                 ),
               );
             }
-=======
-                        data[i].name,
-                        data[i].mac.toString(),
-                        data[i].employeeID.toString(),
-                        data[i].id),
-                  ),
-                ],
-              ),
-            );
->>>>>>> parent of 53537db... add new version
           }
           return new Column(children: list);
         } else {
