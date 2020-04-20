@@ -19,379 +19,6 @@ getData() async {
   return await helper.showEmployee();
 }
 
-//class content extends StatelessWidget {
-//  List data;
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return FutureBuilder<String>(
-//      future: downloadData(), // function where you call your api
-//      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-//        // AsyncSnapshot<Your object type>
-//        List<Widget> list;
-//        if (snapshot.hasData) {
-//          list = new List<Widget>();
-//          for (var i = 0; i < data.length; i++) {
-//            list.add(
-//              new Slidable(
-//                actionPane: SlidableDrawerActionPane(),
-//                actionExtentRatio: 0.25,
-//                child: Container(
-//                  color: Colors.white,
-//                  child: ListTile(
-//                    leading: CircleAvatar(
-//                      backgroundColor: Colors.indigoAccent,
-//                      child: Icon(Icons.person),
-//                      foregroundColor: Colors.white,
-//                    ),
-//                    trailing: Text(
-//                      data[i].mac.toString(),
-//                      style: TextStyle(
-//                        fontSize: 22,
-//                      ),
-//                      textAlign: TextAlign.right,
-//                    ),
-//                    title: Text(
-//                      data[i].name.toString(),
-//                      style: TextStyle(
-//                        fontSize: 20,
-//                      ),
-//                      textAlign: TextAlign.left,
-//                    ),
-//                    subtitle: Text(
-//                      data[i].employeeID.toString(),
-//                      style: TextStyle(
-//                        fontSize: 16,
-//                      ),
-//                      textAlign: TextAlign.left,
-//                    ),
-//                  ),
-//                ),
-//                secondaryActions: <Widget>[
-//                  IconSlideAction(
-//                    caption: '修改',
-//                    color: cashColor,
-//                    icon: Icons.edit,
-//                    onTap: () => createEditPeopleAlertDialog(
-//                        context,
-//                        data[i].name,
-//                        data[i].mac.toString(),
-//                        data[i].employeeID.toString()),
-//                  ),
-//                  IconSlideAction(
-//                    caption: '配對',
-//                    color: Colors.blue,
-//                    icon: Icons.settings_ethernet,
-//                    onTap: () => createPairPeopleAlertDialog(context),
-//                  ),
-//                  IconSlideAction(
-//                    caption: '刪除',
-//                    color: Colors.red,
-//                    icon: Icons.delete,
-//                    onTap: () => createDeletePeopleAlertDialog(
-//                        context,
-//                        data[i].name,
-//                        data[i].mac.toString(),
-//                        data[i].employeeID.toString(),
-//                        data[i].id),
-//                  ),
-//                ],
-//              ),
-//            );
-//          }
-//          return new Column(children: list);
-//        } else {
-//          return Text('無資料');
-//        }
-//      },
-//    );
-//  }
-//
-//  createDeletePeopleAlertDialog(
-//      BuildContext context, String name, String mac, String num, int idNum) {
-//    return showDialog(
-//        context: context,
-//        builder: (context) {
-//          return AlertDialog(
-//            title: Text("刪除確認"),
-//            content: SingleChildScrollView(
-//              child: Column(
-//                children: <Widget>[
-//                  Padding(
-//                    padding: EdgeInsets.only(top: 16),
-//                    child: Row(
-//                      children: <Widget>[
-//                        Text('確定要刪除此資料？'),
-//                      ],
-//                    ),
-//                  ),
-//                  Padding(
-//                    padding: EdgeInsets.only(top: 16),
-//                    child: Row(
-//                      children: <Widget>[
-//                        Text('姓名：'),
-//                        Text(name),
-//                      ],
-//                    ),
-//                  ),
-//                  Padding(
-//                    padding: EdgeInsets.only(top: 16),
-//                    child: Row(
-//                      children: <Widget>[
-//                        Text('編號：'),
-//                        Text(num),
-//                      ],
-//                    ),
-//                  ),
-//                  Padding(
-//                    padding: EdgeInsets.only(top: 16),
-//                    child: Row(
-//                      children: <Widget>[
-//                        Text('MAC編碼：'),
-//                        Text(
-//                          mac,
-//                        ),
-//                      ],
-//                    ),
-//                  ),
-//                ],
-//              ),
-//            ),
-//            actions: <Widget>[
-//              new ButtonBar(
-//                children: <Widget>[
-//                  new FlatButton(
-//                    child: Text('確認'),
-//                    // ignore: missing_return
-//                    onPressed: () async {
-//                      sqlhelper helpler = new sqlhelper();
-//                      await helpler.deleteEmployee(idNum);
-//                      Navigator.of(context).pop();
-//                    },
-//                    color: appColor,
-//                  ),
-//                  new FlatButton(
-//                    child: Text(
-//                      '取消',
-//                      style: new TextStyle(color: appColor),
-//                    ),
-//                    onPressed: () {
-//                      Navigator.of(context).pop();
-//                    },
-//                  )
-//                ],
-//              ),
-//            ],
-//          );
-//        });
-//  }
-//
-//  TextEditingController editNameController = new TextEditingController();
-//  TextEditingController editNumController = new TextEditingController();
-//  List<TextEditingController> _editMaccontroller = [
-//    for (int i = 1; i < 7; i++) TextEditingController()
-//  ];
-//
-//  createEditPeopleAlertDialog(
-//      BuildContext context, String name, String mac, String num) {
-//    editNameController.text = name;
-//    editNumController.text = num;
-//    var macSpilt = mac.split(":");
-//
-//    for (int i = 0; i < 6; i++) {
-//      _editMaccontroller[i].text = macSpilt[i];
-//    }
-//
-//    Widget getMacWidgets() {
-//      List<Widget> list = new List<Widget>();
-//      for (var i = 0; i < 11; i++) {
-//        if (i % 2 == 0) {
-//          int $Control = (i / 2).toInt();
-//          list.add(
-//            new Flexible(
-//              child: new TextField(
-//                maxLength: 2,
-//                controller: _editMaccontroller[$Control],
-//              ),
-//            ),
-//          );
-//        } else {
-//          list.add(
-//            Text(":"),
-//          );
-//        }
-//      }
-//      return new Row(children: list);
-//    }
-//
-//    return showDialog(
-//        context: context,
-//        builder: (context) {
-//          return AlertDialog(
-//            title: Text("修改人員"),
-//            content: SingleChildScrollView(
-//              child: Column(
-//                children: <Widget>[
-//                  Padding(
-//                    padding: EdgeInsets.only(top: 16),
-//                    child: Row(
-//                      children: <Widget>[
-//                        new Flexible(
-//                          child: new TextField(
-//                            decoration: InputDecoration(
-//                              border: OutlineInputBorder(),
-//                              labelText: '姓名',
-//                            ),
-//                            keyboardType: TextInputType.number,
-//                            controller: editNameController,
-//                            style: Theme.of(context).textTheme.body1,
-//                          ),
-//                        ),
-//                      ],
-//                    ),
-//                  ),
-//                  Padding(
-//                    padding: EdgeInsets.only(top: 16),
-//                    child: Row(
-//                      children: <Widget>[
-//                        new Flexible(
-//                          child: new TextField(
-//                            decoration: InputDecoration(
-//                              border: OutlineInputBorder(),
-//                              labelText: '編號',
-//                            ),
-//                            controller: editNumController,
-//                            style: Theme.of(context).textTheme.body1,
-//                          ),
-//                        ),
-//                      ],
-//                    ),
-//                  ),
-//                  Padding(
-//                      padding: EdgeInsets.only(top: 16),
-//                      child: getMacWidgets()),
-//                ],
-//              ),
-//            ),
-//            actions: <Widget>[
-//              new ButtonBar(
-//                children: <Widget>[
-//                  new FlatButton(
-//                    child: Text('確認'),
-//                    // ignore: missing_return
-//                    onPressed: () {
-//                      Scaffold.of(context).showSnackBar(SnackBar(
-//                        content: Text(name + "資料已修改"),
-//                      ));
-//                      Navigator.of(context).pop();
-//                    },
-//                    color: appColor,
-//                  ),
-//                  new FlatButton(
-//                    child: Text(
-//                      '取消',
-//                      style: new TextStyle(color: appColor),
-//                    ),
-//                    onPressed: () {
-//                      Navigator.of(context).pop();
-//                    },
-//                  )
-//                ],
-//              ),
-//            ],
-//          );
-//        });
-//  }
-//
-//  createPairPeopleAlertDialog(BuildContext context) {
-//    return showDialog(
-//        context: context,
-//        builder: (context) {
-//          debugPrint("Press Pair button.");
-//          return AlertDialog(
-//            title: Text("配對"),
-//            content: RefreshIndicator(
-//              onRefresh: () =>
-//                  FlutterBlue.instance.startScan(timeout: Duration(seconds: 4)),
-//              child: SingleChildScrollView(
-//                //SingleChildScrollView滾動條
-//                child: Column(
-//                  children: <Widget>[
-//                    //當已經connect上後才顯示的部分，少了RSSI與詳細資訊，多了open按鍵//
-//                    StreamBuilder<List<BluetoothDevice>>(
-//                      //用于創建一个周期性發送事件的串流Stream.periodic //asyncMap異步
-//                      stream: Stream.periodic(Duration(seconds: 2)).asyncMap(
-//                          (_) => FlutterBlue.instance.connectedDevices),
-//                      //initialData初始資料為空
-//                      initialData: [],
-//                      builder: (c, snapshot) => Column(
-//                        //ListTile 通常用於在 Flutter 中填充 ListView
-//                        children: snapshot.data
-//                            .map((d) =>
-////                      getTempWidgets(nameList, tempList, numList)
-//                                ListTile(
-//                                  //名稱
-//                                  title: Text(d.name),
-//                                  //mac
-//                                  subtitle: Text(d.id.toString()),
-//
-//                                  //trailing設置拖尾將在列表的末尾放置一個圖像
-////                          trailing: StreamBuilder<BluetoothDeviceState>(
-////                            stream: d.state,
-////                            //預設未連接
-////                            initialData: BluetoothDeviceState.disconnected,
-////                            builder: (c, snapshot) {
-////                              if (snapshot.data == BluetoothDeviceState.connected) {
-////                                return RaisedButton(
-////                                  child: Text('OPEN'),
-////                                  //跳頁
-////                                  onPressed: () => Navigator.of(context).push(
-////                                    //跳頁到DeviceScreen並攜帶device
-////                                      MaterialPageRoute(
-//////                                    builder: (context) =>
-//////                                        DeviceScreen(device: d)
-////                                      )),
-////                                );
-////                              }
-////                              //如果未連線，則顯示未連線資訊
-////                              return Text(snapshot.data.toString());
-////                            },
-////                          ),
-//                                ))
-//                            .toList(),
-//                      ),
-//                    ),
-//
-////              所有搜尋到的結果列表
-//                    StreamBuilder<List<ScanResult>>(
-//                      stream: FlutterBlue.instance.scanResults,
-//                      initialData: [],
-//                      builder: (c, snapshot) => Column(
-//                        children: snapshot.data
-//                            .map(
-//                              (r) => ScanResultTile(
-//                                result: r,
-//                              ),
-//                            )
-//                            .toList(),
-//                      ),
-//                    ),
-//                  ],
-//                ),
-//              ),
-//            ),
-//          );
-//        });
-//  }
-//
-//  Future<String> downloadData() async {
-//    data = await getData();
-//    sqlhelper helper = new sqlhelper();
-//    print(await helper.showEmployee());
-//    return Future.value("Get Data");
-//  }
-//}
-
 class Content extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -412,26 +39,57 @@ class ContentState extends State<Content> {
         if (snapshot.hasData) {
           list = new List<Widget>();
           for (var i = 0; i < data.length; i++) {
-            list.add(
-              new Slidable(
-                actionPane: SlidableDrawerActionPane(),
-                actionExtentRatio: 0.25,
-                child: Container(
-                  color: Colors.white,
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.indigoAccent,
-                      child: Icon(Icons.person),
-                      foregroundColor: Colors.white,
-                    ),
-                    trailing: Text(
-                      data[i].mac.toString(),
-                      style: TextStyle(
-                        fontSize: 22,
+            if (data[i].mac.toString() == ":::::" ||
+                data[i].mac.toString() == "") {
+              print(
+                  data[i].id.toString() + "," + data[i].mac.toString() + "未配對");
+              list.add(
+                new Slidable(
+                  actionPane: SlidableDrawerActionPane(),
+                  actionExtentRatio: 0.25,
+                  child: Container(
+                    color: Colors.white,
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.indigoAccent,
+                        child: Text(
+                          data[i].employeeID.toString(),
+                        ),
+                        foregroundColor: Colors.white,
                       ),
-                      textAlign: TextAlign.right,
+                      trailing: Text(
+                        data[i].mac.toString(),
+                        style: TextStyle(
+                          fontSize: 22,
+                        ),
+                        textAlign: TextAlign.right,
+                      ),
+                      title: Text(
+                        data[i].name.toString(),
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+//                      subtitle: Text(
+//                        data[i].employeeID.toString(),
+//                        style: TextStyle(
+//                          fontSize: 16,
+//                        ),
+//                        textAlign: TextAlign.left,
+//                      ),
                     ),
-<<<<<<< HEAD
+                  ),
+                  secondaryActions: <Widget>[
+                    IconSlideAction(
+                      caption: '修改',
+                      color: cashColor,
+                      icon: Icons.edit,
+                      onTap: () => createEditPeopleAlertDialog(
+                        context,
+                        data[i],
+                      ),
+                    ),
                     IconSlideAction(
                       caption: '配對',
                       color: Colors.blue,
@@ -441,47 +99,67 @@ class ContentState extends State<Content> {
                       (context,data[i].name,data[i].id,data[i].employeeID.toString()),
                        await setState((){}),
                       },
-=======
-                    title: Text(
-                      data[i].name.toString(),
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                      textAlign: TextAlign.left,
->>>>>>> parent of 53537db... add new version
                     ),
-                    subtitle: Text(
-                      data[i].employeeID.toString(),
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                      textAlign: TextAlign.left,
+                    IconSlideAction(
+                      caption: '刪除',
+                      color: Colors.red,
+                      icon: Icons.delete,
+                      onTap: () => createDeletePeopleAlertDialog(
+                          context,
+                          data[i].name,
+                          data[i].mac.toString(),
+                          data[i].employeeID.toString(),
+                          data[i].id),
                     ),
-                  ),
+                  ],
                 ),
-                secondaryActions: <Widget>[
-                  IconSlideAction(
-                    caption: '修改',
-                    color: cashColor,
-                    icon: Icons.edit,
-                    onTap: () => createEditPeopleAlertDialog(
-                      context,
-                      data[i],
+              );
+            } else {
+              print(data[i].id.toString() + "已配對");
+              list.add(
+                new Slidable(
+                  actionPane: SlidableDrawerActionPane(),
+                  actionExtentRatio: 0.25,
+                  child: Container(
+                    color: Colors.white,
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.indigoAccent,
+                        child: Text(
+                          data[i].employeeID.toString(),
+                        ),
+                        foregroundColor: Colors.white,
+                      ),
+                      trailing: Text(
+                        data[i].mac.toString(),
+                        style: TextStyle(
+                          fontSize: 22,
+                        ),
+                        textAlign: TextAlign.right,
+                      ),
+                      title: Text(
+                        data[i].name.toString(),
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+//                      subtitle: Text(
+//                        data[i].employeeID.toString(),
+//                        style: TextStyle(
+//                          fontSize: 16,
+//                        ),
+//                        textAlign: TextAlign.left,
+//                      ),
                     ),
                   ),
-                  IconSlideAction(
-                    caption: '配對',
-                    color: Colors.blue,
-                    icon: Icons.settings_ethernet,
-                    onTap: () => createPairPeopleAlertDialog(context),
-                  ),
-                  IconSlideAction(
-                    caption: '刪除',
-                    color: Colors.red,
-                    icon: Icons.delete,
-                    onTap: () => createDeletePeopleAlertDialog(
+                  secondaryActions: <Widget>[
+                    IconSlideAction(
+                      caption: '修改',
+                      color: cashColor,
+                      icon: Icons.edit,
+                      onTap: () => createEditPeopleAlertDialog(
                         context,
-<<<<<<< HEAD
                         data[i],
                       ),
                     ),
@@ -520,16 +198,6 @@ class ContentState extends State<Content> {
                 ),
               );
             }
-=======
-                        data[i].name,
-                        data[i].mac.toString(),
-                        data[i].employeeID.toString(),
-                        data[i].id),
-                  ),
-                ],
-              ),
-            );
->>>>>>> parent of 53537db... add new version
           }
           return new Column(children: list);
         } else {
@@ -675,7 +343,6 @@ class ContentState extends State<Content> {
                               border: OutlineInputBorder(),
                               labelText: '姓名',
                             ),
-                            keyboardType: TextInputType.number,
                             controller: editNameController,
                             style: Theme.of(context).textTheme.body1,
                           ),
@@ -719,7 +386,17 @@ class ContentState extends State<Content> {
                           id: data.id,
                           employeeID: editNumController.text,
                           name: editNameController.text,
-                          mac: _editMaccontroller.join(":"));
+                          mac: _editMaccontroller[0].text +
+                              ":" +
+                              _editMaccontroller[1].text +
+                              ":" +
+                              _editMaccontroller[2].text +
+                              ":" +
+                              _editMaccontroller[3].text +
+                              ":" +
+                              _editMaccontroller[4].text +
+                              ":" +
+                              _editMaccontroller[5].text);
                       await helpler.updateData(editData);
                       Navigator.of(context).pop();
 //                      Scaffold.of(context).showSnackBar(SnackBar(
@@ -957,6 +634,14 @@ class PeopleScreenState extends State<PeopleScreen> {
                         Navigator.of(context).pop();
                         debugPrint(name);
                         if (num != "") {
+                          if (_maccontroller[0].text == "" ||
+                              _maccontroller[1].text == "" ||
+                              _maccontroller[2].text == "" ||
+                              _maccontroller[3].text == "" ||
+                              _maccontroller[4].text == "" ||
+                              _maccontroller[5].text == "") {
+                            macAddress = "";
+                          }
                           employee data = new employee(
                               employeeID: num, name: name, mac: macAddress);
                           await helper.insertData(data);

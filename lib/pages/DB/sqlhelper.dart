@@ -16,6 +16,7 @@ class sqlhelper {
   String _DbDir;
   String _Dbname = "NewApp06.db";
   Database _DB;
+
   initDB() async {
     _DbDir = await getDatabasesPath();
     _DB = await openDatabase(path.join(_DbDir, _Dbname),
@@ -190,7 +191,7 @@ class sqlhelper {
         }
       }
       if (repeat.length > 0) {
-        return repeat.join("、") + "有重複 請檢察列表中的資料";
+        return repeat.join("、") + "有重複 請檢查列表中的資料";
       } else {
         return "匯入成功";
       }
@@ -257,7 +258,6 @@ class sqlhelper {
     String csvFormat = "";
     String idAndName = "";
     if (id != null) {
-<<<<<<< HEAD
       try {
         data = await _DB.rawQuery('''
                   select * from
@@ -272,14 +272,6 @@ class sqlhelper {
       } catch (e) {
         return "${e}匯出失敗";
       }
-=======
-      data = await _DB.rawQuery('''select * from employees 
-        INNER JOIN temperatures 
-        on temperatures.id= employees.id
-        WHERE employees.id = ${id}
-        and WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
-        ''');
->>>>>>> parent of 53537db... add new version
       print(data);
     } else {
       try {
