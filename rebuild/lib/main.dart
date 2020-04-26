@@ -5,6 +5,8 @@ import './views/share_screen.dart';
 
 void main() => runApp(MyApp());
 
+List<String> checkData = [];
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

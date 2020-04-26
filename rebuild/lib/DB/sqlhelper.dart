@@ -1,7 +1,7 @@
 import 'dart:async';
-import './AllJoin_model.dart';
-import './employee_model.dart';
-import './temperature_model.dart';
+import '../DB/AllJoin_model.dart';
+import '../DB/employee_model.dart';
+import '../DB/temperature_model.dart';
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
 import 'package:file_picker/file_picker.dart';
@@ -14,8 +14,9 @@ import 'employee_model.dart';
 
 class sqlhelper {
   String _DbDir;
-  String _Dbname = "NewApp05.db";
+  String _Dbname = "NewApp06.db";
   Database _DB;
+
   initDB() async {
     _DbDir = await getDatabasesPath();
     _DB = await openDatabase(path.join(_DbDir, _Dbname),
@@ -24,17 +25,25 @@ class sqlhelper {
             CREATE TABLE employees(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,employeeID TEXT, name TEXT,mac TEXT DEFAULT NULL);
           ''');
       await database.execute('''
-            CREATE TABLE temperatures(id INTEGER, temp TEXT,time TEXT);
+            CREATE TABLE temperatures(id INTEGER, temp TEXT,time TEXT,symptom TEXT DEFAULT NULL);
           ''');
     }, version: 4);
   }
 
-  insertData(dynamic data) async {
+  Future<String> insertData(dynamic data) async {
     await initDB();
     if (data is employee) {
+      List searchData = await searchEmployeeID(data.employeeID);
+      if (data.id == 0 || searchData.length > 0) {
+        return "請檢查資料";
+      }
       await _DB.insert('employees', data.toMap());
     } else {
-      await _DB.insert('temperatures', data.toMap());
+      try {
+        await _DB.insert('temperatures', data.toMap());
+      } catch (e) {
+        print(e);
+      }
     }
   }
 
@@ -56,7 +65,10 @@ class sqlhelper {
     final List<Map<String, dynamic>> maps = await _DB.query('temperatures');
     return List.generate(maps.length, (i) {
       return temperature(
-          id: maps[i]['id'], temp: maps[i]['temp'], time: maps[i]['time']);
+          id: maps[i]['id'],
+          temp: maps[i]['temp'],
+          time: maps[i]['time'],
+          symptom: maps[i]['symptom']);
     });
   }
 
@@ -75,14 +87,44 @@ class sqlhelper {
         mac: maps[i]['mac'],
         temp: maps[i]['temp'],
         time: maps[i]['time'],
+        symptom: maps[i]['symptom'],
       );
     });
   }
 
-  searchEmployee(int id) async {
+  showLastDate() async {
+    await initDB();
+    final List<Map<String, dynamic>> maps = await _DB.rawQuery('''
+      select * from temperatures
+          ORDER BY temperatures.time DESC
+    ''');
+    return List.generate(maps.length, (i) {
+      return temperature(
+          id: maps[i]['id'],
+          temp: maps[i]['temp'],
+          time: maps[i]['time'],
+          symptom: maps[i]['symptom']);
+    });
+  }
+
+  Future<List<employee>> searchEmployee(int id) async {
     await initDB();
     final List<Map<String, dynamic>> maps =
         await _DB.query('employees', where: "id=?", whereArgs: [id]);
+    return List.generate(maps.length, (i) {
+      return employee(
+        id: maps[i]['id'],
+        name: maps[i]['name'],
+        employeeID: maps[i]['employeeID'],
+        mac: maps[i]['mac'],
+      );
+    });
+  }
+
+  searchEmployeeID(String id) async {
+    await initDB();
+    final List<Map<String, dynamic>> maps =
+        await _DB.query('employees', where: "employeeID=?", whereArgs: [id]);
     return List.generate(maps.length, (i) {
       return employee(
         id: maps[i]['id'],
@@ -113,7 +155,10 @@ class sqlhelper {
         "SELECT * FROM temperatures WHERE time BETWEEN '${startData}' AND '${endData}'"); //2020-01-01
     return List.generate(maps.length, (i) {
       return temperature(
-          id: maps[i]['id'], temp: maps[i]['temp'], time: maps[i]['time']);
+          id: maps[i]['id'],
+          temp: maps[i]['temp'],
+          time: maps[i]['time'],
+          symptom: maps[i]['symptom']);
     });
   }
 
@@ -125,7 +170,8 @@ class sqlhelper {
     }
   }
 
-  readCsvToEmployee() async {
+  Future<String> readCsvToEmployee() async {
+    List repeat = [];
     try {
       String _path = await FilePicker.getFilePath();
       final input = new File(_path).openRead();
@@ -137,20 +183,26 @@ class sqlhelper {
         if (fields[i][0] == "人員編號") {
           continue;
         }
-        employee data = employee(
-            name: fields[i][1].toString(),
-            employeeID: fields[i][0].toString(),
-            mac: fields[i].length > 2 ? fields[i][2] : null);
-        await insertData(data);
+        List data = await searchEmployeeID(fields[i][0].toString());
+        print(data);
+        if (data.length > 0) {
+          repeat.add(fields[i][0].toString());
+        } else {
+          employee data = employee(
+              name: fields[i][1].toString(),
+              employeeID: fields[i][0].toString(),
+              mac: fields[i].length > 2 ? fields[i][2].toString() : null);
+          await insertData(data);
+        }
       }
-      return true;
+      return "匯入成功";
     } catch (e) {
       print(e);
-      return false;
+      return repeat.join("、") + "有重複 請檢查列表中的資料";
     }
   }
 
-  showLastTemp() async {
+  showLastData() async {
     await initDB();
     final List<Map<String, dynamic>> maps = await _DB.rawQuery('''
       select * from employees         
@@ -158,10 +210,11 @@ class sqlhelper {
       (
         select * from
         (select * from temperatures
-          ORDER BY time DESC)          
+          ORDER BY temperatures.time DESC)          
           GROUP BY  id      
       )as temperatures
       on temperatures.id= employees.id
+      ORDER BY temperatures.time 
     ''');
     return List.generate(maps.length, (i) {
       return AllJoinTable(
@@ -171,84 +224,99 @@ class sqlhelper {
         mac: maps[i]['mac'],
         temp: maps[i]['temp'],
         time: maps[i]['time'],
+        symptom: maps[i]['symptom'],
       );
     });
   }
 
-  writeEmployeeToCsv(List date, [int id]) async {
-    dynamic data;
+  showLastTemp() async {
+    await initDB();
+    final List<Map<String, dynamic>> maps = await _DB.rawQuery('''
+      select * from employees        
+      ORDER BY employeeID
+    ''');
+    return List.generate(maps.length, (i) {
+      return AllJoinTable(
+        id: maps[i]['id'],
+        employeeID: maps[i]['employeeID'],
+        name: maps[i]['name'],
+        mac: maps[i]['mac'],
+        temp: "",
+        time: "",
+        symptom: "",
+      );
+    });
+  }
+
+  String twoDigit(int n) {
+    if (n >= 10) return "$n";
+    return "0$n";
+  }
+
+  Future<String> writeEmployeeToCsv(List date, [int id]) async {
+    await initDB();
+    List<Map<String, dynamic>> data;
+    String csvFormat = "";
+    String idAndName = "";
     if (id != null) {
-      data = await _DB.rawQuery('''select * from employees         
-        INNER JOIN temperatures 
-        on temperatures.id= employees.id
-        WHERE employees.id = ${id}
-        and WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
-        ''');
+      try {
+        data = await _DB.rawQuery('''
+                  select * from
+                  (select * from employees WHERE employees.id = ${id})
+                  as employees
+                  INNER JOIN temperatures
+                  on temperatures.id= employees.id
+                  WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
+                    ''');
+        List<employee> searchData = await searchEmployee(id);
+        idAndName = searchData[0].employeeID + "_" + searchData[0].name;
+      } catch (e) {
+        return "${e}匯出失敗";
+      }
       print(data);
     } else {
-      data = await _DB.rawQuery('''select * from employees 
+      try {
+        data = await _DB.rawQuery('''select * from employees 
         INNER JOIN temperatures 
         on temperatures.id= employees.id
         WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
         ''');
-    }
-    print(data);
-    try {
-      var csv = mapListToCsv(data);
-      Directory directory = await getExternalStorageDirectory();
-      print(csv);
-      print(directory.path);
-      final File file = File('${directory.path}/${date[0]}_${date[1]}.csv');
-      await file.writeAsString(csv);
-      return "${directory.path}/${date[0]}_${date[1]}.csv";
-    } catch (e) {
-      print(e);
-      return "false";
-    }
-  }
-
-  String mapListToCsv(List<Map<String, dynamic>> mapList,
-      {ListToCsvConverter converter}) {
-    if (mapList == null) {
-      return null;
-    }
-    converter ??= const ListToCsvConverter();
-    var data = <List>[];
-    var keys = <String>[];
-    var keyIndexMap = <String, int>{};
-
-    // Add the key and fix previous records
-    int _addKey(String key) {
-      var index = keys.length;
-      keyIndexMap[key] = index;
-      keys.add(key);
-      for (var dataRow in data) {
-        dataRow.add(null);
+      } catch (e) {
+        return "${e}匯出失敗";
       }
-      return index;
     }
+    List.generate(data.length, (i) {
+      csvFormat += data[i]['time'] +
+          "," +
+          data[i]['name'] +
+          "," +
+          data[i]['temp'] +
+          "," +
+          data[i]['symptom'] +
+          "\n";
+    });
 
-    for (var map in mapList) {
-      // This list might grow if a new key is found
-      var dataRow = List(keyIndexMap.length);
-      // Fix missing key
-      map.forEach((key, value) {
-        var keyIndex = keyIndexMap[key];
-        if (keyIndex == null) {
-          // New key is found
-          // Add it and fix previous data
-          keyIndex = _addKey(key);
-          // grow our list
-          dataRow = List.from(dataRow, growable: true)..add(value);
-        } else {
-          dataRow[keyIndex] = value;
-        }
-      });
-      data.add(dataRow);
+    try {
+      Directory directory = await getExternalStorageDirectory();
+      var now = new DateTime.now();
+      String fileName = twoDigit(now.year) +
+          "-" +
+          twoDigit(now.month) +
+          "-" +
+          twoDigit(now.day) +
+          "_" +
+          twoDigit(now.hour) +
+          "-" +
+          twoDigit(now.minute) +
+          "-" +
+          twoDigit(now.second);
+      fileName += (id != null) ? "_${idAndName}" : "";
+      final File file = new File('${directory.path}/${fileName}.csv');
+      await file.writeAsString(csvFormat);
+      return "${directory.path}/${fileName}.csv";
+    } catch (e) {
+      return "${e}匯出失敗";
     }
-    return converter.convert(<List>[]
-      ..add(keys)
-      ..addAll(data));
   }
 
   deleteOverDay(String date) async {
@@ -265,6 +333,16 @@ class sqlhelper {
   deleteEmployee(int id) async {
     await initDB();
     await _DB.delete('employees', where: "id=?", whereArgs: [id]);
+  }
+
+  dropEmployee() async {
+    await initDB();
+    await _DB.delete('employees');
+  }
+
+  dropTemp() async {
+    await initDB();
+    await _DB.delete('temperatures');
   }
 
   dropAll() async {

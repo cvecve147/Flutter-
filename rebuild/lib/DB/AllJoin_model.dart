@@ -5,8 +5,15 @@ class AllJoinTable {
   final String mac;
   final String temp;
   final String time;
+  final String symptom;
   AllJoinTable(
-      {this.id, this.name, this.employeeID, this.mac, this.temp, this.time});
+      {this.id,
+      this.name,
+      this.employeeID,
+      this.mac,
+      this.temp,
+      this.time,
+      this.symptom});
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -14,13 +21,14 @@ class AllJoinTable {
       'employeeID': employeeID,
       'mac': mac,
       'temp': temp,
-      'time': time
+      'time': time,
+      'symptom': symptom
     };
   }
 
   @override
   String toString() {
     // TODO: implement toString
-    return 'AllJoinTable{id: $id, name: $name, employeeID: $employeeID, mac: $mac, temp:$temp , time:$time}';
+    return 'AllJoinTable{id: $id, name: $name, employeeID: $employeeID, mac: $mac, temp:$temp , time:$time, symptom:$symptom}';
   }
 }

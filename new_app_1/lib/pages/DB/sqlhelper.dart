@@ -30,9 +30,13 @@ class sqlhelper {
     }, version: 4);
   }
 
-  insertData(dynamic data) async {
+  Future<String> insertData(dynamic data) async {
     await initDB();
     if (data is employee) {
+      List searchData = await searchEmployeeID(data.employeeID);
+      if (data.id == 0 || searchData.length > 0) {
+        return "請檢查資料";
+      }
       await _DB.insert('employees', data.toMap());
     } else {
       try {
@@ -167,8 +171,8 @@ class sqlhelper {
   }
 
   Future<String> readCsvToEmployee() async {
+    List repeat = [];
     try {
-      List repeat = [];
       String _path = await FilePicker.getFilePath();
       final input = new File(_path).openRead();
       final fields = await input
@@ -180,24 +184,21 @@ class sqlhelper {
           continue;
         }
         List data = await searchEmployeeID(fields[i][0].toString());
+        print(data);
         if (data.length > 0) {
           repeat.add(fields[i][0].toString());
         } else {
           employee data = employee(
               name: fields[i][1].toString(),
               employeeID: fields[i][0].toString(),
-              mac: fields[i].length > 2 ? fields[i][2] : null);
+              mac: fields[i].length > 2 ? fields[i][2].toString() : null);
           await insertData(data);
         }
       }
-      if (repeat.length > 0) {
-        return repeat.join("、") + "有重複 請檢查列表中的資料";
-      } else {
-        return "匯入成功";
-      }
+      return "匯入成功";
     } catch (e) {
       print(e);
-      return "匯入失敗";
+      return repeat.join("、") + "有重複 請檢查列表中的資料";
     }
   }
 
@@ -290,6 +291,8 @@ class sqlhelper {
           data[i]['name'] +
           "," +
           data[i]['temp'] +
+          "," +
+          data[i]['symptom'] +
           "\n";
     });
 

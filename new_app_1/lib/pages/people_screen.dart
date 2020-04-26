@@ -16,6 +16,7 @@ getData() async {
 //  temperature data=new temperature(id:1,time: "2020-01-12",temp: "25.6");
 //  helper.insertData(data);
 //  print(await helper.showEmployee());
+
   return await helper.showEmployee();
 }
 
@@ -94,10 +95,10 @@ class ContentState extends State<Content> {
                       caption: '配對',
                       color: Colors.blue,
                       icon: Icons.bluetooth_connected,
-                      onTap: ()async =>  {
-                        await createPairPeopleAlertDialog
-                      (context,data[i].name,data[i].id,data[i].employeeID.toString()),
-                       await setState((){}),
+                      onTap: () async => {
+                        await createPairPeopleAlertDialog(context, data[i].name,
+                            data[i].id, data[i].employeeID.toString()),
+                        await setState(() {}),
                       },
                     ),
                     IconSlideAction(
@@ -422,7 +423,7 @@ class ContentState extends State<Content> {
         });
   }
 
-  createPairPeopleAlertDialog(BuildContext context,na,id,employeeid) {
+  createPairPeopleAlertDialog(BuildContext context, na, id, employeeid) {
     print(na);
     print(id);
     return showDialog(
@@ -491,7 +492,10 @@ class ContentState extends State<Content> {
                         children: snapshot.data
                             .map(
                               (r) => Scan(
-                                result: r,na:na,id:id,employeeid:employeeid,
+                                result: r,
+                                na: na,
+                                id: id,
+                                employeeid: employeeid,
                               ),
                             )
                             .toList(),
@@ -644,7 +648,7 @@ class PeopleScreenState extends State<PeopleScreen> {
                           }
                           employee data = new employee(
                               employeeID: num, name: name, mac: macAddress);
-                          await helper.insertData(data);
+                          print(await helper.insertData(data));
                           setState(() {});
                           return showDialog(
                             context: context,
@@ -716,9 +720,11 @@ class PeopleScreenState extends State<PeopleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List datas = ["頭痛", "喉嚨痛"];
+    print(datas.join("、"));
     return Scaffold(
       appBar: AppBar(
-        title: Text("人員管理"),
+        title: Text("人員管理3"),
         centerTitle: true,
         backgroundColor: appColor,
         actions: <Widget>[
