@@ -13,35 +13,38 @@ import '../DB/sqlhelper.dart';
 import '../DB/employee_model.dart';
 import '../DB/temperature_model.dart';
 
-
 //List allData;
 
 class Scan extends StatefulWidget {
-  Scan({Key key, this.result, this.onTap,this.na,this.id,this.employeeid}) : super(key: key);
+  Scan({Key key, this.result, this.onTap}) : super(key: key);
 
   final ScanResult result;
   final VoidCallback onTap;
-  final String na,employeeid;
-  final int id;
+
+//  final String na;
+//  final String id;
 //  final List<String> items;
 
   //必需重写createState方法
   @override
-  ScanResultTile createState() => new ScanResultTile(result,onTap,na,id,employeeid);
+  ScanResultTile createState() => new ScanResultTile(result, onTap);
 }
 
-class ScanResultTile extends State<Scan> { //StatelessWidget
+class ScanResultTile extends State<Scan> {
+  //StatelessWidget
 //  ScanResultTile({Key key, this.result, this.onTap}) : super(key: key);
   ScanResult result;
   VoidCallback onTap;
-  String na,employeeid;
-  int id;
+
+//  String na;
+//  String id;
 //  List<String> items;
-  ScanResultTile(this.result,this.onTap, this.na,this.id,this.employeeid);
+  ScanResultTile(this.result, this.onTap);
 
   List<String> numList = [];
   List<String> macL = [];
   List<String> nameList = [];
+
 //  List<String> checkList = [];
 
   Widget _buildTitle(BuildContext context) {
@@ -69,15 +72,16 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
     }
   }
 
-  Widget getTempWidgets(context,List<String> macL, List<String> tempL, List<String> rssiL) {
-//    ListView.builder(
-//      itemCount:nameL.length,
-//      itemExtent: 50,
-//      itemBuilder: (BuildContext context, int index){
-//        return getTempWidgets(nameL,tempL,numberL);//ListTile(title:Text("$index"))
-//      },
-//    );
-    createConfirmDataAlertDialog(BuildContext context, String mac, String data, String rssi,int i,) {
+  Widget getTempWidgets(
+      context, List<String> macL, List<String> tempL, List<String> rssiL) {
+    createConfirmDataAlertDialog(
+      BuildContext context,
+      String mac,
+      String data,
+      String rssi,
+      int i,
+    ) {
+
       return showDialog(
           context: context,
           builder: (context) {
@@ -110,6 +114,7 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
                         ],
                       ),
                     ),
+
                   ],
                 ),
               ),
@@ -120,7 +125,7 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
                       child: Text('確認'),
                       // ignore: missing_return
                       onPressed: () {
-                        insertData(macL,tempL,rssiL,i);
+                        insertData(macL, tempL, rssiL, i);
                         Navigator.of(context).pop();
                         return showDialog(
                           context: context,
@@ -223,7 +228,7 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
               color: Color(0xFF81E9E6),
               icon: Icons.check_circle,
               onTap: () => createConfirmDataAlertDialog(
-                  context, macL[i], tempL[i], rssiL[i],i),
+                  context, macL[i], tempL[i], rssiL[i], i),
             ),
           ],
         ),
@@ -271,37 +276,89 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
         .toUpperCase();
   }
 
-  String transValue(correct,bytes) {
-    String t ='${bytes.map((i) => i.toRadixString(16).padLeft(2, '0')).join(', ')}'
-        .toUpperCase();
-    var data1,data2,data3,data4,pid,check1,check2;
-    check1 = bytes.elementAt(0).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-    check2 = bytes.elementAt(1).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-    pid = bytes.elementAt(2).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-    if(correct=='8796' && check1 == '59' && check2 == '80' && pid == '03'){
-      data1 = bytes.elementAt(4).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-      data2 = bytes.elementAt(5).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-      data3 = bytes.elementAt(6).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-      data4 = bytes.elementAt(7).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-      double tem = bytesToFloat(toRadix(data1), toRadix(data2), toRadix(data3), toRadix(data4));//decodeTempLevel(data,0);
-      return tem.toString();//+data2+data3+data4
-    }else{
+  String transValue(correct, bytes) {
+    String t =
+        '${bytes.map((i) => i.toRadixString(16).padLeft(2, '0')).join(', ')}'
+            .toUpperCase();
+    var data1, data2, data3, data4, pid, check1, check2;
+    check1 = bytes
+        .elementAt(0)
+        .toRadixString(16)
+        .padLeft(2, '0')
+        .toUpperCase()
+        .toString();
+    check2 = bytes
+        .elementAt(1)
+        .toRadixString(16)
+        .padLeft(2, '0')
+        .toUpperCase()
+        .toString();
+    pid = bytes
+        .elementAt(2)
+        .toRadixString(16)
+        .padLeft(2, '0')
+        .toUpperCase()
+        .toString();
+    if (correct == '8796' && check1 == '59' && check2 == '80' && pid == '03') {
+      data1 = bytes
+          .elementAt(4)
+          .toRadixString(16)
+          .padLeft(2, '0')
+          .toUpperCase()
+          .toString();
+      data2 = bytes
+          .elementAt(5)
+          .toRadixString(16)
+          .padLeft(2, '0')
+          .toUpperCase()
+          .toString();
+      data3 = bytes
+          .elementAt(6)
+          .toRadixString(16)
+          .padLeft(2, '0')
+          .toUpperCase()
+          .toString();
+      data4 = bytes
+          .elementAt(7)
+          .toRadixString(16)
+          .padLeft(2, '0')
+          .toUpperCase()
+          .toString();
+      double tem = bytesToFloat(toRadix(data1), toRadix(data2), toRadix(data3),
+          toRadix(data4)); //decodeTempLevel(data,0);
+      return tem.toString(); //+data2+data3+data4
+    } else {
       return correct;
     }
   }
 
-  String checkAddress(correct,bytes) {
-    var pid,check1,check2;
-    check1 = bytes.elementAt(0).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-    check2 = bytes.elementAt(1).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-    pid = bytes.elementAt(2).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-    return correct+check1+check2+pid;
+  String checkAddress(correct, bytes) {
+    var pid, check1, check2;
+    check1 = bytes
+        .elementAt(0)
+        .toRadixString(16)
+        .padLeft(2, '0')
+        .toUpperCase()
+        .toString();
+    check2 = bytes
+        .elementAt(1)
+        .toRadixString(16)
+        .padLeft(2, '0')
+        .toUpperCase()
+        .toString();
+    pid = bytes
+        .elementAt(2)
+        .toRadixString(16)
+        .padLeft(2, '0')
+        .toUpperCase()
+        .toString();
+    return correct + check1 + check2 + pid;
   }
 
   String transTemp(bytes) {
-    var data1,data2,data3,data4,data;
+    var data1, data2, data3, data4, data;
     data = bytes.split(',');
-    data1 = data[0].trim();//trim():將字符串兩邊去除空格處理
+    data1 = data[0].trim(); //trim():將字符串兩邊去除空格處理
     data2 = data[1].trim();
     data3 = data[2].trim();
     data4 = data[3].trim();
@@ -309,90 +366,122 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
     print(data2);
     print(data3);
     print(data4);
-    double tem = bytesToFloat(toRadix(data1), toRadix(data2), toRadix(data3), toRadix(data4));//decodeTempLevel(data,0);
-    return formatNum(tem,2);//+data2+data3+data4
+    double tem = bytesToFloat(toRadix(data1), toRadix(data2), toRadix(data3),
+        toRadix(data4)); //decodeTempLevel(data,0);
+    return formatNum(tem, 2); //+data2+data3+data4
   }
 
   //溫度小數取到第二位
-  formatNum(double num,int postion){
-    if((num.toString().length-num.toString().lastIndexOf(".")-1)<postion){
-      return num.toStringAsFixed(postion).substring(0,num.toString().lastIndexOf(".")+postion+1).toString();
-    }else{
-      return num.toString().substring(0,num.toString().lastIndexOf(".")+postion+1).toString();
+  formatNum(double num, int postion) {
+    if ((num.toString().length - num.toString().lastIndexOf(".") - 1) <
+        postion) {
+      return num.toStringAsFixed(postion)
+          .substring(0, num.toString().lastIndexOf(".") + postion + 1)
+          .toString();
+    } else {
+      return num.toString()
+          .substring(0, num.toString().lastIndexOf(".") + postion + 1)
+          .toString();
     }
   }
 
   int toRadix(x) {
-    var first,sec;
-    first = x.substring(0,1);
+    var first, sec;
+    first = x.substring(0, 1);
     switch (first) {
-      case 'F':{
-        first = 15;
-      }break;
-      case 'E':{
-        first = 14;
-      }break;
-      case 'D':{
-        first = 13;
-      }break;
-      case 'C':{
-        first = 12;
-      }break;
-      case 'B':{
-        first = 11;
-      }break;
-      case 'A':{
-        first = 10;
-      }break;
-      default:{
-        first = int.parse(first);
-      }
+      case 'F':
+        {
+          first = 15;
+        }
+        break;
+      case 'E':
+        {
+          first = 14;
+        }
+        break;
+      case 'D':
+        {
+          first = 13;
+        }
+        break;
+      case 'C':
+        {
+          first = 12;
+        }
+        break;
+      case 'B':
+        {
+          first = 11;
+        }
+        break;
+      case 'A':
+        {
+          first = 10;
+        }
+        break;
+      default:
+        {
+          first = int.parse(first);
+        }
     }
-    sec = x.substring(1,2);
+    sec = x.substring(1, 2);
     switch (sec) {
-      case 'F':{
-        sec = 15;
-      }break;
-      case 'E':{
-        sec = 14;
-      }break;
-      case 'D':{
-        sec = 13;
-      }break;
-      case 'C':{
-        sec = 12;
-      }break;
-      case 'B':{
-        sec = 11;
-      }break;
-      case 'A':{
-        sec = 10;
-      }break;
-      default:{
-        sec = int.parse(sec);
-      }
+      case 'F':
+        {
+          sec = 15;
+        }
+        break;
+      case 'E':
+        {
+          sec = 14;
+        }
+        break;
+      case 'D':
+        {
+          sec = 13;
+        }
+        break;
+      case 'C':
+        {
+          sec = 12;
+        }
+        break;
+      case 'B':
+        {
+          sec = 11;
+        }
+        break;
+      case 'A':
+        {
+          sec = 10;
+        }
+        break;
+      default:
+        {
+          sec = int.parse(sec);
+        }
     }
-    var ans = first*16+sec;
+    var ans = first * 16 + sec;
     return ans & 0xFF;
   }
 
   //判斷是否為華星tag
-  bool tagis(Map<int, List<int>> data1,Map<String, List<int>> data2,mac) {
+  bool tagis(Map<int, List<int>> data1, Map<String, List<int>> data2, mac) {
     macL.add(mac);
     var check;
-    List<String> res1 = [],res2 = [];
+    List<String> res1 = [], res2 = [];
     data1.forEach((id, bytes) {
       var c = '${id.toRadixString(16).toUpperCase()}';
-      check = '${checkAddress(c,bytes)}';
-      res1.add(
-          '${checkAddress(c,bytes)}');
+      check = '${checkAddress(c, bytes)}';
+      res1.add('${checkAddress(c, bytes)}');
     });
     data2.forEach((id, bytes) {
-      res2.add('${trans(bytes)}');//${id.toUpperCase()}  ${getNiceHexArray(bytes)}
+      res2.add(
+          '${trans(bytes)}'); //${id.toUpperCase()}  ${getNiceHexArray(bytes)}
     });
-    if(check == '8796598003'){
+    if (check == '8796598003') {
       return true;
-    }else{
+    } else {
       return false;
     }
   }
@@ -424,53 +513,56 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
     List<String> res = [];
     data.forEach((id, bytes) {
       var c = '${id.toRadixString(16).toUpperCase()}';
-      res.add(
-          '${transValue(c,bytes)}');
+      res.add('${transValue(c, bytes)}');
     });
     return res.join(', ');
   }
 
   //取得體溫資料
-  String getBodyTempData(Map<String, List<int>> data) {//String
+  String getBodyTempData(Map<String, List<int>> data) {
+    //String
     if (data.isEmpty) {
       return null;
     }
     List<String> res = [];
 //    res.add('${trans(data[1])}');
     data.forEach((id, bytes) {
-      res.add('${trans(bytes)}');//${id.toUpperCase()}  ${getNiceHexArray(bytes)}
+      res.add(
+          '${trans(bytes)}'); //${id.toUpperCase()}  ${getNiceHexArray(bytes)}
     });
     return res.elementAt(0);
   }
 
   //取得溫度資料
-  String getTempData(Map<int, List<int>> data1,Map<String, List<int>> data2){
+  String getTempData(Map<int, List<int>> data1, Map<String, List<int>> data2) {
     var check;
-    List<String> res1 = [],res2 = [];
+    List<String> res1 = [], res2 = [];
     data1.forEach((id, bytes) {
       var c = '${id.toRadixString(16).toUpperCase()}';
-      check = '${checkAddress(c,bytes)}';
-      res1.add(
-          '${checkAddress(c,bytes)}');
+      check = '${checkAddress(c, bytes)}';
+      res1.add('${checkAddress(c, bytes)}');
     });
     data2.forEach((id, bytes) {
-      res2.add('${trans(bytes)}');//${id.toUpperCase()}  ${getNiceHexArray(bytes)}
+      res2.add(
+          '${trans(bytes)}'); //${id.toUpperCase()}  ${getNiceHexArray(bytes)}
     });
-    if(check == '8796598003'){
+    if (check == '8796598003') {
       return transTemp(res2.elementAt(1));
-    }else{
+    } else {
       return res1.elementAt(0);
     }
   }
 
   //取得服務資料
-  String getNiceServiceData(Map<String, List<int>> data) {//String
+  String getNiceServiceData(Map<String, List<int>> data) {
+    //String
     if (data.isEmpty) {
       return null;
     }
     List<String> res = [];
     data.forEach((id, bytes) {
-      res.add('${id.toUpperCase()}: ${getNiceHexArray(bytes)}');//${id.toUpperCase()}  ${getNiceHexArray(bytes)}
+      res.add(
+          '${id.toUpperCase()}: ${getNiceHexArray(bytes)}'); //${id.toUpperCase()}  ${getNiceHexArray(bytes)}
     });
     return res.join(', ');
   }
@@ -483,8 +575,9 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
 
   Future<void> insertData(macL, tempL, rssiL, int i) async {
     sqlhelper sqlhepler = new sqlhelper();
-    var a= await sqlhepler.searchEmployeeMAC(macL[i]);
-    temperature  data=new temperature (id:a[0].id,temp:tempL[i],time:getCurrentDate());
+    var a = await sqlhepler.searchEmployeeMAC(macL[i]);
+    temperature data =
+        new temperature(id: a[0].id, temp: tempL[i], time: getCurrentDate());
     await sqlhepler.insertData(data);
 //    print(await sqlhepler.showtemperature());
   }
@@ -518,10 +611,10 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
     return currentDate + " " + currentTime;
   }
 
-  title(String allmac,String mac,String name){
-    if(allmac == mac){
+  title(String allmac, String mac, String name) {
+    if (allmac == mac) {
       return name;
-    }else{
+    } else {
       return mac;
     }
   }
@@ -536,7 +629,9 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
 
   Future<String> downloadData(macList) async {
     sqlhelper helper = new sqlhelper();
-    if(tagis(result.advertisementData.manufacturerData,result.advertisementData.serviceData,macList[0]) == true) {
+    if (tagis(result.advertisementData.manufacturerData,
+            result.advertisementData.serviceData, macList[0]) ==
+        true) {
       var a = await helper.searchEmployeeMAC(macList[0].toString());
       print(a);
       if (a.length != 0) {
@@ -558,47 +653,20 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
     List<String> rssiList = [];
     List<String> macList = [];
     macList.add(result.device.id.toString());
-    tempList.add(getTempData(result.advertisementData.manufacturerData,result.advertisementData.serviceData));
+    tempList.add(getTempData(result.advertisementData.manufacturerData,
+        result.advertisementData.serviceData));
     rssiList.add(result.rssi.toString());
 
-    createConfirmDataAlertDialog(BuildContext context, String name, String data, String num,mac,int i) {
-      print(na);
-      print(id);
+    createConfirmDataAlertDialog(BuildContext context, String name, String data,
+        String num, mac, int i) {
       return showDialog(
           context: context,
           builder: (context) {
-//            return AlertDialog(
-//              title: Text('Result'),
-//              content: SingleChildScrollView(
-//                child: ListBody(
-//                  children: <Widget>[
-//                    Text("配對成功"),
-//                  ],
-//                ),
-//              ),
-//            );
-
             return AlertDialog(
               title: Text("配對確認"),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 16),
-                      child: Row(
-                        children: <Widget>[
-                          Text("編號：" + employeeid),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 16),
-                      child: Row(
-                        children: <Widget>[
-                          Text("姓名：" + na),
-                        ],
-                      ),
-                    ),
                     Padding(
                       padding: EdgeInsets.only(top: 16),
                       child: Row(
@@ -617,11 +685,10 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
                       child: Text('確認'),
                       onPressed: () async {
                         sqlhelper helper = new sqlhelper();
-                        employee data = new employee(
-                            id:id,employeeID: employeeid, name: na, mac: mac);
-                        await helper.updateData(data);
+                        employee data =
+                            new employee(employeeID: num, name: name, mac: mac);
+                        await helper.insertData(data);
 //                          insertData(macList, tempList, num, i);
-                        Navigator.of(context).pop();
                         Navigator.of(context).pop();
                         return showDialog(
                           context: context,
@@ -663,7 +730,9 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
         // AsyncSnapshot<Your object type>
         List<Widget> list = new List<Widget>();
         if (snapshot.hasData) {
-          if (tagis(result.advertisementData.manufacturerData,result.advertisementData.serviceData,macList[0]) == true) {
+          if (tagis(result.advertisementData.manufacturerData,
+                  result.advertisementData.serviceData, macList[0]) ==
+              true) {
             if (nameList[0] == macList[0]) {
               for (var i = 0; i < macList.length; i++) {
                 list.add(
@@ -708,18 +777,14 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
                         caption: '確認',
                         color: Color(0xFF81E9E6),
                         icon: Icons.check_circle,
-                        onTap: () =>
-                            createConfirmDataAlertDialog(
-                                context, nameList[i], tempList[i], numList[i],
-                                macList[i], i),
+                        onTap: () => createConfirmDataAlertDialog(
+                            context,
+                            nameList[i],
+                            tempList[i],
+                            numList[i],
+                            macList[i],
+                            i),
                       ),
-//                    IconSlideAction(
-//                      caption: '配對',
-//                      color: Colors.blue,
-//                      icon: Icons.settings_ethernet,
-//                      onTap: () =>
-//                          createconnectPeopleAlertDialog(context, nameList[i].toString(), macList[i].toString(),tempList[i].toString(), numList[i].toString()),
-//                    ),
                     ],
                   ),
                 );
@@ -736,14 +801,15 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
             }
           }
           return new Column(children: list);
-        }else{
+        } else {
           return new Column();
         }
       },
     );
   }
 
-  createconnectPeopleAlertDialog(BuildContext context, String name,String mac, String temp, String num) {
+  createConnectPeopleAlertDialog(
+      BuildContext context, String name, String mac, String temp, String num) {
     TextEditingController editNameController = new TextEditingController();
     TextEditingController editNumController = new TextEditingController();
 //    editNameController.text = name;
@@ -809,7 +875,8 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
                         debugPrint(name);
                         if (number != "") {
                           insertData(mac, temp, number, 0);
-                          employee data = new employee(employeeID: number, name: n, mac: mac);
+                          employee data = new employee(
+                              employeeID: number, name: n, mac: mac);
                           await helper.insertData(data);
                           return showDialog(
                             context: context,
@@ -879,12 +946,16 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
         });
   }
 
-  double bytesToFloat(b0,b1,b2,b3) {
+  double bytesToFloat(b0, b1, b2, b3) {
 //    int mantissa = unsignedToSigned(b0 + (b1 << 8) + (b2 << 16), 24);
     b3 = -2;
-    int mantissa = unsignedToSigned(unsignedByteToInt(b0) + (unsignedByteToInt(b1) << 8) + (unsignedByteToInt(b2) << 16), 24);
+    int mantissa = unsignedToSigned(
+        unsignedByteToInt(b0) +
+            (unsignedByteToInt(b1) << 8) +
+            (unsignedByteToInt(b2) << 16),
+        24);
     //(mantissa * pow(10, int.parse(b3)))
-    return (mantissa * pow(10,b3));
+    return (mantissa * pow(10, b3));
   }
 
   int unsignedByteToInt(b) {
@@ -897,7 +968,6 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
     }
     return unsigned;
   }
-
 }
 
 //getData() async {

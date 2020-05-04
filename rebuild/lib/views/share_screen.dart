@@ -75,7 +75,7 @@ class _BodyState extends ShareDialog {
                 foregroundColor: Colors.white,
               ),
               trailing: Text(
-                Data[i].mac,
+                Data[i].temp.length > 0 ? Data[i].temp : "20",
                 style: TextStyle(
                   fontSize: 22,
                 ),

@@ -144,30 +144,32 @@ class showMySimpleDialogs extends State {
                     child: Text('確認'),
                     onPressed: () async {
                       if (_formKey.currentState.validate()) {
-                        if (condition != 3) _formKey.currentState.save();
                         sqlhelper helper = sqlhelper();
                         employee inputdata;
                         if (condition == 1) {
+                          _formKey.currentState.save();
                           inputdata = employee(
                               employeeID: inputemployeeID,
                               name: inputname,
-                              mac: inputmac.join(":"));
+                              mac: inputmac[0] != "" ? inputmac.join(":") : "");
                           await helper.insertData(inputdata);
                           print(inputdata);
+                          Navigator.of(context).pop();
                         } else if (condition == 2) {
+                          _formKey.currentState.save();
                           inputdata = employee(
                               id: id,
                               employeeID: inputemployeeID,
                               name: inputname,
                               mac: inputmac.join(":"));
                           await helper.updateData(inputdata);
+                          Navigator.of(context).pop();
                         } else {
                           await helper.deleteEmployee(id);
+                          Navigator.of(context).pop();
                         }
-                        print(inputdata);
+                        await setState(() {});
                       }
-                      await setState(() {});
-                      Navigator.of(context).pop();
                     },
                     color: appColor,
                   ),

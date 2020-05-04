@@ -3,8 +3,16 @@ import 'homeWidget.dart';
 
 void main() => runApp(MyApp());
 
-List<String> checkData =[];
-
+List<String> macL = [];
+List<String> checkData = [];
+List<Map<String, dynamic>> checkListData = [
+  {
+    "id": "",
+    "temp": "",
+    "time": "",
+  }
+];
+print(checkListData[0]);
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -19,7 +27,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
-
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -30,10 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('New APP'),
       ),
       body: Center(
-
-        child: Column(
-          
-        ),  
+        child: Column(),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -133,7 +134,7 @@ createSelectShareDateAlertDialog(BuildContext context) {
                                           .writeEmployeeToCsv(data);
                                       print(result);
 
-                                      Navigator.of(context).pop();
+//                                      Navigator.of(context).pop();
 
                                       if (result == "匯出失敗") {
                                         print("匯出失敗");
@@ -432,14 +433,19 @@ createSelectPersonalShareDateAlertDialog(
 
 getData() async {
   sqlhelper helper = new sqlhelper();
-  temperature data = temperature(id: 1, time: "2020-04-07", temp: "25.6");
-  await helper.insertData(data);
+  // employee data = new employee(employeeID: "12", name: "123");
+  // temperature data = new temperature(id: 1, time: "2020-05-04", temp: "25.6");
   print(await helper.showtemperature());
-//  employee data=new employee(employeeID: "12",name: "123");
-//  temperature data = new temperature(id: 1, time: "2020-01-12", temp: "25.6");
-//  helper.insertData(data);
-  // print(await helper.showEmployee());
-  return await helper.showLastTemp();
+  List templist = await helper.showLastTemp();
+  for (var i = 0; i < templist.length; i++) {
+    List.generate(checkListData.length, (i) {
+      if (checkListData[i]['id'] == templist[i].id) {
+        templist[i]['time'] = checkListData[i]['time'];
+        templist[i]['temp'] = checkListData[i]['temp'];
+      }
+    });
+  }
+  return templist;
 }
 
 class content extends StatelessWidget {

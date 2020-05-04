@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:newapp1/pages/DB/AllJoin_model.dart';
-import 'package:newapp1/pages/DB/employee_model.dart';
-import 'package:newapp1/pages/DB/temperature_model.dart';
+import '../DB/AllJoin_model.dart';
+import '../DB/employee_model.dart';
+import '../DB/temperature_model.dart';
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
 import 'package:file_picker/file_picker.dart';
@@ -281,21 +281,26 @@ class sqlhelper {
         on temperatures.id= employees.id
         WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
         ''');
+        print(data);
       } catch (e) {
         return "${e}匯出失敗";
       }
     }
     List.generate(data.length, (i) {
+      String symptom = "";
+      if (data[i]['symptom'] != null) {
+        symptom = data[i]['symptom'];
+      }
       csvFormat += data[i]['time'] +
           "," +
           data[i]['name'] +
           "," +
           data[i]['temp'] +
           "," +
-          data[i]['symptom'] +
+          symptom +
           "\n";
     });
-
+    print(csvFormat);
     try {
       Directory directory = await getExternalStorageDirectory();
       var now = new DateTime.now();

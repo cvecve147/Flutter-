@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:newapp1/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -16,7 +18,6 @@ getData() async {
 //  temperature data=new temperature(id:1,time: "2020-01-12",temp: "25.6");
 //  helper.insertData(data);
 //  print(await helper.showEmployee());
-
   return await helper.showEmployee();
 }
 
@@ -95,11 +96,8 @@ class ContentState extends State<Content> {
                       caption: '配對',
                       color: Colors.blue,
                       icon: Icons.bluetooth_connected,
-                      onTap: () async => {
-                        await createPairPeopleAlertDialog(context, data[i].name,
-                            data[i].id, data[i].employeeID.toString()),
-                        await setState(() {}),
-                      },
+                      onTap: () => createPairPeopleAlertDialog(
+                          context, data[i].name, data[i].employeeID.toString()),
                     ),
                     IconSlideAction(
                       caption: '刪除',
@@ -423,9 +421,7 @@ class ContentState extends State<Content> {
         });
   }
 
-  createPairPeopleAlertDialog(BuildContext context, na, id, employeeid) {
-    print(na);
-    print(id);
+  createPairPeopleAlertDialog(BuildContext context, name, id) {
     return showDialog(
         context: context,
         builder: (context) {
@@ -493,9 +489,6 @@ class ContentState extends State<Content> {
                             .map(
                               (r) => Scan(
                                 result: r,
-                                na: na,
-                                id: id,
-                                employeeid: employeeid,
                               ),
                             )
                             .toList(),
@@ -578,9 +571,10 @@ class PeopleScreenState extends State<PeopleScreen> {
                           child: new TextField(
                             decoration: InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: '姓名',
+                              labelText: '編號',
                             ),
-                            controller: nameController,
+                            keyboardType: TextInputType.number,
+                            controller: numController,
                             style: Theme.of(context).textTheme.body1,
                           ),
                         ),
@@ -596,10 +590,9 @@ class PeopleScreenState extends State<PeopleScreen> {
                           child: new TextField(
                             decoration: InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: '編號',
+                              labelText: '姓名',
                             ),
-                            keyboardType: TextInputType.number,
-                            controller: numController,
+                            controller: nameController,
                             style: Theme.of(context).textTheme.body1,
                           ),
                         ),
@@ -619,6 +612,7 @@ class PeopleScreenState extends State<PeopleScreen> {
                     child: Text('確認'),
                     // ignore: missing_return
                     onPressed: () async {
+
                       sqlhelper helper = new sqlhelper();
 
                       String name = nameController.text;
@@ -648,7 +642,7 @@ class PeopleScreenState extends State<PeopleScreen> {
                           }
                           employee data = new employee(
                               employeeID: num, name: name, mac: macAddress);
-                          print(await helper.insertData(data));
+                          await helper.insertData(data);
                           setState(() {});
                           return showDialog(
                             context: context,
@@ -658,8 +652,8 @@ class PeopleScreenState extends State<PeopleScreen> {
                                 content: SingleChildScrollView(
                                   child: ListBody(
                                     children: <Widget>[
-                                      Text("姓名：" + name),
                                       Text("編號：" + num),
+                                      Text("姓名：" + name),
                                       Text("Mac Address：" + macAddress),
                                     ],
                                   ),
@@ -720,11 +714,9 @@ class PeopleScreenState extends State<PeopleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List datas = ["頭痛", "喉嚨痛"];
-    print(datas.join("、"));
     return Scaffold(
       appBar: AppBar(
-        title: Text("人員管理3"),
+        title: Text("人員管理"),
         centerTitle: true,
         backgroundColor: appColor,
         actions: <Widget>[
@@ -767,8 +759,6 @@ class PeopleScreenState extends State<PeopleScreen> {
   Future<void> searchData() async {
     sqlhelper hepler = new sqlhelper();
 //    var employee =await hepler.searchEmployeeMAC("11:11:21:11"); //id
-    // var a= await sqlhepler.searchEmployeeMAC(nameL[i]);
-//    employee.length;//id:1,name:"123",mac:"11:11:21:11", employeeID:"001", employee[0].name
     employee data1 = new employee(
         name: "ivy", employeeID: "1", id: 1, mac: "30:45:11:3E:30:E5");
     await hepler.updateData(data1);
@@ -964,3 +954,5 @@ class _PeopleState extends State<People> {
     return null;
   }
 }
+
+

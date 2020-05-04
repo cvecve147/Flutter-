@@ -14,47 +14,51 @@ import '../DB/sqlhelper.dart';
 import '../DB/employee_model.dart';
 import '../DB/temperature_model.dart';
 
-
-//List allData;
+List<Map<String, dynamic>> timesData = [{}];
+//timesData.add({"id":a[0],"temp":tempL,"time":getCurrentDate().toString()});
 
 class Scan extends StatefulWidget {
   Scan({Key key, this.result, this.onTap}) : super(key: key);
 
   final ScanResult result;
   final VoidCallback onTap;
+
 //  final List<String> items;
 
   //必需重写createState方法
   @override
-  ScanResultTile createState() => new ScanResultTile(result,onTap);
+  ScanResultTile createState() => new ScanResultTile(result, onTap);
 }
 
 class ScanList extends State<Scan> {
   final ScanResult result;
   final VoidCallback onTap;
-  ScanList(this.result,this.onTap);
+
+  ScanList(this.result, this.onTap);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: SingleChildScrollView(
-          child: Column(
+      child: Column(
 //            children: <Widget>[ScanResultTile(result,onTap)],
           ),
-        ));
+    ));
   }
 }
 
-class ScanResultTile extends State<Scan> { //StatelessWidget
+class ScanResultTile extends State<Scan> {
+  //StatelessWidget
 //  ScanResultTile({Key key, this.result, this.onTap}) : super(key: key);
   ScanResult result;
   VoidCallback onTap;
+
 //  List<String> items;
-  ScanResultTile(this.result,this.onTap);
+  ScanResultTile(this.result, this.onTap);
 
   List<String> numList = [];
-  List<String> macL = [];
   List<String> nameList = [];
+
 //  List<String> checkList = [];
 
   Widget _buildTitle(BuildContext context) {
@@ -82,7 +86,8 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
     }
   }
 
-  Widget getTempWidgets(context,List<String> macL, List<String> tempL, List<String> rssiL) {
+  Widget getTempWidgets(
+      context, List<String> macL, List<String> tempL, List<String> rssiL) {
 //    ListView.builder(
 //      itemCount:nameL.length,
 //      itemExtent: 50,
@@ -90,7 +95,13 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
 //        return getTempWidgets(nameL,tempL,numberL);//ListTile(title:Text("$index"))
 //      },
 //    );
-    createConfirmDataAlertDialog(BuildContext context, String mac, String data, String rssi,int i,) {
+    createConfirmDataAlertDialog(
+      BuildContext context,
+      String mac,
+      String data,
+      String rssi,
+      int i,
+    ) {
       return showDialog(
           context: context,
           builder: (context) {
@@ -131,9 +142,8 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
                   children: <Widget>[
                     new FlatButton(
                       child: Text('確認'),
-                      // ignore: missing_return
                       onPressed: () {
-                        insertData(macL,tempL,rssiL,i);
+                        insertData(macL, tempL, rssiL, i, statusList);
                         Navigator.of(context).pop();
                         return showDialog(
                           context: context,
@@ -191,6 +201,7 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
             );
           });
     }
+
 //    print(macL);print(tempL);print(rssiL);
     List<Widget> list = new List<Widget>();
     for (var i = 0; i < macL.length; i++) {
@@ -235,7 +246,7 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
               color: Color(0xFF81E9E6),
               icon: Icons.check_circle,
               onTap: () => createConfirmDataAlertDialog(
-                  context, macL[i], tempL[i], rssiL[i],i),
+                  context, macL[i], tempL[i], rssiL[i], i),
             ),
           ],
         ),
@@ -283,128 +294,211 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
         .toUpperCase();
   }
 
-  String transValue(correct,bytes) {
-    String t ='${bytes.map((i) => i.toRadixString(16).padLeft(2, '0')).join(', ')}'
-        .toUpperCase();
-    var data1,data2,data3,data4,pid,check1,check2;
-    check1 = bytes.elementAt(0).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-    check2 = bytes.elementAt(1).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-    pid = bytes.elementAt(2).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-    if(correct=='8796' && check1 == '59' && check2 == '80' && pid == '03'){
-      data1 = bytes.elementAt(4).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-      data2 = bytes.elementAt(5).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-      data3 = bytes.elementAt(6).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-      data4 = bytes.elementAt(7).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-      double tem = bytesToFloat(toRadix(data1), toRadix(data2), toRadix(data3), toRadix(data4));//decodeTempLevel(data,0);
-      return tem.toString();//+data2+data3+data4
-    }else{
+  String transValue(correct, bytes) {
+    String t =
+        '${bytes.map((i) => i.toRadixString(16).padLeft(2, '0')).join(', ')}'
+            .toUpperCase();
+    var data1, data2, data3, data4, pid, check1, check2;
+    check1 = bytes
+        .elementAt(0)
+        .toRadixString(16)
+        .padLeft(2, '0')
+        .toUpperCase()
+        .toString();
+    check2 = bytes
+        .elementAt(1)
+        .toRadixString(16)
+        .padLeft(2, '0')
+        .toUpperCase()
+        .toString();
+    pid = bytes
+        .elementAt(2)
+        .toRadixString(16)
+        .padLeft(2, '0')
+        .toUpperCase()
+        .toString();
+    if (correct == '8796' && check1 == '59' && check2 == '80' && pid == '03') {
+      data1 = bytes
+          .elementAt(4)
+          .toRadixString(16)
+          .padLeft(2, '0')
+          .toUpperCase()
+          .toString();
+      data2 = bytes
+          .elementAt(5)
+          .toRadixString(16)
+          .padLeft(2, '0')
+          .toUpperCase()
+          .toString();
+      data3 = bytes
+          .elementAt(6)
+          .toRadixString(16)
+          .padLeft(2, '0')
+          .toUpperCase()
+          .toString();
+      data4 = bytes
+          .elementAt(7)
+          .toRadixString(16)
+          .padLeft(2, '0')
+          .toUpperCase()
+          .toString();
+      double tem = bytesToFloat(toRadix(data1), toRadix(data2), toRadix(data3),
+          toRadix(data4)); //decodeTempLevel(data,0);
+      return tem.toString(); //+data2+data3+data4
+    } else {
       return correct;
     }
   }
 
-  String checkAddress(correct,bytes) {
-    var pid,check1,check2;
-    check1 = bytes.elementAt(0).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-    check2 = bytes.elementAt(1).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-    pid = bytes.elementAt(2).toRadixString(16).padLeft(2, '0').toUpperCase().toString();
-    return correct+check1+check2+pid;
+  String checkAddress(correct, bytes) {
+    var pid, check1, check2;
+    check1 = bytes
+        .elementAt(0)
+        .toRadixString(16)
+        .padLeft(2, '0')
+        .toUpperCase()
+        .toString();
+    check2 = bytes
+        .elementAt(1)
+        .toRadixString(16)
+        .padLeft(2, '0')
+        .toUpperCase()
+        .toString();
+    pid = bytes
+        .elementAt(2)
+        .toRadixString(16)
+        .padLeft(2, '0')
+        .toUpperCase()
+        .toString();
+    return correct + check1 + check2 + pid;
   }
 
   String transTemp(bytes) {
-    var data1,data2,data3,data4,data;
+    var data1, data2, data3, data4, data;
     data = bytes.split(',');
-    data1 = data[0].trim();//trim():將字符串兩邊去除空格處理
+    data1 = data[0].trim(); //trim():將字符串兩邊去除空格處理
     data2 = data[1].trim();
     data3 = data[2].trim();
     data4 = data[3].trim();
-    print(data1);
-    print(data2);
-    print(data3);
-    print(data4);
-    double tem = bytesToFloat(toRadix(data1), toRadix(data2), toRadix(data3), toRadix(data4));//decodeTempLevel(data,0);
-    return formatNum(tem,2);//+data2+data3+data4
+//    print(data1);
+//    print(data2);
+//    print(data3);
+//    print(data4);
+    double tem = bytesToFloat(toRadix(data1), toRadix(data2), toRadix(data3),
+        toRadix(data4)); //decodeTempLevel(data,0);
+    return formatNum(tem, 2); //+data2+data3+data4
   }
 
   //溫度小數取到第二位
-  formatNum(double num,int postion){
-    if((num.toString().length-num.toString().lastIndexOf(".")-1)<postion){
-      return num.toStringAsFixed(postion).substring(0,num.toString().lastIndexOf(".")+postion+1).toString();
-    }else{
-      return num.toString().substring(0,num.toString().lastIndexOf(".")+postion+1).toString();
+  formatNum(double num, int postion) {
+    if ((num.toString().length - num.toString().lastIndexOf(".") - 1) <
+        postion) {
+      return num.toStringAsFixed(postion)
+          .substring(0, num.toString().lastIndexOf(".") + postion + 1)
+          .toString();
+    } else {
+      return num.toString()
+          .substring(0, num.toString().lastIndexOf(".") + postion + 1)
+          .toString();
     }
   }
 
   int toRadix(x) {
-    var first,sec;
-    first = x.substring(0,1);
+    var first, sec;
+    first = x.substring(0, 1);
     switch (first) {
-      case 'F':{
-        first = 15;
-      }break;
-      case 'E':{
-        first = 14;
-      }break;
-      case 'D':{
-        first = 13;
-      }break;
-      case 'C':{
-        first = 12;
-      }break;
-      case 'B':{
-        first = 11;
-      }break;
-      case 'A':{
-        first = 10;
-      }break;
-      default:{
-        first = int.parse(first);
-      }
+      case 'F':
+        {
+          first = 15;
+        }
+        break;
+      case 'E':
+        {
+          first = 14;
+        }
+        break;
+      case 'D':
+        {
+          first = 13;
+        }
+        break;
+      case 'C':
+        {
+          first = 12;
+        }
+        break;
+      case 'B':
+        {
+          first = 11;
+        }
+        break;
+      case 'A':
+        {
+          first = 10;
+        }
+        break;
+      default:
+        {
+          first = int.parse(first);
+        }
     }
-    sec = x.substring(1,2);
+    sec = x.substring(1, 2);
     switch (sec) {
-      case 'F':{
-        sec = 15;
-      }break;
-      case 'E':{
-        sec = 14;
-      }break;
-      case 'D':{
-        sec = 13;
-      }break;
-      case 'C':{
-        sec = 12;
-      }break;
-      case 'B':{
-        sec = 11;
-      }break;
-      case 'A':{
-        sec = 10;
-      }break;
-      default:{
-        sec = int.parse(sec);
-      }
+      case 'F':
+        {
+          sec = 15;
+        }
+        break;
+      case 'E':
+        {
+          sec = 14;
+        }
+        break;
+      case 'D':
+        {
+          sec = 13;
+        }
+        break;
+      case 'C':
+        {
+          sec = 12;
+        }
+        break;
+      case 'B':
+        {
+          sec = 11;
+        }
+        break;
+      case 'A':
+        {
+          sec = 10;
+        }
+        break;
+      default:
+        {
+          sec = int.parse(sec);
+        }
     }
-    var ans = first*16+sec;
+    var ans = first * 16 + sec;
     return ans & 0xFF;
   }
 
   //判斷是否為華星tag
-  bool tagis(Map<int, List<int>> data1,Map<String, List<int>> data2,mac) {
-
+  bool tagis(Map<int, List<int>> data1, Map<String, List<int>> data2, mac) {
     var check;
-    List<String> res1 = [],res2 = [];
+    List<String> res1 = [], res2 = [];
     data1.forEach((id, bytes) {
       var c = '${id.toRadixString(16).toUpperCase()}';
-      check = '${checkAddress(c,bytes)}';
-      res1.add(
-          '${checkAddress(c,bytes)}');
+      check = '${checkAddress(c, bytes)}';
+      res1.add('${checkAddress(c, bytes)}');
     });
     data2.forEach((id, bytes) {
-      res2.add('${trans(bytes)}');//${id.toUpperCase()}  ${getNiceHexArray(bytes)}
+      res2.add(
+          '${trans(bytes)}'); //${id.toUpperCase()}  ${getNiceHexArray(bytes)}
     });
-    if(check == '8796598003'){
+    if (check == '8796598003') {
       return true;
-    }else{
+    } else {
       return false;
     }
   }
@@ -436,53 +530,56 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
     List<String> res = [];
     data.forEach((id, bytes) {
       var c = '${id.toRadixString(16).toUpperCase()}';
-      res.add(
-          '${transValue(c,bytes)}');
+      res.add('${transValue(c, bytes)}');
     });
     return res.join(', ');
   }
 
   //取得體溫資料
-  String getBodyTempData(Map<String, List<int>> data) {//String
+  String getBodyTempData(Map<String, List<int>> data) {
+    //String
     if (data.isEmpty) {
       return null;
     }
     List<String> res = [];
 //    res.add('${trans(data[1])}');
     data.forEach((id, bytes) {
-      res.add('${trans(bytes)}');//${id.toUpperCase()}  ${getNiceHexArray(bytes)}
+      res.add(
+          '${trans(bytes)}'); //${id.toUpperCase()}  ${getNiceHexArray(bytes)}
     });
     return res.elementAt(0);
   }
 
   //取得溫度資料
-  String getTempData(Map<int, List<int>> data1,Map<String, List<int>> data2){
+  String getTempData(Map<int, List<int>> data1, Map<String, List<int>> data2) {
     var check;
-    List<String> res1 = [],res2 = [];
+    List<String> res1 = [], res2 = [];
     data1.forEach((id, bytes) {
       var c = '${id.toRadixString(16).toUpperCase()}';
-      check = '${checkAddress(c,bytes)}';
-      res1.add(
-          '${checkAddress(c,bytes)}');
+      check = '${checkAddress(c, bytes)}';
+      res1.add('${checkAddress(c, bytes)}');
     });
     data2.forEach((id, bytes) {
-      res2.add('${trans(bytes)}');//${id.toUpperCase()}  ${getNiceHexArray(bytes)}
+      res2.add(
+          '${trans(bytes)}'); //${id.toUpperCase()}  ${getNiceHexArray(bytes)}
     });
-    if(check == '8796598003'){
+    if (check == '8796598003') {
       return transTemp(res2.elementAt(1));
-    }else{
-      return res1.toString();//elementAt(0)
+    } else {
+      return res1.toString(); //elementAt(0)
     }
   }
 
   //取得服務資料
-  String getNiceServiceData(Map<String, List<int>> data) {//String
+  String getNiceServiceData(Map<String, List<int>> data) {
+    //String
     if (data.isEmpty) {
       return null;
     }
     List<String> res = [];
     data.forEach((id, bytes) {
-      res.add('${id.toUpperCase()}: ${getNiceHexArray(bytes)}');//${id.toUpperCase()}  ${getNiceHexArray(bytes)}
+      res.add(
+          '${id.toUpperCase()}: ${getNiceHexArray(bytes)}'); //${id.toUpperCase()}  ${getNiceHexArray(bytes)}
     });
     return res.join(', ');
   }
@@ -493,43 +590,27 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
     return a[0].name;
   }
 
-  Future<void> insertData(macL, tempL, rssiL, int i) async {
-    print(tempL);
+  Future<void> insertData(macL, tempL, rssiL, int i, List s) async {
+    //print(tempL);
     sqlhelper sqlhepler = new sqlhelper();
-    var a= await sqlhepler.searchEmployeeMAC(macL.toString());
-    print(a);
-    temperature  data=new temperature (id:a[0].id,temp:tempL,time:getCurrentDate().toString());
-    print(getCurrentDate());
+    var a = await sqlhepler.searchEmployeeMAC(macL.toString());
+    //print(a);
+    checkListData.add({
+      "id": a[0].id,
+      "temp": tempL,
+      "time": getCurrentDate().toString(),
+    });
+    temperature data = new temperature(
+        id: a[0].id,
+        temp: tempL,
+        time: getCurrentDate().toString(),
+        symptom: s.join("、"));
+    timesData
+        .add({"id": a[0], "temp": tempL, "time": getCurrentDate().toString()});
+    //print(getCurrentDate());
     await sqlhepler.insertData(data);
 //    print(await sqlhepler.showtemperature());
   }
-
-//  getCurrentDate() {
-//    var now = new DateTime.now();
-//    String nowYear = now.year.toString();
-//    String nowMonth, nowDay;
-//    if (int.parse(now.month.toString()) < 10) {
-//      nowMonth = "0" + now.month.toString();
-//    }else nowMonth = now.month.toString();
-//    if (int.parse(now.day.toString()) < 10) {
-//      nowDay = "0" + now.day.toString();
-//    }else nowDay = "0" + now.day.toString();
-//    String currentDate = nowYear.toString() + "-" + nowMonth.toString() + "-" + nowDay.toString();
-//    print(currentDate);
-//    String nowHour,nowMin,nowSec;
-//    if (int.parse(now.hour.toString()) < 10) {
-//      nowHour = "0" + now.hour.toString();
-//    }else nowHour = now.hour.toString();
-//    if (int.parse(now.minute.toString()) < 10) {
-//      nowMin = "0" + now.minute.toString();
-//    }else nowMin = now.minute.toString();
-//    if (int.parse(now.second.toString()) < 10) {
-//      nowSec = "0" + now.second.toString();
-//    }else nowSec = now.second.toString();
-//    String currentTime = nowHour.toString() + ":" + nowMin.toString() + ":" + nowSec.toString();
-//    print(currentTime);
-//    return currentDate + " " + currentTime;
-//  }
 
   getCurrentDate() {
     var now = new DateTime.now();
@@ -552,27 +633,29 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
     return currentDate + " " + currentTime;
   }
 
-  title(String allmac,String mac,String name){
-    if(allmac == mac){
+  title(String allmac, String mac, String name) {
+    if (allmac == mac) {
       return name;
-    }else{
+    } else {
       return mac;
     }
   }
 
-  id(String allmac,String mac,String id){
-    if(allmac == mac){
+  id(String allmac, String mac, String id) {
+    if (allmac == mac) {
       return id;
-    }else{
+    } else {
       return 0.toString();
     }
   }
 
   Future<String> downloadData(macList) async {
     sqlhelper helper = new sqlhelper();
-    if(tagis(result.advertisementData.manufacturerData,result.advertisementData.serviceData,macList[0]) == true) {
+    if (tagis(result.advertisementData.manufacturerData,
+            result.advertisementData.serviceData, macList[0]) ==
+        true) {
       var a = await helper.searchEmployeeMAC(macList[0].toString());
-      print(a);
+      //print(a);
       if (a.length != 0) {
         nameList.add(a[0].name.toString());
         numList.add(a[0].employeeID);
@@ -590,13 +673,16 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
     List<String> tempList = [];
     List<String> rssiList = [];
     List<String> macList = [];
+    List<String> m = [];
+    bool turn = true;
 
     macList.add(result.device.id.toString());
-    tempList.add(getTempData(result.advertisementData.manufacturerData,result.advertisementData.serviceData));
+    tempList.add(getTempData(result.advertisementData.manufacturerData,
+        result.advertisementData.serviceData));
     rssiList.add(result.rssi.toString());
 
-
-    createConfirmDataAlertDialog(BuildContext context, String name, String data, String num,int i) {
+    createConfirmDataAlertDialog(
+        BuildContext context, String name, String data, String num, int i) {
       return showDialog(
           context: context,
           builder: (context) {
@@ -629,6 +715,7 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
                         ],
                       ),
                     ),
+                    StatusBox(),
                   ],
                 ),
               ),
@@ -638,9 +725,10 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
                     new FlatButton(
                       child: Text('確認'),
                       onPressed: () {
-                        if(num != '0') {
-                          insertData(macList[i], tempList[i], num, i);
-//                          checkList.add(macList[i]);
+                        setState(() {});
+                        if (num != '0') {
+                          setState(() {});
+
                           for (var j = 0; j < macList.length; j++) {
                             if (checkData.length <= 0) {
                               checkData.add(macList[0]);
@@ -648,7 +736,14 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
                               checkData.add(macList[0]);
                             }
                           }
-                          print(checkData);
+                          List<String> Status = new List();
+                          for (var n = 0; n < _value.length; n++) {
+                            if (_value[n]) {
+                              Status.add(statusList[n]);
+                            }
+                          }
+                          insertData(
+                              macList[i], tempList[i], num, i, statusList);
                           Navigator.of(context).pop();
                           return showDialog(
                             context: context,
@@ -682,13 +777,19 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
                                           ],
                                         ),
                                       ),
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 16),
+                                        child: Text(
+                                          "狀態：" + Status.join(","),
+                                        ),
+                                      )
                                     ],
                                   ),
                                 ),
                               );
                             },
                           );
-                        }else{
+                        } else {
                           print("並未配對成功");
                           Navigator.of(context).pop();
                           return showDialog(
@@ -725,14 +826,15 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
           });
     }
 
-
     return FutureBuilder<String>(
       future: downloadData(macList), // function where you call your api
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         // AsyncSnapshot<Your object type>
         List<Widget> list = new List<Widget>();
         if (snapshot.hasData) {
-          if (tagis(result.advertisementData.manufacturerData,result.advertisementData.serviceData,macList[0]) == true) {
+          if (tagis(result.advertisementData.manufacturerData,
+                  result.advertisementData.serviceData, macList[0]) ==
+              true) {
 //            for (var i = 0; i < macL.length; i++) {
 //              if (macL.length <= 0) {
 //                macL.add(macList[0]);
@@ -740,14 +842,19 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
 //                macL.add(macList[0]);
 //              }
 //            }
-            print(nameList);
+            //print(macList);
+            macL.clear();
+            m.clear();
             for (var i = 0; i < macList.length; i++) {
-              if(macL.length <= 0){
+              if (macL.length <= 0) {
                 macL.add(macList[0]);
-              }else if(macL[i] != macList[0]){
-                macL.add(macList[0]);
+              } else {
+                for (var x = 0; x < macL.length; x++) {
+                  if (macL[x] != macList[0]) {
+                    macL.add(macList[0]);
+                  }
+                }
               }
-              print(checkData);
               if (checkData.length <= 0) {
                 list.add(
                   new Slidable(
@@ -791,104 +898,118 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
                         caption: '確認',
                         color: Color(0xFF81E9E6),
                         icon: Icons.check_circle,
-                        onTap: () =>
-                            createConfirmDataAlertDialog(
-                                context, nameList[i], tempList[i], numList[i],
-                                i),
-
+                        onTap: () => createConfirmDataAlertDialog(
+                            context, nameList[i], tempList[i], numList[i], i),
                       ),
                       IconSlideAction(
-                        caption: '配對',
-                        color: Colors.blue,
-                        icon: Icons.settings_ethernet,
-                        onTap: ()async =>{
-                          await createconnectPeopleAlertDialog(
-                              context, nameList[i].toString(),
-                              macList[i].toString(), tempList[i].toString(),
-                              numList[i].toString()),
-                          await print("lev"),
-                          await setState((){}),
-                        }
-
-                      ),
-                    ],
-                  ),
-                );
-              }
-              for(var j = 0;j<checkData.length;j++) {
-                if(macList[0] != checkData[j]){
-                  list.add(
-                    new Slidable(
-                      actionPane: SlidableDrawerActionPane(),
-                      actionExtentRatio: 0.25,
-                      child: Container(
-                        color: Colors.white,
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.indigoAccent,
-                            child: Icon(Icons.person),
-                            foregroundColor: Colors.white,
-                          ),
-                          trailing: Text(
-                            tempList[i],
-                            style: TextStyle(
-                              fontSize: 24,
-                            ),
-                            textAlign: TextAlign.right,
-                          ),
-                          title: Text(
-                            nameList.length <= 0 ? "" : nameList[i],
-//                      title(allData[i].mac.toString(),macList[i],allData[i].name.toString()),
-                            style: TextStyle(
-                              fontSize: 20,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                          subtitle: Text(
-                            numList.length <= 0 ? "" : numList[i],
-//                      id(allData[i].mac.toString(),macList[i],allData[i].employeeID.toString()),
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                      ),
-                      secondaryActions: <Widget>[
-                        IconSlideAction(
-                          caption: '確認',
-                          color: Color(0xFF81E9E6),
-                          icon: Icons.check_circle,
-                          onTap: () =>
-                              createConfirmDataAlertDialog(
-                                  context, nameList[i], tempList[i], numList[i],
-                                  i),
-
-                        ),
-                        IconSlideAction(
                           caption: '配對',
                           color: Colors.blue,
                           icon: Icons.settings_ethernet,
-                          onTap: ()async =>{
-                            await createconnectPeopleAlertDialog(
-                                context, nameList[i].toString(),
-                                macList[i].toString(), tempList[i].toString(),
-                                numList[i].toString()),
-                            await print("lev"),
-                            await setState((){}),
-                          }
+                          onTap: () async => {
+                                await createconnectPeopleAlertDialog(
+                                    context,
+                                    nameList[i].toString(),
+                                    macList[i].toString(),
+                                    tempList[i].toString(),
+                                    numList[i].toString()),
+                                await print("lev"),
+                                await setState(() {}),
+                              }),
+                    ],
+                  ),
+                );
+              } else {
+                for (var j = 0; j < checkData.length; j++) {
+                  print(checkData[j]);
+//                  m.add(macList[0]);
+//                  print(m);
 
-
-                        ),
-                      ],
-                    ),
-                  );
+                  //for(var x=0;x<m.length;x++) {
+                  if (macList[0] != checkData[j]) {
+                    if (m.length <= 0) {
+                      m.add(macList[0]);
+                    } else {
+                      for (var x = 0; x < macL.length; x++) {
+                        if (m[x] != macList[0] || nameList[i] == m[x]) {
+                          m.add(macList[0]);
+                          list.add(
+                            new Slidable(
+                              actionPane: SlidableDrawerActionPane(),
+                              actionExtentRatio: 0.25,
+                              child: Container(
+                                color: Colors.white,
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor: Colors.indigoAccent,
+                                    child: Icon(Icons.person),
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  trailing: Text(
+                                    tempList[i],
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                    ),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                  title: Text(
+                                    nameList.length <= 0 ? "" : nameList[i],
+//                      title(allData[i].mac.toString(),macList[i],allData[i].name.toString()),
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  subtitle: Text(
+                                    numList.length <= 0 ? "" : numList[i],
+//                      id(allData[i].mac.toString(),macList[i],allData[i].employeeID.toString()),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                              ),
+                              secondaryActions: <Widget>[
+                                IconSlideAction(
+                                  caption: '確認',
+                                  color: Color(0xFF81E9E6),
+                                  icon: Icons.check_circle,
+                                  onTap: () => createConfirmDataAlertDialog(
+                                      context,
+                                      nameList[i],
+                                      tempList[i],
+                                      numList[i],
+                                      i),
+                                ),
+                                IconSlideAction(
+                                    caption: '配對',
+                                    color: Colors.blue,
+                                    icon: Icons.settings_ethernet,
+                                    onTap: () async => {
+                                          await createconnectPeopleAlertDialog(
+                                              context,
+                                              nameList[i].toString(),
+                                              macList[i].toString(),
+                                              tempList[i].toString(),
+                                              numList[i].toString()),
+                                          await print("lev"),
+                                          await setState(() {}),
+                                        }),
+                              ],
+                            ),
+                          );
+                        }
+                      }
+                    }
+                    print(m);
+                  }
+                  //}
                 }
               }
             }
           }
           return new Column(children: list);
-        }else{
+        } else {
 //          return CircularProgressIndicator();
           return new Column();
         }
@@ -896,12 +1017,86 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
     );
   }
 
-  createconnectPeopleAlertDialog(BuildContext context, String name,String mac, String temp, String num) {
+//  Widget displayList(BuildContext context) {
+//    List<Widget> list = new List<Widget>();
+//    list.add(
+//      new Slidable(
+//        actionPane: SlidableDrawerActionPane(),
+//        actionExtentRatio: 0.25,
+//        child: Container(
+//          color: Colors.white,
+//          child: ListTile(
+//            leading: CircleAvatar(
+//              backgroundColor: Colors.indigoAccent,
+//              child: Icon(Icons.person),
+//              foregroundColor: Colors.white,
+//            ),
+//            trailing: Text(
+//              tempList[i],
+//              style: TextStyle(
+//                fontSize: 24,
+//              ),
+//              textAlign: TextAlign.right,
+//            ),
+//            title: Text(
+//              nameList.length <= 0 ? "" : nameList[i],
+////                      title(allData[i].mac.toString(),macList[i],allData[i].name.toString()),
+//              style: TextStyle(
+//                fontSize: 20,
+//              ),
+//              textAlign: TextAlign.left,
+//            ),
+//            subtitle: Text(
+//              numList.length <= 0 ? "" : numList[i],
+////                      id(allData[i].mac.toString(),macList[i],allData[i].employeeID.toString()),
+//              style: TextStyle(
+//                fontSize: 16,
+//              ),
+//              textAlign: TextAlign.left,
+//            ),
+//          ),
+//        ),
+//        secondaryActions: <Widget>[
+//          IconSlideAction(
+//            caption: '確認',
+//            color: Color(0xFF81E9E6),
+//            icon: Icons.check_circle,
+//            onTap: () =>
+//                createConfirmDataAlertDialog(
+//                    context, nameList[i], tempList[i],
+//                    numList[i],
+//                    i),
+//
+//          ),
+//          IconSlideAction(
+//              caption: '配對',
+//              color: Colors.blue,
+//              icon: Icons.settings_ethernet,
+//              onTap: () async =>
+//              {
+//                await createconnectPeopleAlertDialog(
+//                    context, nameList[i].toString(),
+//                    macList[i].toString(),
+//                    tempList[i].toString(),
+//                    numList[i].toString()),
+//                await print("lev"),
+//                await setState(() {}),
+//              }
+//
+//
+//          ),
+//        ],
+//      ),
+//    );
+//  }
+
+  createconnectPeopleAlertDialog(
+      BuildContext context, String name, String mac, String temp, String num) {
     TextEditingController editNameController = new TextEditingController();
     TextEditingController editNumController = new TextEditingController();
 //    editNameController.text = name;
 //    editNumController.text = num;
-    if(num == '0'){
+    if (num == '0') {
       return showDialog(
           context: context,
           builder: (context) {
@@ -962,13 +1157,14 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
                           Navigator.of(context).pop();
                           debugPrint(name);
                           if (number != "") {
-                            insertData(mac, temp, number, 0);
-                            employee data = new employee(employeeID: number, name: n, mac: mac);
+                            insertData(mac, temp, number, 0, statusList);
+                            employee data = new employee(
+                                employeeID: number, name: n, mac: mac);
                             await helper.insertData(data);
                             await nameList.clear();
                             await numList.clear();
                             print("insert");
-                            await setState((){});
+                            await setState(() {});
                             return showDialog(
                               context: context,
                               builder: (context) {
@@ -1035,7 +1231,7 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
               ],
             );
           });
-    }else{
+    } else {
       print("已配對");
       return showDialog(
           context: context,
@@ -1054,12 +1250,16 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
     }
   }
 
-  double bytesToFloat(b0,b1,b2,b3) {
+  double bytesToFloat(b0, b1, b2, b3) {
 //    int mantissa = unsignedToSigned(b0 + (b1 << 8) + (b2 << 16), 24);
     b3 = -2;
-    int mantissa = unsignedToSigned(unsignedByteToInt(b0) + (unsignedByteToInt(b1) << 8) + (unsignedByteToInt(b2) << 16), 24);
+    int mantissa = unsignedToSigned(
+        unsignedByteToInt(b0) +
+            (unsignedByteToInt(b1) << 8) +
+            (unsignedByteToInt(b2) << 16),
+        24);
     //(mantissa * pow(10, int.parse(b3)))
-    return (mantissa * pow(10,b3));
+    return (mantissa * pow(10, b3));
   }
 
   int unsignedByteToInt(b) {
@@ -1072,67 +1272,72 @@ class ScanResultTile extends State<Scan> { //StatelessWidget
     }
     return unsigned;
   }
-
 }
 
-//MyApp不需要做状态处理，所以此组件继承StatelessWidget即可
-class MyApp extends StatelessWidget {
+class StatusBox extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'Flutter Demo',
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: new MyHomePage(
-          title: 'Flutter Demo Home Page',
-          items: List<String>.generate(20, (i) => "Item ${i + 1}")),
-    );
+  State<StatefulWidget> createState() {
+    return StatusBoxState();
   }
 }
 
-//主页需要继承自StatefulWidget
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title, this.items}) : super(key: key);
+List<bool> _value = [
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false
+];
+List<String> statusList = [
+  '發燒',
+  '乾咳',
+  '倦怠',
+  '有痰',
+  '呼吸急促',
+  '肌肉或關節痛',
+  '喉嚨痛',
+  '頭痛',
+  '發冷',
+  '噁心嘔吐'
+];
 
-  final String title;
-  final List<String> items;
-
-  //必需重写createState方法
-  @override
-  _MyHomePageState createState() => new _MyHomePageState(items);
-}
-
-//状态类必需继承State类,注意后面需要指定为<MyHomePage>
-class _MyHomePageState extends State<MyHomePage> {
-  List<String> items;
-
-  _MyHomePageState(this.items);
-
+class StatusBoxState extends State<StatusBox> {
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
-      ),
-      body: ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final item = items[index];
-          return GestureDetector(
-              onTap: () {
-                items.removeAt(index);
-                setState(() {});
-              },
-              child: new ListTile(
-                title: new Text("$item"),
-              ));
-        },
-      ),
-    );
+    WidgetsFlutterBinding.ensureInitialized();
+
+    List<Widget> list = new List<Widget>();
+
+    for (var i = 0; i < statusList.length; i++) {
+      _valueChanged(bool value) {
+        _value[i] = value;
+        print(_value.join("."));
+        setState(() {
+          _value[i] = value;
+        });
+      }
+
+      list.add(
+        new CheckboxListTile(
+          value: _value[i],
+          onChanged: _valueChanged,
+          title: new Text(statusList[i]),
+          controlAffinity: ListTileControlAffinity.leading,
+          activeColor: appColor,
+        ),
+      );
+    }
+
+    return new Column(children: list);
   }
 }
-
 
 //getData() async {
 //  sqlhelper helper = new sqlhelper();

@@ -3,7 +3,6 @@ import 'dart:convert' show utf8;
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:newapp1/pages/DB/temperature_model.dart';
 import 'package:newapp1/pages/bluetooth/package2.dart';
 import 'package:newapp1/pages/people_screen.dart';
 
@@ -54,6 +53,8 @@ Widget getTimeWidgets(String all) {
   return new Column(children: list);
 }
 
+
+
 class statefulScanScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -68,13 +69,8 @@ showCurrentDate(BuildContext context) {
     return "0$n";
   }
 
-  String currentDate =
-      twoDigit(now.year) + "-" + twoDigit(now.month) + "-" + twoDigit(now.day);
-  String currentTime = twoDigit(now.hour) +
-      "-" +
-      twoDigit(now.minute) +
-      "-" +
-      twoDigit(now.second);
+  String currentDate = twoDigit(now.year) + "-" + twoDigit(now.month) + "-" + twoDigit(now.day);
+  String currentTime = twoDigit(now.hour) + "-" + twoDigit(now.minute) + "-" + twoDigit(now.second);
 
   Scaffold.of(context).showSnackBar(SnackBar(
     content: Text("測量時間：" + currentDate + " " + currentTime),
@@ -82,6 +78,7 @@ showCurrentDate(BuildContext context) {
 }
 
 class _ScanScreenState extends State<statefulScanScreen> {
+
   String lastScanDate = "尚未量測 無上次量測時間";
 
   @override
@@ -90,10 +87,11 @@ class _ScanScreenState extends State<statefulScanScreen> {
     (() async {
       sqlhelper helper = sqlhelper();
       List temp = await helper.showLastDate();
+      print(await helper.showLastDate());
       if (temp.length > 0) {
         lastScanDate = temp[0].time;
       }
-
+      print(temp);
       setState(() {});
     })();
   }
