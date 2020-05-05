@@ -12,7 +12,6 @@ List<Map<String, dynamic>> checkListData = [
     "time": "",
   }
 ];
-print(checkListData[0]);
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
