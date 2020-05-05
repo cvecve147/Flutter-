@@ -439,9 +439,8 @@ getData() async {
   List templist = await helper.showLastTemp();
   for (var i = 0; i < templist.length; i++) {
     List.generate(checkListData.length, (i) {
-      if (checkListData[i]['id'] == templist[i].id) {
-        templist[i]['time'] = checkListData[i]['time'];
-        templist[i]['temp'] = checkListData[i]['temp'];
+      if (checkListData[i]['id'] == templist[i]['id']) {
+        templist[i].addAll(checkListData[i]);
       }
     });
   }
