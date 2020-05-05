@@ -9,6 +9,8 @@ import 'package:newapp1/pages/DB/sqlhelper.dart';
 import 'package:newapp1/pages/DB/temperature_model.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
+import 'DB/AllJoin_model.dart';
+
 Color appColor = Color(0xFF2A6FDB);
 Color primaryColor = Color(0xFF122C91);
 
@@ -435,16 +437,55 @@ getData() async {
   sqlhelper helper = new sqlhelper();
   // employee data = new employee(employeeID: "12", name: "123");
   // temperature data = new temperature(id: 1, time: "2020-05-04", temp: "25.6");
+  checkListData.add(
+    {
+      "id": 2,
+      "temp": "25.6",
+      "time": "2020-01-02",
+    }
+  );
   print(await helper.showtemperature());
   List templist = await helper.showLastTemp();
-  for (var i = 0; i < templist.length; i++) {
-    List.generate(checkListData.length, (i) {
-      if (checkListData[i]['id'] == templist[i]['id']) {
-        templist[i].addAll(checkListData[i]);
+  bool find=false;
+  List<Map<String,dynamic>> newList=new List();
+  for(int i=0;i<templist.length;i++){
+    for (int j = 0; j < checkListData.length; j++) {
+      if(checkListData[j]['id']==templist[i].id){
+        print(templist[i].id);
+        find=true;
+        newList.add(
+          {
+            "id":templist[i].id,
+            "employeeID":templist[i].employeeID.toString(),
+            "name":templist[i].name,
+            "temp":checkListData[j]['temp'],
+            "time":checkListData[j]['time']
+          }
+        );
+        break;
       }
-    });
+    }
+    if(!find){
+      newList.add(
+          {
+            "id":templist[i].id,
+            "employeeID":templist[i].employeeID,
+            "name":templist[i].name,
+            "temp":"",
+            "time":""
+          }
+        );
+    }
   }
-  return templist;
+  return List.generate(newList.length, (i) {
+      return AllJoinTable(
+        id: newList[i]['id'],
+        employeeID: newList[i]['employeeID'],
+        name: newList[i]['name'],
+        temp: newList[i]['temp'],
+        time: newList[i]['time'],
+      );
+    });
 }
 
 class content extends StatelessWidget {
