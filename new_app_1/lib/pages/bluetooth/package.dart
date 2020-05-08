@@ -60,7 +60,7 @@ class ScanResultTile extends State<Scan> {
             overflow: TextOverflow.ellipsis, //無視省略號(...)
           ),
 
-          //MacAdress
+          //MacAddress
           Text(
             result.device.id.toString(),
             style: Theme.of(context).textTheme.caption,
@@ -77,11 +77,10 @@ class ScanResultTile extends State<Scan> {
     createConfirmDataAlertDialog(
       BuildContext context,
       String mac,
-      String data,
+      String temp,
       String rssi,
       int i,
     ) {
-
       return showDialog(
           context: context,
           builder: (context) {
@@ -110,11 +109,10 @@ class ScanResultTile extends State<Scan> {
                       padding: EdgeInsets.only(top: 16),
                       child: Row(
                         children: <Widget>[
-                          Text("量測溫度：" + data),
+                          Text("量測溫度：" + temp),
                         ],
                       ),
                     ),
-
                   ],
                 ),
               ),
@@ -155,7 +153,7 @@ class ScanResultTile extends State<Scan> {
                                       padding: EdgeInsets.only(top: 16),
                                       child: Row(
                                         children: <Widget>[
-                                          Text("量測溫度：" + data),
+                                          Text("量測溫度：" + temp),
                                         ],
                                       ),
                                     ),
@@ -228,7 +226,7 @@ class ScanResultTile extends State<Scan> {
               color: Color(0xFF81E9E6),
               icon: Icons.check_circle,
               onTap: () => createConfirmDataAlertDialog(
-                  context, macL[i], tempL[i], rssiL[i], i),
+                  context, confirmName, tempL[i], macL[i], confirmPosition),
             ),
           ],
         ),
@@ -619,14 +617,6 @@ class ScanResultTile extends State<Scan> {
     }
   }
 
-//  id(String allmac,String mac,String id){
-//    if(allmac == mac){
-//      return id;
-//    }else{
-//      return 0.toString();
-//    }
-//  }
-
   Future<String> downloadData(macList) async {
     sqlhelper helper = new sqlhelper();
     if (tagis(result.advertisementData.manufacturerData,
@@ -657,8 +647,19 @@ class ScanResultTile extends State<Scan> {
         result.advertisementData.serviceData));
     rssiList.add(result.rssi.toString());
 
-    createConfirmDataAlertDialog(BuildContext context, String name, String data,
-        String num, mac, int i) {
+    createConfirmDataAlertDialog(BuildContext context, mac, int i) {
+      debugPrint("Position:" + confirmPosition.toString());
+      debugPrint("data:" + data[confirmPosition].toString());
+      debugPrint("name:" + data[confirmPosition].name);
+      debugPrint("employeeID:" + data[confirmPosition].employeeID);
+      debugPrint("MAC:" + mac);
+
+      String confirmEmployeeID;
+      String confirmEmployeeName;
+
+      confirmEmployeeID = data[confirmPosition].employeeID;
+      confirmEmployeeName = data[confirmPosition].name;
+
       return showDialog(
           context: context,
           builder: (context) {
@@ -669,9 +670,11 @@ class ScanResultTile extends State<Scan> {
                   children: <Widget>[
                     Padding(
                       padding: EdgeInsets.only(top: 16),
-                      child: Row(
+                      child: Column(
                         children: <Widget>[
-                          Text("mac：" + mac),
+                          Text("編號：" + confirmEmployeeID),
+                          Text("姓名：" + confirmEmployeeName),
+                          Text("Mac：" + mac),
                         ],
                       ),
                     ),
@@ -685,16 +688,18 @@ class ScanResultTile extends State<Scan> {
                       child: Text('確認'),
                       onPressed: () async {
                         sqlhelper helper = new sqlhelper();
-                        employee data =
-                            new employee(employeeID: num, name: name, mac: mac);
-                        await helper.insertData(data);
-//                          insertData(macList, tempList, num, i);
+                        employee employeeData = new employee(
+                            id: data[confirmPosition].id,
+                            employeeID: confirmEmployeeID,
+                            name: confirmEmployeeName,
+                            mac: mac);
+                        await helper.updateData(employeeData);
                         Navigator.of(context).pop();
                         return showDialog(
                           context: context,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text('Result'),
+                              title: Text('配對結果'),
                               content: SingleChildScrollView(
                                 child: ListBody(
                                   children: <Widget>[
@@ -764,7 +769,6 @@ class ScanResultTile extends State<Scan> {
                         ),
                         subtitle: Text(
                           numList.length <= 0 ? "" : numList[i],
-//                      id(allData[i].mac.toString(),macList[i],allData[i].employeeID.toString()),
                           style: TextStyle(
                             fontSize: 16,
                           ),
@@ -778,26 +782,12 @@ class ScanResultTile extends State<Scan> {
                         color: Color(0xFF81E9E6),
                         icon: Icons.check_circle,
                         onTap: () => createConfirmDataAlertDialog(
-                            context,
-                            nameList[i],
-                            tempList[i],
-                            numList[i],
-                            macList[i],
-                            i),
+                            context, macList[i], i),
                       ),
                     ],
                   ),
                 );
               }
-//            ListView.builder(
-//              itemCount: macList.length,
-//              itemExtent: 50,
-//              itemBuilder: (BuildContext listView, int index) {
-////                print(ListView);
-//                return new Column(children: list);
-////          Navigator.of(listView).pop();
-//              },
-//            );
             }
           }
           return new Column(children: list);
@@ -875,9 +865,9 @@ class ScanResultTile extends State<Scan> {
                         debugPrint(name);
                         if (number != "") {
                           insertData(mac, temp, number, 0);
-                          employee data = new employee(
+                          employee employeeData = new employee(
                               employeeID: number, name: n, mac: mac);
-                          await helper.insertData(data);
+                          await helper.insertData(employeeData);
                           return showDialog(
                             context: context,
                             builder: (context) {

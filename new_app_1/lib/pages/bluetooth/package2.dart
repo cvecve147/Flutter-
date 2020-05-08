@@ -596,7 +596,7 @@ class ScanResultTile extends State<Scan> {
     var a = await sqlhepler.searchEmployeeMAC(macL.toString());
     //print(a);
     checkListData.add({
-      "id": a[0].id,
+      "id": a.length==0?0:a[0].id,
       "temp": tempL,
       "time": getCurrentDate().toString(),
     });
@@ -736,14 +736,14 @@ class ScanResultTile extends State<Scan> {
                               checkData.add(macList[0]);
                             }
                           }
-                          List<String> Status = new List();
+                          List<String> SelectedStatus = new List();
                           for (var n = 0; n < _value.length; n++) {
                             if (_value[n]) {
-                              Status.add(statusList[n]);
+                              SelectedStatus.add(statusList[n]);
                             }
                           }
                           insertData(
-                              macList[i], tempList[i], num, i, statusList);
+                              macList[i], tempList[i], num, i, SelectedStatus);
                           Navigator.of(context).pop();
                           return showDialog(
                             context: context,
@@ -777,12 +777,20 @@ class ScanResultTile extends State<Scan> {
                                           ],
                                         ),
                                       ),
-                                      Padding(
-                                        padding: EdgeInsets.only(top: 16),
-                                        child: Text(
-                                          "狀態：" + Status.join(","),
+                                      if (SelectedStatus.length != 0)
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 16),
+                                          child: Text(
+                                            "狀態：" + SelectedStatus.join(","),
+                                          ),
                                         ),
-                                      )
+                                      if (SelectedStatus.length == 0)
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 16),
+                                          child: Text(
+                                            "狀態：無狀態",
+                                          ),
+                                        )
                                     ],
                                   ),
                                 ),
@@ -919,91 +927,78 @@ class ScanResultTile extends State<Scan> {
                   ),
                 );
               } else {
+                bool find = false;
+                print(checkData);
+                print(macList);
                 for (var j = 0; j < checkData.length; j++) {
-                  print(checkData[j]);
-//                  m.add(macList[0]);
-//                  print(m);
-
-                  //for(var x=0;x<m.length;x++) {
-                  if (macList[0] != checkData[j]) {
-                    if (m.length <= 0) {
-                      m.add(macList[0]);
-                    } else {
-                      for (var x = 0; x < macL.length; x++) {
-                        if (m[x] != macList[0] || nameList[i] == m[x]) {
-                          m.add(macList[0]);
-                          list.add(
-                            new Slidable(
-                              actionPane: SlidableDrawerActionPane(),
-                              actionExtentRatio: 0.25,
-                              child: Container(
-                                color: Colors.white,
-                                child: ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor: Colors.indigoAccent,
-                                    child: Icon(Icons.person),
-                                    foregroundColor: Colors.white,
-                                  ),
-                                  trailing: Text(
-                                    tempList[i],
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                    ),
-                                    textAlign: TextAlign.right,
-                                  ),
-                                  title: Text(
-                                    nameList.length <= 0 ? "" : nameList[i],
-//                      title(allData[i].mac.toString(),macList[i],allData[i].name.toString()),
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                    ),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                  subtitle: Text(
-                                    numList.length <= 0 ? "" : numList[i],
-//                      id(allData[i].mac.toString(),macList[i],allData[i].employeeID.toString()),
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                    ),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                              ),
-                              secondaryActions: <Widget>[
-                                IconSlideAction(
-                                  caption: '確認',
-                                  color: Color(0xFF81E9E6),
-                                  icon: Icons.check_circle,
-                                  onTap: () => createConfirmDataAlertDialog(
-                                      context,
-                                      nameList[i],
-                                      tempList[i],
-                                      numList[i],
-                                      i),
-                                ),
-                                IconSlideAction(
-                                    caption: '配對',
-                                    color: Colors.blue,
-                                    icon: Icons.settings_ethernet,
-                                    onTap: () async => {
-                                          await createconnectPeopleAlertDialog(
-                                              context,
-                                              nameList[i].toString(),
-                                              macList[i].toString(),
-                                              tempList[i].toString(),
-                                              numList[i].toString()),
-                                          await print("lev"),
-                                          await setState(() {}),
-                                        }),
-                              ],
-                            ),
-                          );
-                        }
-                      }
-                    }
-                    print(m);
+                  if (macList[0] == checkData[j]) {
+                    find = true;
+                    break;
                   }
-                  //}
+                }
+                if (!find) {
+                  list.add(
+                    new Slidable(
+                      actionPane: SlidableDrawerActionPane(),
+                      actionExtentRatio: 0.25,
+                      child: Container(
+                        color: Colors.white,
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.indigoAccent,
+                            child: Icon(Icons.person),
+                            foregroundColor: Colors.white,
+                          ),
+                          trailing: Text(
+                            tempList[i],
+                            style: TextStyle(
+                              fontSize: 24,
+                            ),
+                            textAlign: TextAlign.right,
+                          ),
+                          title: Text(
+                            nameList.length <= 0 ? "" : nameList[i],
+//                      title(allData[i].mac.toString(),macList[i],allData[i].name.toString()),
+                            style: TextStyle(
+                              fontSize: 20,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                          subtitle: Text(
+                            numList.length <= 0 ? "" : numList[i],
+//                      id(allData[i].mac.toString(),macList[i],allData[i].employeeID.toString()),
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ),
+                      secondaryActions: <Widget>[
+                        IconSlideAction(
+                          caption: '確認',
+                          color: Color(0xFF81E9E6),
+                          icon: Icons.check_circle,
+                          onTap: () => createConfirmDataAlertDialog(
+                              context, nameList[i], tempList[i], numList[i], i),
+                        ),
+                        IconSlideAction(
+                            caption: '配對',
+                            color: Colors.blue,
+                            icon: Icons.settings_ethernet,
+                            onTap: () async => {
+                              await createconnectPeopleAlertDialog(
+                                  context,
+                                  nameList[i].toString(),
+                                  macList[i].toString(),
+                                  tempList[i].toString(),
+                                  numList[i].toString()),
+                              await print("lev"),
+                              await setState(() {}),
+                            }),
+                      ],
+                    ),
+                  );
                 }
               }
             }
@@ -1016,79 +1011,6 @@ class ScanResultTile extends State<Scan> {
       },
     );
   }
-
-//  Widget displayList(BuildContext context) {
-//    List<Widget> list = new List<Widget>();
-//    list.add(
-//      new Slidable(
-//        actionPane: SlidableDrawerActionPane(),
-//        actionExtentRatio: 0.25,
-//        child: Container(
-//          color: Colors.white,
-//          child: ListTile(
-//            leading: CircleAvatar(
-//              backgroundColor: Colors.indigoAccent,
-//              child: Icon(Icons.person),
-//              foregroundColor: Colors.white,
-//            ),
-//            trailing: Text(
-//              tempList[i],
-//              style: TextStyle(
-//                fontSize: 24,
-//              ),
-//              textAlign: TextAlign.right,
-//            ),
-//            title: Text(
-//              nameList.length <= 0 ? "" : nameList[i],
-////                      title(allData[i].mac.toString(),macList[i],allData[i].name.toString()),
-//              style: TextStyle(
-//                fontSize: 20,
-//              ),
-//              textAlign: TextAlign.left,
-//            ),
-//            subtitle: Text(
-//              numList.length <= 0 ? "" : numList[i],
-////                      id(allData[i].mac.toString(),macList[i],allData[i].employeeID.toString()),
-//              style: TextStyle(
-//                fontSize: 16,
-//              ),
-//              textAlign: TextAlign.left,
-//            ),
-//          ),
-//        ),
-//        secondaryActions: <Widget>[
-//          IconSlideAction(
-//            caption: '確認',
-//            color: Color(0xFF81E9E6),
-//            icon: Icons.check_circle,
-//            onTap: () =>
-//                createConfirmDataAlertDialog(
-//                    context, nameList[i], tempList[i],
-//                    numList[i],
-//                    i),
-//
-//          ),
-//          IconSlideAction(
-//              caption: '配對',
-//              color: Colors.blue,
-//              icon: Icons.settings_ethernet,
-//              onTap: () async =>
-//              {
-//                await createconnectPeopleAlertDialog(
-//                    context, nameList[i].toString(),
-//                    macList[i].toString(),
-//                    tempList[i].toString(),
-//                    numList[i].toString()),
-//                await print("lev"),
-//                await setState(() {}),
-//              }
-//
-//
-//          ),
-//        ],
-//      ),
-//    );
-//  }
 
   createconnectPeopleAlertDialog(
       BuildContext context, String name, String mac, String temp, String num) {
@@ -1113,9 +1035,10 @@ class ScanResultTile extends State<Scan> {
                             child: new TextField(
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: '姓名',
+                                labelText: '編號',
                               ),
-                              controller: editNameController,
+                              keyboardType: TextInputType.number,
+                              controller: editNumController,
                               style: Theme.of(context).textTheme.body1,
                             ),
                           ),
@@ -1130,16 +1053,16 @@ class ScanResultTile extends State<Scan> {
                             child: new TextField(
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: '編號',
+                                labelText: '姓名',
                               ),
-                              keyboardType: TextInputType.number,
-                              controller: editNumController,
+                              controller: editNameController,
                               style: Theme.of(context).textTheme.body1,
                             ),
                           ),
                         ],
                       ),
                     ),
+
                   ],
                 ),
               ),
@@ -1151,15 +1074,14 @@ class ScanResultTile extends State<Scan> {
                       // ignore: missing_return
                       onPressed: () async {
                         sqlhelper helper = new sqlhelper();
-                        String n = editNameController.text;
-                        String number = editNumController.text;
-                        if (n != "") {
+                        String editName = editNameController.text;
+                        String editNumber = editNumController.text;
+                        if (editName != "") {
                           Navigator.of(context).pop();
                           debugPrint(name);
-                          if (number != "") {
-                            insertData(mac, temp, number, 0, statusList);
+                          if (editNumber != "") {
                             employee data = new employee(
-                                employeeID: number, name: n, mac: mac);
+                                employeeID: editNumber, name: editName, mac: mac);
                             await helper.insertData(data);
                             await nameList.clear();
                             await numList.clear();
@@ -1173,8 +1095,8 @@ class ScanResultTile extends State<Scan> {
                                   content: SingleChildScrollView(
                                     child: ListBody(
                                       children: <Widget>[
-                                        Text("姓名：" + n),
-                                        Text("編號：" + number),
+                                        Text("編號：" + editNumber),
+                                        Text("姓名：" + editName),
                                         Text("Mac Address：" + mac),
                                       ],
                                     ),

@@ -12,6 +12,9 @@ import 'package:newapp1/pages/bluetooth/package.dart';
 Color appColor = Color(0xFF2A6FDB);
 Color cashColor = Color(0xFFFEFCBF);
 
+String confirmName = "";
+int confirmPosition;
+
 getData() async {
   sqlhelper helper = new sqlhelper();
 //  employee data=new employee(employeeID: "12",name: "123");
@@ -28,9 +31,9 @@ class Content extends StatefulWidget {
   }
 }
 
-class ContentState extends State<Content> {
-  List data;
+List data;
 
+class ContentState extends State<Content> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<String>(
@@ -43,8 +46,7 @@ class ContentState extends State<Content> {
           for (var i = 0; i < data.length; i++) {
             if (data[i].mac.toString() == ":::::" ||
                 data[i].mac.toString() == "") {
-              print(
-                  data[i].id.toString() + "," + data[i].mac.toString() + "未配對");
+//              print(data[i].id.toString() + "," + data[i].mac.toString() + "未配對");
               list.add(
                 new Slidable(
                   actionPane: SlidableDrawerActionPane(),
@@ -93,12 +95,13 @@ class ContentState extends State<Content> {
                       ),
                     ),
                     IconSlideAction(
-                      caption: '配對',
-                      color: Colors.blue,
-                      icon: Icons.bluetooth_connected,
-                      onTap: () => createPairPeopleAlertDialog(
-                          context, data[i].name, data[i].employeeID.toString()),
-                    ),
+                        caption: '配對',
+                        color: Colors.blue,
+                        icon: Icons.bluetooth_connected,
+                        onTap: () async  {
+                          await createPairPeopleAlertDialog(context, data[i].name, i);
+                          await setState(() {});
+                        }),
                     IconSlideAction(
                       caption: '刪除',
                       color: Colors.red,
@@ -114,7 +117,7 @@ class ContentState extends State<Content> {
                 ),
               );
             } else {
-              print(data[i].id.toString() + "已配對");
+//              print(data[i].id.toString() + "已配對");
               list.add(
                 new Slidable(
                   actionPane: SlidableDrawerActionPane(),
@@ -143,13 +146,6 @@ class ContentState extends State<Content> {
                         ),
                         textAlign: TextAlign.left,
                       ),
-//                      subtitle: Text(
-//                        data[i].employeeID.toString(),
-//                        style: TextStyle(
-//                          fontSize: 16,
-//                        ),
-//                        textAlign: TextAlign.left,
-//                      ),
                     ),
                   ),
                   secondaryActions: <Widget>[
@@ -421,13 +417,14 @@ class ContentState extends State<Content> {
         });
   }
 
-  createPairPeopleAlertDialog(BuildContext context, name, id) {
+  createPairPeopleAlertDialog(BuildContext context, name, position) {
+    confirmPosition = position;
     return showDialog(
         context: context,
         builder: (context) {
           debugPrint("Press Pair button.");
           return AlertDialog(
-            title: Text("配對"),
+            title: Text("配對 " + name),
             content: RefreshIndicator(
               onRefresh: () =>
                   FlutterBlue.instance.startScan(timeout: Duration(seconds: 4)),
@@ -452,29 +449,6 @@ class ContentState extends State<Content> {
                                   title: Text(d.name),
                                   //mac
                                   subtitle: Text(d.id.toString()),
-
-                                  //trailing設置拖尾將在列表的末尾放置一個圖像
-//                          trailing: StreamBuilder<BluetoothDeviceState>(
-//                            stream: d.state,
-//                            //預設未連接
-//                            initialData: BluetoothDeviceState.disconnected,
-//                            builder: (c, snapshot) {
-//                              if (snapshot.data == BluetoothDeviceState.connected) {
-//                                return RaisedButton(
-//                                  child: Text('OPEN'),
-//                                  //跳頁
-//                                  onPressed: () => Navigator.of(context).push(
-//                                    //跳頁到DeviceScreen並攜帶device
-//                                      MaterialPageRoute(
-////                                    builder: (context) =>
-////                                        DeviceScreen(device: d)
-//                                      )),
-//                                );
-//                              }
-//                              //如果未連線，則顯示未連線資訊
-//                              return Text(snapshot.data.toString());
-//                            },
-//                          ),
                                 ))
                             .toList(),
                       ),
@@ -612,7 +586,6 @@ class PeopleScreenState extends State<PeopleScreen> {
                     child: Text('確認'),
                     // ignore: missing_return
                     onPressed: () async {
-
                       sqlhelper helper = new sqlhelper();
 
                       String name = nameController.text;
@@ -954,5 +927,3 @@ class _PeopleState extends State<People> {
     return null;
   }
 }
-
-

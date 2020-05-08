@@ -1,12 +1,9 @@
-import 'dart:math';
 
-import '../main.dart';
+import 'package:newapp1/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:newapp1/pages/DB/employee_model.dart';
 import 'package:newapp1/pages/DB/sqlhelper.dart';
-import 'package:newapp1/pages/DB/temperature_model.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import 'DB/AllJoin_model.dart';
@@ -343,7 +340,7 @@ createSelectPersonalShareDateAlertDialog(
                                           .writeEmployeeToCsv(data, num);
                                       print(result);
 
-                                      Navigator.of(context).pop();
+//                                      Navigator.of(context).pop();
 
                                       if (result == "匯出失敗") {
                                         print("匯出失敗");
@@ -437,13 +434,6 @@ getData() async {
   sqlhelper helper = new sqlhelper();
   // employee data = new employee(employeeID: "12", name: "123");
   // temperature data = new temperature(id: 1, time: "2020-05-04", temp: "25.6");
-  checkListData.add(
-    {
-      "id": 2,
-      "temp": "25.6",
-      "time": "2020-01-02",
-    }
-  );
   print(await helper.showtemperature());
   List templist = await helper.showLastTemp();
   bool find=false;
