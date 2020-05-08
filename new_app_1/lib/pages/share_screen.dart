@@ -1,4 +1,3 @@
-
 import 'package:newapp1/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -436,46 +435,42 @@ getData() async {
   // temperature data = new temperature(id: 1, time: "2020-05-04", temp: "25.6");
   print(await helper.showtemperature());
   List templist = await helper.showLastTemp();
-  bool find=false;
-  List<Map<String,dynamic>> newList=new List();
-  for(int i=0;i<templist.length;i++){
+  List<Map<String, dynamic>> newList = new List();
+  for (int i = 0; i < templist.length; i++) {
+    bool find = false;
     for (int j = 0; j < checkListData.length; j++) {
-      if(checkListData[j]['id']==templist[i].id){
+      if (checkListData[j]['id'] == templist[i].id) {
         print(templist[i].id);
-        find=true;
-        newList.add(
-          {
-            "id":templist[i].id,
-            "employeeID":templist[i].employeeID.toString(),
-            "name":templist[i].name,
-            "temp":checkListData[j]['temp'],
-            "time":checkListData[j]['time']
-          }
-        );
+        find = true;
+        newList.add({
+          "id": templist[i].id,
+          "employeeID": templist[i].employeeID.toString(),
+          "name": templist[i].name,
+          "temp": checkListData[j]['temp'],
+          "time": checkListData[j]['time']
+        });
         break;
       }
     }
-    if(!find){
-      newList.add(
-          {
-            "id":templist[i].id,
-            "employeeID":templist[i].employeeID,
-            "name":templist[i].name,
-            "temp":"",
-            "time":""
-          }
-        );
+    if (!find) {
+      newList.add({
+        "id": templist[i].id,
+        "employeeID": templist[i].employeeID,
+        "name": templist[i].name,
+        "temp": "",
+        "time": ""
+      });
     }
   }
   return List.generate(newList.length, (i) {
-      return AllJoinTable(
-        id: newList[i]['id'],
-        employeeID: newList[i]['employeeID'],
-        name: newList[i]['name'],
-        temp: newList[i]['temp'],
-        time: newList[i]['time'],
-      );
-    });
+    return AllJoinTable(
+      id: newList[i]['id'],
+      employeeID: newList[i]['employeeID'],
+      name: newList[i]['name'],
+      temp: newList[i]['temp'],
+      time: newList[i]['time'],
+    );
+  });
 }
 
 class content extends StatelessWidget {
