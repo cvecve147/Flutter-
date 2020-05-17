@@ -3,6 +3,7 @@ class AllJoinTable {
   final String name;
   final String employeeID;
   final String mac;
+  final String roomTemp;
   final String temp;
   final String time;
   final String symptom;
@@ -11,6 +12,7 @@ class AllJoinTable {
       this.name,
       this.employeeID,
       this.mac,
+      this.roomTemp,
       this.temp,
       this.time,
       this.symptom});
@@ -20,6 +22,7 @@ class AllJoinTable {
       'name': name,
       'employeeID': employeeID,
       'mac': mac,
+      'roomTemp': roomTemp,
       'temp': temp,
       'time': time,
       'symptom': symptom
@@ -29,6 +32,6 @@ class AllJoinTable {
   @override
   String toString() {
     // TODO: implement toString
-    return 'AllJoinTable{id: $id, name: $name, employeeID: $employeeID, mac: $mac, temp:$temp , time:$time, symptom:$symptom}';
+    return 'AllJoinTable{id: $id, name: $name, employeeID: $employeeID, mac: $mac,roomTemp:$roomTemp, temp:$temp , time:$time, symptom:$symptom}';
   }
 }

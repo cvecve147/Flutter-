@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+//import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:newapp1/pages/bluetooth/package2.dart';
 
 import 'DB/sqlhelper.dart';
@@ -114,7 +115,7 @@ class _ScanScreenState extends State<statefulScanScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => FindDevicesScreen()),
+                        builder: (context) => FlutterBlueApp()),//FindDevicesScreen
                   );
                 },
                 textColor: Colors.white,
@@ -187,11 +188,11 @@ class FlutterBlueApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //確認是否開啟藍芽，若未開顯示藍芽未開的畫面
-    return MaterialApp(
-      color: Colors.white,
+    return Scaffold(//MaterialApp
+      //color: Colors.white,
       //StreamBuilder本身是一個Widget，會監聽一個Stream，只要這個Stream有數據變化，
       //它內部的UI就會根據這個新的數據進行變化，完全不需要setState((){})
-      home: StreamBuilder<BluetoothState>(
+      body: StreamBuilder<BluetoothState>(
           //負責監聽的Stream
           stream: FlutterBlue.instance.state,
           //初始化值
@@ -199,12 +200,15 @@ class FlutterBlueApp extends StatelessWidget {
           //根據Stream變化進行修改的UI
           builder: (context, snapshot) {
             final state = snapshot.data;
+            print(state);
             if (state == BluetoothState.on) {
               //藍芽已開，進入搜尋畫面
               return FindDevicesScreen();
+            }else {
+              //藍芽未開
+              //FlutterBluetoothSerial.instance.requestEnable();
+              return BluetoothOffScreen(state: state);
             }
-            //藍芽未開
-            return BluetoothOffScreen(state: state);
           }),
     );
   }
@@ -212,13 +216,24 @@ class FlutterBlueApp extends StatelessWidget {
 
 //藍芽未開的畫面
 class BluetoothOffScreen extends StatelessWidget {
-  const BluetoothOffScreen({Key key, this.state}) : super(key: key);
-
-  final BluetoothState state;
+  BluetoothOffScreen({Key key, this.state}) : super(key: key);
+  BluetoothState state;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("量測結果"),
+        backgroundColor: Color(0xFF2A6FDB),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: '重新掃描',
+            onPressed: () =>
+                FlutterBlue.instance.startScan(timeout: Duration(seconds: 10)),
+          ),
+        ],
+      ),
       backgroundColor: Colors.grey,
       body: Center(
         child: Column(
@@ -333,28 +348,6 @@ class FindDevicesScreen extends StatelessWidget {
           ),
         ),
       ),
-
-      //改變按鈕
-//      floatingActionButton: StreamBuilder<bool>(
-//        stream: FlutterBlue.instance.isScanning,
-//        initialData: false,
-//        builder: (c, snapshot) {
-//          if (snapshot.data) {
-//            //當在掃描中就改變icon為stop，要是被按下就執行stopScan()，背景是紅色停止鍵
-//            return FloatingActionButton(
-//              child: Icon(Icons.stop),
-//              onPressed: () => FlutterBlue.instance.stopScan(),
-//              backgroundColor: Colors.red,
-//            );
-//          } else {
-//            //不在掃描中就icon為search，要是被按下就開始掃10秒
-//            return FloatingActionButton(
-//                child: Icon(Icons.search),
-//                onPressed: () => FlutterBlue.instance
-//                    .startScan(timeout: Duration(seconds:10)));
-//          }
-//        },
-//      ),
     );
   }
 }

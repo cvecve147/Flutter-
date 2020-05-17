@@ -374,6 +374,7 @@ class ContentState extends State<Content> {
                 children: <Widget>[
                   new FlatButton(
                     child: Text('確認'),
+
                     // ignore: missing_return
                     onPressed: () async {
                       sqlhelper helpler = new sqlhelper();
@@ -392,11 +393,9 @@ class ContentState extends State<Content> {
                               _editMaccontroller[4].text +
                               ":" +
                               _editMaccontroller[5].text);
-                      await helpler.updateData(editData);
                       Navigator.of(context).pop();
-//                      Scaffold.of(context).showSnackBar(SnackBar(
-//                        content: Text(data.name + "資料已修改"),
-//                      ));
+                      String result = await helpler.updateData(editData);
+                      print(result);
                       setState(() {});
                     },
                     color: appColor,
@@ -615,25 +614,44 @@ class PeopleScreenState extends State<PeopleScreen> {
                           }
                           employee data = new employee(
                               employeeID: num, name: name, mac: macAddress);
-                          await helper.insertData(data);
+                          String result = await helper.insertData(data);
                           setState(() {});
-                          return showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: Text('Result'),
-                                content: SingleChildScrollView(
-                                  child: ListBody(
-                                    children: <Widget>[
-                                      Text("編號：" + num),
-                                      Text("姓名：" + name),
-                                      Text("Mac Address：" + macAddress),
-                                    ],
+                          print(result);
+                          if(result == "請檢查資料"){
+                            return showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text('新增人員失敗'),
+                                  content: SingleChildScrollView(
+                                    child: ListBody(
+                                      children: <Widget>[
+                                        Text("人員編號重複，請重新新增"),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          );
+                                );
+                              },
+                            );
+                          }else{
+                            return showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text('新增人員成功'),
+                                  content: SingleChildScrollView(
+                                    child: ListBody(
+                                      children: <Widget>[
+                                        Text("編號：" + num),
+                                        Text("姓名：" + name),
+                                        Text("Mac Address：" + macAddress),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }
                         } else {
                           return showDialog(
                               context: context,
@@ -650,7 +668,8 @@ class PeopleScreenState extends State<PeopleScreen> {
                                 );
                               });
                         }
-                      } else {
+                      }
+                      else {
                         return showDialog(
                             context: context,
                             builder: (context) {

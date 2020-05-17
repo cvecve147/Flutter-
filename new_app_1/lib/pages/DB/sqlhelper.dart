@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:path/path.dart';
+
 import '../DB/AllJoin_model.dart';
 import '../DB/employee_model.dart';
 import '../DB/temperature_model.dart';
@@ -8,13 +10,15 @@ import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
 import 'dart:convert' show utf8;
 import 'dart:io';
+import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
-
 import 'employee_model.dart';
+
+import 'package:excel/excel.dart';
 
 class sqlhelper {
   String _DbDir;
-  String _Dbname = "NewApp06.db";
+  String _Dbname = "NewApp07.db";
   Database _DB;
 
   initDB() async {
@@ -25,7 +29,7 @@ class sqlhelper {
             CREATE TABLE employees(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,employeeID TEXT, name TEXT,mac TEXT DEFAULT NULL);
           ''');
       await database.execute('''
-            CREATE TABLE temperatures(id INTEGER, temp TEXT,time TEXT,symptom TEXT DEFAULT NULL);
+            CREATE TABLE temperatures(id INTEGER, temp TEXT,roomTemp TEXT,time TEXT,symptom TEXT DEFAULT NULL);
           ''');
     }, version: 4);
   }
@@ -66,6 +70,7 @@ class sqlhelper {
     return List.generate(maps.length, (i) {
       return temperature(
           id: maps[i]['id'],
+          roomTemp: maps[i]['roomTemp'],
           temp: maps[i]['temp'],
           time: maps[i]['time'],
           symptom: maps[i]['symptom']);
@@ -85,6 +90,7 @@ class sqlhelper {
         employeeID: maps[i]['employeeID'],
         name: maps[i]['name'],
         mac: maps[i]['mac'],
+        roomTemp: maps[i]['roomTemp'],
         temp: maps[i]['temp'],
         time: maps[i]['time'],
         symptom: maps[i]['symptom'],
@@ -101,6 +107,7 @@ class sqlhelper {
     return List.generate(maps.length, (i) {
       return temperature(
           id: maps[i]['id'],
+          roomTemp: maps[i]['roomTemp'],
           temp: maps[i]['temp'],
           time: maps[i]['time'],
           symptom: maps[i]['symptom']);
@@ -156,6 +163,7 @@ class sqlhelper {
     return List.generate(maps.length, (i) {
       return temperature(
           id: maps[i]['id'],
+          roomTemp: maps[i]['roomTemp'],
           temp: maps[i]['temp'],
           time: maps[i]['time'],
           symptom: maps[i]['symptom']);
@@ -222,6 +230,7 @@ class sqlhelper {
         employeeID: maps[i]['employeeID'],
         name: maps[i]['name'],
         mac: maps[i]['mac'],
+        roomTemp: maps[i]['roomTemp'],
         temp: maps[i]['temp'],
         time: maps[i]['time'],
         symptom: maps[i]['symptom'],
@@ -241,6 +250,7 @@ class sqlhelper {
         employeeID: maps[i]['employeeID'],
         name: maps[i]['name'],
         mac: maps[i]['mac'],
+        roomTemp: "",
         temp: "",
         time: "",
         symptom: "",
@@ -256,8 +266,21 @@ class sqlhelper {
   Future<String> writeEmployeeToCsv(List date, [int id]) async {
     await initDB();
     List<Map<String, dynamic>> data;
-    String csvFormat = "";
+
     String idAndName = "";
+    Directory directory = await getExternalStorageDirectory(); //取得内部储存空间
+    var now = new DateTime.now();
+    String fileName = twoDigit(now.year) +
+        "-" +
+        twoDigit(now.month) +
+        "-" +
+        twoDigit(now.day) +
+        "_" +
+        twoDigit(now.hour) +
+        "-" +
+        twoDigit(now.minute) +
+        "-" +
+        twoDigit(now.second);
     if (id != null) {
       try {
         data = await _DB.rawQuery('''
@@ -270,6 +293,9 @@ class sqlhelper {
                     ''');
         List<employee> searchData = await searchEmployee(id);
         idAndName = searchData[0].employeeID + "_" + searchData[0].name;
+        fileName += (id != null) ? "_${idAndName}" : "";
+        List<String> csvFormat2 = ["時間", "體溫", "模組溫度", "備註"];
+        createExcelfiles(directory.path, fileName, csvFormat2, data, true);
       } catch (e) {
         return "${e}匯出失敗";
       }
@@ -282,46 +308,81 @@ class sqlhelper {
         WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
         ''');
         print(data);
+        fileName += (id != null) ? "_${idAndName}" : "";
+        List<String> csvFormat2 = ["員工編號", "時間", "姓名", "體溫", "模組溫度", "備註"];
+        createExcelfiles(directory.path, fileName, csvFormat2, data, false);
       } catch (e) {
         return "${e}匯出失敗";
       }
     }
-    List.generate(data.length, (i) {
-      String symptom = "";
-      if (data[i]['symptom'] != null) {
-        symptom = data[i]['symptom'];
-      }
-      csvFormat += data[i]['time'] +
-          "," +
-          data[i]['name'] +
-          "," +
-          data[i]['temp'] +
-          "," +
-          symptom +
-          "\n";
-    });
-    print(csvFormat);
     try {
-      Directory directory = await getExternalStorageDirectory();
-      var now = new DateTime.now();
-      String fileName = twoDigit(now.year) +
-          "-" +
-          twoDigit(now.month) +
-          "-" +
-          twoDigit(now.day) +
-          "_" +
-          twoDigit(now.hour) +
-          "-" +
-          twoDigit(now.minute) +
-          "-" +
-          twoDigit(now.second);
-      fileName += (id != null) ? "_${idAndName}" : "";
-      final File file = new File('${directory.path}/${fileName}.csv');
-      await file.writeAsString(csvFormat);
       return "${directory.path}/${fileName}.csv";
     } catch (e) {
       return "${e}匯出失敗";
     }
+  }
+
+  createExcelfiles(String directory, String fileName, List<String> header,
+      List<Map<String, dynamic>> data, bool person) {
+    var excel = Excel.createExcel();
+    final File file = new File('${directory}/${fileName}.xlsx');
+
+    var sheet = 'Sheet1';
+    var sheetcol = ["A", "B", "C", "D", "E", "F"];
+    for (int i = 0; i < header.length; i++) {
+      excel.updateCell(
+          sheet,
+          CellIndex.indexByString(sheetcol[i].toString() + 1.toString()),
+          header[i]);
+    }
+    if (person) {
+      List.generate(data.length, (i) {
+        String symptom = "";
+        if (data[i]['symptom'] != null) {
+          symptom = data[i]['symptom'];
+        }
+        excel.updateCell(sheet,
+            CellIndex.indexByString("A" + (i + 2).toString()), data[i]['time']);
+        excel.updateCell(sheet,
+            CellIndex.indexByString("B" + (i + 2).toString()), data[i]['temp']);
+        excel.updateCell(
+            sheet,
+            CellIndex.indexByString("C" + (i + 2).toString()),
+            data[i]['roomTemp']);
+        excel.updateCell(
+            sheet, CellIndex.indexByString("D" + (i + 2).toString()), symptom);
+      });
+    } else {
+      List.generate(data.length, (i) {
+        String symptom = "";
+        if (data[i]['symptom'] != null) {
+          symptom = data[i]['symptom'];
+        }
+        excel.updateCell(
+            sheet,
+            CellIndex.indexByString("A" + (i + 2).toString()),
+            data[i]['employeeID']);
+        excel.updateCell(sheet,
+            CellIndex.indexByString("B" + (i + 2).toString()), data[i]['time']);
+        excel.updateCell(sheet,
+            CellIndex.indexByString("C" + (i + 2).toString()), data[i]['name']);
+        excel.updateCell(sheet,
+            CellIndex.indexByString("D" + (i + 2).toString()), data[i]['temp']);
+        excel.updateCell(
+            sheet,
+            CellIndex.indexByString("E" + (i + 2).toString()),
+            data[i]['roomTemp']);
+        excel.updateCell(
+            sheet, CellIndex.indexByString("F" + (i + 2).toString()), symptom);
+      });
+    }
+
+    String outputFile = "${directory}/${fileName}.xlsx";
+    excel.encode().then((onValue) {
+      File(join(outputFile))
+        ..createSync(recursive: true)
+        ..writeAsBytesSync(onValue);
+    });
   }
 
   deleteOverDay(String date) async {

@@ -74,7 +74,7 @@ class ScanResultTile extends State<Scan> {
             overflow: TextOverflow.ellipsis, //無視省略號(...)
           ),
 
-          //MacAdress
+          //MacAddress
           Text(
             result.device.id.toString(),
             style: Theme.of(context).textTheme.caption,
@@ -106,7 +106,7 @@ class ScanResultTile extends State<Scan> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text("量測確認"),
+              title: Text("人員配對確認"),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
@@ -143,7 +143,7 @@ class ScanResultTile extends State<Scan> {
                     new FlatButton(
                       child: Text('確認'),
                       onPressed: () {
-                        insertData(macL, tempL, rssiL, i, statusList);
+                        insertData(macL, tempL, rssiL, i, statusList,getRoomTempData(result.advertisementData.manufacturerData),);
                         Navigator.of(context).pop();
                         return showDialog(
                           context: context,
@@ -344,7 +344,7 @@ class ScanResultTile extends State<Scan> {
           .toString();
       double tem = bytesToFloat(toRadix(data1), toRadix(data2), toRadix(data3),
           toRadix(data4)); //decodeTempLevel(data,0);
-      return tem.toString(); //+data2+data3+data4
+      return formatNum(tem,2); //+data2+data3+data4
     } else {
       return correct;
     }
@@ -590,18 +590,19 @@ class ScanResultTile extends State<Scan> {
     return a[0].name;
   }
 
-  Future<void> insertData(macL, tempL, rssiL, int i, List s) async {
+  Future<void> insertData(macL, tempL, rssiL, int i, List s,roomTemp) async {
     //print(tempL);
     sqlhelper sqlhepler = new sqlhelper();
     var a = await sqlhepler.searchEmployeeMAC(macL.toString());
     //print(a);
     checkListData.add({
-      "id": a.length==0?0:a[0].id,
+      "id": a.length == 0 ? 0 : a[0].id,
       "temp": tempL,
       "time": getCurrentDate().toString(),
     });
     temperature data = new temperature(
         id: a[0].id,
+        roomTemp:roomTemp,
         temp: tempL,
         time: getCurrentDate().toString(),
         symptom: s.join("、"));
@@ -683,6 +684,20 @@ class ScanResultTile extends State<Scan> {
 
     createConfirmDataAlertDialog(
         BuildContext context, String name, String data, String num, int i) {
+      _value = [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ];
       return showDialog(
           context: context,
           builder: (context) {
@@ -736,14 +751,14 @@ class ScanResultTile extends State<Scan> {
                               checkData.add(macList[0]);
                             }
                           }
-                          List<String> SelectedStatus = new List();
+                          List<String> selectedStatus = new List();
                           for (var n = 0; n < _value.length; n++) {
                             if (_value[n]) {
-                              SelectedStatus.add(statusList[n]);
+                              selectedStatus.add(statusList[n]);
                             }
                           }
                           insertData(
-                              macList[i], tempList[i], num, i, SelectedStatus);
+                              macList[i], tempList[i], num, i, selectedStatus,getRoomTempData(result.advertisementData.manufacturerData),);
                           Navigator.of(context).pop();
                           return showDialog(
                             context: context,
@@ -777,14 +792,14 @@ class ScanResultTile extends State<Scan> {
                                           ],
                                         ),
                                       ),
-                                      if (SelectedStatus.length != 0)
+                                      if (selectedStatus.length != 0)
                                         Padding(
                                           padding: EdgeInsets.only(top: 16),
                                           child: Text(
-                                            "狀態：" + SelectedStatus.join(","),
+                                            "狀態：" + selectedStatus.join(","),
                                           ),
                                         ),
-                                      if (SelectedStatus.length == 0)
+                                      if (selectedStatus.length == 0)
                                         Padding(
                                           padding: EdgeInsets.only(top: 16),
                                           child: Text(
@@ -914,7 +929,7 @@ class ScanResultTile extends State<Scan> {
                           color: Colors.blue,
                           icon: Icons.settings_ethernet,
                           onTap: () async => {
-                                await createconnectPeopleAlertDialog(
+                                await createConnectPeopleAlertDialog(
                                     context,
                                     nameList[i].toString(),
                                     macList[i].toString(),
@@ -987,15 +1002,15 @@ class ScanResultTile extends State<Scan> {
                             color: Colors.blue,
                             icon: Icons.settings_ethernet,
                             onTap: () async => {
-                              await createconnectPeopleAlertDialog(
-                                  context,
-                                  nameList[i].toString(),
-                                  macList[i].toString(),
-                                  tempList[i].toString(),
-                                  numList[i].toString()),
-                              await print("lev"),
-                              await setState(() {}),
-                            }),
+                                  await createConnectPeopleAlertDialog(
+                                      context,
+                                      nameList[i].toString(),
+                                      macList[i].toString(),
+                                      tempList[i].toString(),
+                                      numList[i].toString()),
+                                  await print("lev"),
+                                  await setState(() {}),
+                                }),
                       ],
                     ),
                   );
@@ -1012,7 +1027,7 @@ class ScanResultTile extends State<Scan> {
     );
   }
 
-  createconnectPeopleAlertDialog(
+  createConnectPeopleAlertDialog(
       BuildContext context, String name, String mac, String temp, String num) {
     TextEditingController editNameController = new TextEditingController();
     TextEditingController editNumController = new TextEditingController();
@@ -1062,7 +1077,6 @@ class ScanResultTile extends State<Scan> {
                         ],
                       ),
                     ),
-
                   ],
                 ),
               ),
@@ -1081,29 +1095,50 @@ class ScanResultTile extends State<Scan> {
                           debugPrint(name);
                           if (editNumber != "") {
                             employee data = new employee(
-                                employeeID: editNumber, name: editName, mac: mac);
-                            await helper.insertData(data);
+                                employeeID: editNumber,
+                                name: editName,
+                                mac: mac);
+                            String result = await helper.insertData(data);
                             await nameList.clear();
                             await numList.clear();
                             print("insert");
                             await setState(() {});
-                            return showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: Text('Result'),
-                                  content: SingleChildScrollView(
-                                    child: ListBody(
-                                      children: <Widget>[
-                                        Text("編號：" + editNumber),
-                                        Text("姓名：" + editName),
-                                        Text("Mac Address：" + mac),
-                                      ],
+
+                            if (result == "請檢查資料") {
+                              return showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text('配對失敗'),
+                                    content: SingleChildScrollView(
+                                      child: ListBody(
+                                        children: <Widget>[
+                                          Text("人員編號重複，請重新新增"),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                            );
+                                  );
+                                },
+                              );
+                            } else {
+                              return showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text('配對成功'),
+                                    content: SingleChildScrollView(
+                                      child: ListBody(
+                                        children: <Widget>[
+                                          Text("姓名：" + editName),
+                                          Text("編號：" + editNumber),
+                                          Text("MAC Address：" + mac),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }
                           } else {
                             return showDialog(
                                 context: context,
@@ -1239,11 +1274,11 @@ class StatusBoxState extends State<StatusBox> {
 
     for (var i = 0; i < statusList.length; i++) {
       _valueChanged(bool value) {
-        _value[i] = value;
-        print(_value.join("."));
+        _value[i] = false;
         setState(() {
           _value[i] = value;
         });
+        print(_value.join(","));
       }
 
       list.add(
