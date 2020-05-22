@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:newapp1/pages/DB/sqlhelper.dart';
 import 'package:newapp1/pages/DB/employee_model.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:newapp1/pages/DB/temperature_model.dart';
 import 'package:newapp1/pages/bluetooth/package.dart';
 
 Color appColor = Color(0xFF2A6FDB);
@@ -18,9 +19,11 @@ int confirmPosition;
 getData() async {
   sqlhelper helper = new sqlhelper();
 //  employee data=new employee(employeeID: "12",name: "123");
-//  temperature data=new temperature(id:1,time: "2020-01-12",temp: "25.6");
+ temperature data=new temperature(id:2,time: "2020-05-06",temp: "25.6");
 //  helper.insertData(data);
 //  print(await helper.showEmployee());
+  print("server");
+  helper.insertData(data);
   return await helper.showEmployee();
 }
 

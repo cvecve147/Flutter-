@@ -14,6 +14,15 @@ class temperature {
       'symptom': symptom,
     };
   }
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "temp": temp,
+      "roomTemp": roomTemp,
+      "time": time,
+      "symptom": symptom,
+    };
+  }
 
   String toString() {
     return 'temperature{id: $id, temp: $temp,roomTemp: $roomTemp,time: $time,symptom:$symptom}';

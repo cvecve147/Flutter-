@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:path/path.dart';
 
 import '../DB/AllJoin_model.dart';
@@ -15,6 +16,8 @@ import 'package:path_provider/path_provider.dart';
 import 'employee_model.dart';
 
 import 'package:excel/excel.dart';
+import 'dart:convert' as convert;
+import 'package:http/http.dart' as http;
 
 class sqlhelper {
   String _DbDir;
@@ -34,6 +37,55 @@ class sqlhelper {
     }, version: 4);
   }
 
+  uploadDataTemp(temperature data) async {
+    var url = 'http://120.105.161.209:3000/temps';
+    try {
+      var response = await http.post(url,
+          headers: <String, String>{
+            HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(data.toJson()));
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  uploadDataUser(employee data) async {
+    var url = 'http://120.105.161.209:3000/users';
+    try {
+      var response = await http.post(url,
+          headers: <String, String>{
+            HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(data.toJson()));
+    } catch (e) {
+      print(e);
+    }
+  }
+  editServerData(employee data)async{
+    var url = 'http://120.105.161.209:3000/users/${data.id}';
+    try {
+      var response = await http.put(url,
+          headers: <String, String>{
+            HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(data.toJson()));
+    } catch (e) {
+      print(e);
+    }
+  }
+  deleteServerData(int data) async{
+    var url = 'http://120.105.161.209:3000/users/${data}';
+    try {
+      var response = await http.delete(url,
+          headers: <String, String>{
+            HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
+          },);
+    } catch (e) {
+      print(e);
+    }
+  }
+
   Future<String> insertData(dynamic data) async {
     await initDB();
     if (data is employee) {
@@ -42,13 +94,29 @@ class sqlhelper {
         return "請檢查資料";
       }
       await _DB.insert('employees', data.toMap());
+      var res = await showEmployeeLast();
+      await uploadDataUser(res);
     } else {
       try {
         await _DB.insert('temperatures', data.toMap());
+        await uploadDataTemp(data);
       } catch (e) {
         print(e);
       }
     }
+  }
+
+  Future<employee> showEmployeeLast() async {
+    await initDB();
+    final List<Map<String, dynamic>> maps = await _DB.rawQuery('''
+          SELECT * FROM employees ORDER BY id DESC LIMIT 1
+    ''');
+    return employee(
+      id: maps[0]['id'],
+      name: maps[0]['name'],
+      employeeID: maps[0]['employeeID'],
+      mac: maps[0]['mac'],
+    );
   }
 
   Future<List<employee>> showEmployee() async {
@@ -175,6 +243,7 @@ class sqlhelper {
     if (data is employee) {
       await _DB.update("employees", data.toMap(),
           where: "id=?", whereArgs: [data.id]);
+      await editServerData(data);
     }
   }
 
@@ -399,6 +468,7 @@ class sqlhelper {
   deleteEmployee(int id) async {
     await initDB();
     await _DB.delete('employees', where: "id=?", whereArgs: [id]);
+    await deleteServerData(id);
   }
 
   dropEmployee() async {
