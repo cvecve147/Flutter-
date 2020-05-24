@@ -3,14 +3,41 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import './widgets.dart';
+import './device.dart';
 
+List<Device> device = new List<Device>();
 void main() {
   runApp(FlutterBlueApp());
+
+// 9704-1	MAC: D4:6C:51:7D:F8:DB	(12,14.4)
+// 9704-2	(24,12)
+// 9704-3	MAC: EB:A7:C6:6A:7C:CD	(36,12)
+// 9704-4	MAC: DC:F6:28:8B:95:8E	(45,14.4)
+// 9704-5	(31.95,21)
+// 9704-6	MAC: CA:8F:29:16:7F:4A	(37.2,31.8)
+// 9704-7	MAC: F8:94:1E:4E:31:D3	(34.65,42)
+  //初始化
+  Device temp = Device(mac: "D4:6C:51:7D:F8:DB", x: 12, y: 14.4);
+  device.add(temp);
+  temp = Device(mac: "00:9E:C8:B0:DE:57", x: 24, y: 12);
+  device.add(temp);
+  temp = Device(mac: "EB:A7:C6:6A:7C:CD", x: 36, y: 12);
+  device.add(temp);
+  temp = Device(mac: "DC:F6:28:8B:95:8E", x: 45, y: 14.4);
+  device.add(temp);
+  temp = Device(mac: "", x: 31.95, y: 21);
+  device.add(temp);
+  temp = Device(mac: "CA:8F:29:16:7F:4A", x: 37.2, y: 31.8);
+  device.add(temp);
+  temp = Device(mac: "F8:94:1E:4E:31:D3", x: 34.65, y: 42);
+  device.add(temp);
+  print(device[0].mac);
 }
 
 bool switchOn = false;
@@ -98,55 +125,114 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              StreamBuilder<List<BluetoothDevice>>(
-                stream: Stream.periodic(Duration(seconds: 2))
-                    .asyncMap((_) => FlutterBlue.instance.connectedDevices),
-                initialData: [],
-                builder: (c, snapshot) => Column(
-                  children: snapshot.data
-                      .map((d) => ListTile(
-                            title: Text(d.name),
-                            subtitle: Text(d.id.toString()),
-                            trailing: StreamBuilder<BluetoothDeviceState>(
-                              stream: d.state,
-                              initialData: BluetoothDeviceState.disconnected,
-                              builder: (c, snapshot) {
-                                if (snapshot.data ==
-                                    BluetoothDeviceState.connected) {
-                                  return RaisedButton(
-                                    child: Text('OPEN'),
-                                    onPressed: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                DeviceScreen(device: d))),
-                                  );
-                                }
-                                return Text(snapshot.data.toString());
-                              },
-                            ),
-                          ))
-                      .toList(),
-                ),
-              ),
               StreamBuilder<List<ScanResult>>(
-                stream: FlutterBlue.instance.scanResults,
-                initialData: [],
-                builder: (c, snapshot) => Column(
-                  children: snapshot.data
-                      .map(
-                        (r) => ScanResultTile(
-                          result: r,
-                          onTap: () => Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (context) {
-                            r.device.connect();
-                            return DeviceScreen(device: r.device);
-                          })),
-                          open: switchOn,
+                  stream: FlutterBlue.instance.scanResults,
+                  initialData: [],
+                  builder: (c, snapshot) {
+                    print(snapshot.data);
+                    List getmac = List();
+                    List selectDevice = List();
+                    List<int> Distance = List();
+                    List<Device> point = List();
+                    snapshot.data.map((r) {
+                      getmac.add(r.device.id.toString());
+                    }).toList();
+                    for (var item in device) {
+                      if (getmac.indexOf(item.mac) != -1) {
+                        selectDevice
+                            .add(snapshot.data[getmac.indexOf(item.mac)]);
+                        int rssi =
+                            snapshot.data[getmac.indexOf(item.mac)].rssi.abs();
+                        double power = (rssi - 70) / (10.0 * 3.3);
+                        item.distance = pow(10, power);
+                        point.add(item);
+                      }
+                    }
+                    if (!switchOn) {
+                      return Column(
+                        children: selectDevice
+                            .map(
+                              (r) => ScanResultTile(
+                                result: r,
+                                onTap: () => Navigator.of(context)
+                                    .push(MaterialPageRoute(builder: (context) {
+                                  r.device.connect();
+                                  return DeviceScreen(device: r.device);
+                                })),
+                                open: true,
+                              ),
+                            )
+                            .toList(),
+                      );
+                    }
+                    if (switchOn && selectDevice.length >= 0) {
+                      double X = 0, Y = 0;
+                      for (int i = 0; i < point.length - 1; i++) {
+                        for (int j = i + 1; j < 3; j++) {
+                          double p2p = sqrt(pow(point[i].x - point[j].x, 2) +
+                              pow(point[i].y - point[j].y, 2));
+                          //判断两圆是否相交
+                          if (point[i].distance + point[j].distance <= p2p) {
+                            //不相交，按比例求
+                            X += point[i].x +
+                                (point[j].x - point[i].x) *
+                                    point[i].distance /
+                                    (point[i].distance + point[j].distance);
+                            Y += point[i].y +
+                                (point[j].y - point[i].y) *
+                                    point[i].distance /
+                                    (point[i].distance + point[j].distance);
+                          } else {
+                            //相交则套用公式（上面推导出的）
+                            double dr = p2p / 2 +
+                                (point[i].distance * point[i].distance -
+                                        point[j].distance * point[j].distance) /
+                                    (2 * p2p);
+                            X += point[i].x +
+                                (point[j].x - point[i].x) * dr / p2p;
+                            Y += point[i].y +
+                                (point[j].y - point[i].y) * dr / p2p;
+                          }
+                        }
+                      }
+                      X /= 3;
+                      Y /= 3;
+
+                      return Container(
+                        child: Column(
+                          children: <Widget>[
+                            Text(
+                              " 利用三角定位得出你現在的位子為 " +
+                                  X.toStringAsFixed(2) +
+                                  " , " +
+                                  Y.toStringAsFixed(2),
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            Column(
+                              children: selectDevice
+                                  .map(
+                                    (r) => ScanResultTile(
+                                      result: r,
+                                      onTap: () => Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (context) {
+                                        r.device.connect();
+                                        return DeviceScreen(device: r.device);
+                                      })),
+                                      open: true,
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ],
                         ),
-                      )
-                      .toList(),
-                ),
-              ),
+                      );
+                    }
+                    return Column(children: <Widget>[
+                      Text("掃描數量為" +
+                          selectDevice.length.toString() +
+                          " 無法計算三角定位")
+                    ]);
+                  }),
             ],
           ),
         ),
@@ -164,8 +250,10 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
           } else {
             return FloatingActionButton(
                 child: Icon(Icons.search),
-                onPressed: () => FlutterBlue.instance
-                    .startScan(timeout: Duration(seconds: 4)));
+                onPressed: () async {
+                  await FlutterBlue.instance.startScan(
+                      timeout: Duration(seconds: 999), allowDuplicates: true);
+                });
           }
         },
       ),
