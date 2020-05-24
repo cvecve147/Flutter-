@@ -19,11 +19,8 @@ int confirmPosition;
 getData() async {
   sqlhelper helper = new sqlhelper();
 //  employee data=new employee(employeeID: "12",name: "123");
- temperature data=new temperature(id:2,time: "2020-05-06",temp: "25.6");
 //  helper.insertData(data);
 //  print(await helper.showEmployee());
-  print("server");
-  helper.insertData(data);
   return await helper.showEmployee();
 }
 
@@ -101,8 +98,9 @@ class ContentState extends State<Content> {
                         caption: '配對',
                         color: Colors.blue,
                         icon: Icons.bluetooth_connected,
-                        onTap: () async  {
-                          await createPairPeopleAlertDialog(context, data[i].name, i);
+                        onTap: () async {
+                          await createPairPeopleAlertDialog(
+                              context, data[i].name, i);
                           await setState(() {});
                         }),
                     IconSlideAction(
@@ -619,8 +617,8 @@ class PeopleScreenState extends State<PeopleScreen> {
                               employeeID: num, name: name, mac: macAddress);
                           String result = await helper.insertData(data);
                           setState(() {});
-                          print(result);
-                          if(result == "請檢查資料"){
+
+                          if (result == "請檢查資料") {
                             return showDialog(
                               context: context,
                               builder: (context) {
@@ -636,7 +634,7 @@ class PeopleScreenState extends State<PeopleScreen> {
                                 );
                               },
                             );
-                          }else{
+                          } else {
                             return showDialog(
                               context: context,
                               builder: (context) {
@@ -671,8 +669,7 @@ class PeopleScreenState extends State<PeopleScreen> {
                                 );
                               });
                         }
-                      }
-                      else {
+                      } else {
                         return showDialog(
                             context: context,
                             builder: (context) {
@@ -718,8 +715,8 @@ class PeopleScreenState extends State<PeopleScreen> {
           IconButton(
             icon: const Icon(Icons.person_add),
             tooltip: '新增人員',
-            onPressed: () {
-              createAddPeopleAlertDialog(context);
+            onPressed: () async {
+              await createAddPeopleAlertDialog(context);
             },
           ),
         ],

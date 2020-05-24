@@ -40,7 +40,7 @@ class sqlhelper {
   uploadDataTemp(temperature data) async {
     var url = 'http://120.105.161.209:3000/temps';
     try {
-      var response = await http.post(url,
+      await http.post(url,
           headers: <String, String>{
             HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
           },
@@ -53,7 +53,7 @@ class sqlhelper {
   uploadDataUser(employee data) async {
     var url = 'http://120.105.161.209:3000/users';
     try {
-      var response = await http.post(url,
+      await http.post(url,
           headers: <String, String>{
             HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
           },
@@ -62,10 +62,11 @@ class sqlhelper {
       print(e);
     }
   }
-  editServerData(employee data)async{
+
+  editServerData(employee data) async {
     var url = 'http://120.105.161.209:3000/users/${data.id}';
     try {
-      var response = await http.put(url,
+      await http.put(url,
           headers: <String, String>{
             HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
           },
@@ -74,13 +75,16 @@ class sqlhelper {
       print(e);
     }
   }
-  deleteServerData(int data) async{
+
+  deleteServerData(int data) async {
     var url = 'http://120.105.161.209:3000/users/${data}';
     try {
-      var response = await http.delete(url,
-          headers: <String, String>{
-            HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
-          },);
+      await http.delete(
+        url,
+        headers: <String, String>{
+          HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
+        },
+      );
     } catch (e) {
       print(e);
     }
@@ -95,7 +99,11 @@ class sqlhelper {
       }
       await _DB.insert('employees', data.toMap());
       var res = await showEmployeeLast();
-      await uploadDataUser(res);
+      try {
+        await uploadDataUser(res);
+      } catch (e) {
+        print(e);
+      }
     } else {
       try {
         await _DB.insert('temperatures', data.toMap());
