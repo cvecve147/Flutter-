@@ -25,13 +25,13 @@ void main() {
   //初始化
   Device temp = Device(mac: "D4:6C:51:7D:F8:DB", x: 12, y: 14.4);
   device.add(temp);
-  temp = Device(mac: "00:9E:C8:B0:DE:57", x: 24, y: 12);
+  temp = Device(mac: "", x: 24, y: 12);
   device.add(temp);
   temp = Device(mac: "EB:A7:C6:6A:7C:CD", x: 36, y: 12);
   device.add(temp);
   temp = Device(mac: "DC:F6:28:8B:95:8E", x: 45, y: 14.4);
   device.add(temp);
-  temp = Device(mac: "", x: 31.95, y: 21);
+  temp = Device(mac: "FE:42:E1:2F:42:77", x: 31.95, y: 21);
   device.add(temp);
   temp = Device(mac: "CA:8F:29:16:7F:4A", x: 37.2, y: 31.8);
   device.add(temp);
@@ -129,13 +129,16 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                   stream: FlutterBlue.instance.scanResults,
                   initialData: [],
                   builder: (c, snapshot) {
-                    print(snapshot.data);
                     List getmac = List();
                     List selectDevice = List();
+                    List haobear = List();
                     List<int> Distance = List();
                     List<Device> point = List();
                     snapshot.data.map((r) {
                       getmac.add(r.device.id.toString());
+                      if (r.device.name == "HaoBear") {
+                        haobear.add(r);
+                      }
                     }).toList();
                     for (var item in device) {
                       if (getmac.indexOf(item.mac) != -1) {
@@ -149,8 +152,11 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                       }
                     }
                     if (!switchOn) {
+                      haobear.sort((a, b) {
+                        return a.rssi > b.rssi ? -1 : 1;
+                      });
                       return Column(
-                        children: selectDevice
+                        children: haobear
                             .map(
                               (r) => ScanResultTile(
                                 result: r,
@@ -165,12 +171,18 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                             .toList(),
                       );
                     }
-                    if (switchOn && selectDevice.length >= 0) {
+                    if (switchOn && selectDevice.length >= 3) {
+                      selectDevice.sort((a, b) {
+                        return a.rssi > b.rssi ? -1 : 1;
+                      });
+                      point.sort((a, b) {
+                        return a.distance > b.distance ? -1 : 1;
+                      });
                       double X = 0, Y = 0;
-                      for (int i = 0; i < point.length - 1; i++) {
+                      for (int i = 0; i < 2; i++) {
                         for (int j = i + 1; j < 3; j++) {
                           double p2p = sqrt(pow(point[i].x - point[j].x, 2) +
-                              pow(point[i].y - point[j].y, 2));
+                              pow(point[i].y - point[j].y, 2)); //圓心公式
                           //判断两圆是否相交
                           if (point[i].distance + point[j].distance <= p2p) {
                             //不相交，按比例求
@@ -185,8 +197,8 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                           } else {
                             //相交则套用公式（上面推导出的）
                             double dr = p2p / 2 +
-                                (point[i].distance * point[i].distance -
-                                        point[j].distance * point[j].distance) /
+                                (pow(point[i].distance, 2) -
+                                        pow(point[j].distance, 2)) /
                                     (2 * p2p);
                             X += point[i].x +
                                 (point[j].x - point[i].x) * dr / p2p;
