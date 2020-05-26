@@ -102,8 +102,6 @@ class FindDevicesScreen extends StatefulWidget {
 
 class _FindDevicesScreenState extends State<FindDevicesScreen> {
   void _onSwitchChanged(bool value) {
-    print("value" + value.toString());
-
     setState(() {
       switchOn = value;
     });
@@ -129,17 +127,16 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                   stream: FlutterBlue.instance.scanResults,
                   initialData: [],
                   builder: (c, snapshot) {
-                    List getmac = List();
-                    List selectDevice = List();
-                    List haobear = List();
-                    List<int> Distance = List();
-                    List<Device> point = List();
+                    List getmac = List(); //只抓取掃描到的id 利用此id 來判斷是否為7樓Tag
+                    List selectDevice = List(); //抓到的所有在Device列表中的Tag
+                    List haobear = List(); //Tag name= Haobear
+                    List<Device> point = List(); //抓取到的點
                     snapshot.data.map((r) {
                       getmac.add(r.device.id.toString());
                       if (r.device.name == "HaoBear") {
                         haobear.add(r);
                       }
-                    }).toList();
+                    });
                     for (var item in device) {
                       if (getmac.indexOf(item.mac) != -1) {
                         selectDevice
@@ -171,19 +168,22 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                             .toList(),
                       );
                     }
+                    //排列抓取到的Tag
+                    selectDevice.sort((a, b) {
+                      return a.rssi > b.rssi ? -1 : 1;
+                    });
+                    //排列抓取到的點
+                    point.sort((a, b) {
+                      return a.distance > b.distance ? -1 : 1;
+                    });
+                    double X = 0, Y = 0;
+                    String showText = "";
                     if (switchOn && selectDevice.length >= 3) {
-                      selectDevice.sort((a, b) {
-                        return a.rssi > b.rssi ? -1 : 1;
-                      });
-                      point.sort((a, b) {
-                        return a.distance > b.distance ? -1 : 1;
-                      });
-                      double X = 0, Y = 0;
                       for (int i = 0; i < 2; i++) {
                         for (int j = i + 1; j < 3; j++) {
                           double p2p = sqrt(pow(point[i].x - point[j].x, 2) +
                               pow(point[i].y - point[j].y, 2)); //圓心公式
-                          //判断两圆是否相交
+                          //判斷两圆是否相交
                           if (point[i].distance + point[j].distance <= p2p) {
                             //不相交，按比例求
                             X += point[i].x +
@@ -209,41 +209,41 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                       }
                       X /= 3;
                       Y /= 3;
-
-                      return Container(
-                        child: Column(
-                          children: <Widget>[
-                            Text(
-                              " 利用三角定位得出你現在的位子為 " +
-                                  X.toStringAsFixed(2) +
-                                  " , " +
-                                  Y.toStringAsFixed(2),
-                              style: TextStyle(fontSize: 18),
-                            ),
-                            Column(
-                              children: selectDevice
-                                  .map(
-                                    (r) => ScanResultTile(
-                                      result: r,
-                                      onTap: () => Navigator.of(context).push(
-                                          MaterialPageRoute(builder: (context) {
-                                        r.device.connect();
-                                        return DeviceScreen(device: r.device);
-                                      })),
-                                      open: true,
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    return Column(children: <Widget>[
-                      Text("掃描數量為" +
+                      //設定顯示文字
+                      showText = " 利用三角定位得出你現在的位子為 " +
+                          X.toStringAsFixed(2) +
+                          " , " +
+                          Y.toStringAsFixed(2);
+                    } else {
+                      showText = "掃描數量為 " +
                           selectDevice.length.toString() +
-                          " 無法計算三角定位")
-                    ]);
+                          " 無法計算三角定位";
+                    }
+                    return Container(
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                            showText,
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          Column(
+                            children: selectDevice
+                                .map(
+                                  (r) => ScanResultTile(
+                                    result: r,
+                                    onTap: () => Navigator.of(context).push(
+                                        MaterialPageRoute(builder: (context) {
+                                      r.device.connect();
+                                      return DeviceScreen(device: r.device);
+                                    })),
+                                    open: true,
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ],
+                      ),
+                    );
                   }),
             ],
           ),
