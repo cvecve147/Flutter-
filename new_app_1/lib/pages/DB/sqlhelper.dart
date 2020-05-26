@@ -367,6 +367,7 @@ class sqlhelper {
                   INNER JOIN temperatures
                   on temperatures.id= employees.id
                   WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
+                  ordey by employees.id ,temperatures.time ASC
                     ''');
         List<employee> searchData = await searchEmployee(id);
         idAndName = searchData[0].employeeID + "_" + searchData[0].name;
@@ -383,6 +384,7 @@ class sqlhelper {
         INNER JOIN temperatures 
         on temperatures.id= employees.id
         WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
+        ordey by employees.id ,temperatures.time ASC
         ''');
         print(data);
         fileName += (id != null) ? "_${idAndName}" : "";
