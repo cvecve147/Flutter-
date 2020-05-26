@@ -16,22 +16,22 @@ void main() {
   runApp(FlutterBlueApp());
 
 // 9704-1	MAC: D4:6C:51:7D:F8:DB	(12,14.4)
-// 9704-2	(24,12)
+// 9704-2	MAC: FE:42:E1:2F:42:77   (24,12)
 // 9704-3	MAC: EB:A7:C6:6A:7C:CD	(36,12)
 // 9704-4	MAC: DC:F6:28:8B:95:8E	(45,14.4)
-// 9704-5	(31.95,21)
+// 9704-5	MAC: CC:E1:BF:9D:6B:9C  (31.95,21)
 // 9704-6	MAC: CA:8F:29:16:7F:4A	(37.2,31.8)
 // 9704-7	MAC: F8:94:1E:4E:31:D3	(34.65,42)
   //初始化
   Device temp = Device(mac: "D4:6C:51:7D:F8:DB", x: 12, y: 14.4);
   device.add(temp);
-  temp = Device(mac: "", x: 24, y: 12);
+  temp = Device(mac: "FE:42:E1:2F:42:77", x: 24, y: 12);
   device.add(temp);
   temp = Device(mac: "EB:A7:C6:6A:7C:CD", x: 36, y: 12);
   device.add(temp);
   temp = Device(mac: "DC:F6:28:8B:95:8E", x: 45, y: 14.4);
   device.add(temp);
-  temp = Device(mac: "FE:42:E1:2F:42:77", x: 31.95, y: 21);
+  temp = Device(mac: "CC:E1:BF:9D:6B:9C", x: 31.95, y: 21);
   device.add(temp);
   temp = Device(mac: "CA:8F:29:16:7F:4A", x: 37.2, y: 31.8);
   device.add(temp);
