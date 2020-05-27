@@ -136,7 +136,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                       if (r.device.name == "HaoBear") {
                         haobear.add(r);
                       }
-                    });
+                    }).toList();
                     for (var item in device) {
                       if (getmac.indexOf(item.mac) != -1) {
                         selectDevice
@@ -222,6 +222,10 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                     return Container(
                       child: Column(
                         children: <Widget>[
+                          Text(
+                            showText,
+                            style: TextStyle(fontSize: 18),
+                          ),
                           Text(
                             showText,
                             style: TextStyle(fontSize: 18),

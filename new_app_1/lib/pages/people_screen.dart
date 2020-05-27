@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:newapp1/main.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,8 @@ import 'package:flutter/foundation.dart';
 import 'package:newapp1/pages/DB/sqlhelper.dart';
 import 'package:newapp1/pages/DB/employee_model.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:newapp1/pages/DB/temperature_model.dart';
 import 'package:newapp1/pages/bluetooth/package.dart';
+import 'package:newapp1/pages/scan_screen.dart';
 
 Color appColor = Color(0xFF2A6FDB);
 Color cashColor = Color(0xFFFEFCBF);
@@ -19,6 +20,7 @@ int confirmPosition;
 getData() async {
   sqlhelper helper = new sqlhelper();
 //  employee data=new employee(employeeID: "12",name: "123");
+//  temperature data=new temperature(id:1,time: "2020-01-12",temp: "25.6");
 //  helper.insertData(data);
 //  print(await helper.showEmployee());
   return await helper.showEmployee();
@@ -293,10 +295,16 @@ class ContentState extends State<Content> {
   createEditPeopleAlertDialog(BuildContext context, dynamic data) {
     editNameController.text = data.name;
     editNumController.text = data.employeeID.toString();
-    var macSpilt = data.mac.toString().split(":");
 
-    for (int i = 0; i < 6; i++) {
-      _editMaccontroller[i].text = macSpilt[i];
+    if (data.mac == "") {
+      for (int i = 0; i < 6; i++) {
+        _editMaccontroller[i].text = "";
+      }
+    } else {
+      var macSpilt = data.mac.toString().split(":");
+      for (int i = 0; i < 6; i++) {
+        _editMaccontroller[i].text = macSpilt[i];
+      }
     }
 
     Widget getMacWidgets() {
@@ -375,29 +383,46 @@ class ContentState extends State<Content> {
                 children: <Widget>[
                   new FlatButton(
                     child: Text('確認'),
-
                     // ignore: missing_return
                     onPressed: () async {
-                      sqlhelper helpler = new sqlhelper();
-                      employee editData = employee(
-                          id: data.id,
-                          employeeID: editNumController.text,
-                          name: editNameController.text,
-                          mac: _editMaccontroller[0].text +
-                              ":" +
-                              _editMaccontroller[1].text +
-                              ":" +
-                              _editMaccontroller[2].text +
-                              ":" +
-                              _editMaccontroller[3].text +
-                              ":" +
-                              _editMaccontroller[4].text +
-                              ":" +
-                              _editMaccontroller[5].text);
-                      Navigator.of(context).pop();
-                      String result = await helpler.updateData(editData);
-                      print(result);
-                      setState(() {});
+                      if (_editMaccontroller[0].text == "" ||
+                          _editMaccontroller[1].text == "" ||
+                          _editMaccontroller[2].text == "" ||
+                          _editMaccontroller[3].text == "" ||
+                          _editMaccontroller[4].text == "" ||
+                          _editMaccontroller[5].text == "") {
+                        sqlhelper helpler = new sqlhelper();
+                        employee editData = employee(
+                            id: data.id,
+                            employeeID: editNumController.text,
+                            name: editNameController.text,
+                            mac: "");
+                        String result = await helpler.updateData(editData);
+                        print(result);
+                        setState(() {});
+                        Navigator.of(context).pop();
+                      } else {
+                        sqlhelper helpler = new sqlhelper();
+                        employee editData = employee(
+                            id: data.id,
+                            employeeID: editNumController.text,
+                            name: editNameController.text,
+                            mac: _editMaccontroller[0].text +
+                                ":" +
+                                _editMaccontroller[1].text +
+                                ":" +
+                                _editMaccontroller[2].text +
+                                ":" +
+                                _editMaccontroller[3].text +
+                                ":" +
+                                _editMaccontroller[4].text +
+                                ":" +
+                                _editMaccontroller[5].text);
+                        String result = await helpler.updateData(editData);
+                        print(result);
+                        setState(() {});
+                        Navigator.of(context).pop();
+                      }
                     },
                     color: appColor,
                   ),
@@ -422,7 +447,7 @@ class ContentState extends State<Content> {
     return showDialog(
         context: context,
         builder: (context) {
-          debugPrint("Press Pair button.");
+//          debugPrint("Press Pair button.");
           return AlertDialog(
             title: Text("配對 " + name),
             content: RefreshIndicator(
@@ -602,7 +627,6 @@ class PeopleScreenState extends State<PeopleScreen> {
                           ":" +
                           _maccontroller[5].text.toUpperCase();
                       if (name != "") {
-                        Navigator.of(context).pop();
                         debugPrint(name);
                         if (num != "") {
                           if (_maccontroller[0].text == "" ||
@@ -617,7 +641,8 @@ class PeopleScreenState extends State<PeopleScreen> {
                               employeeID: num, name: name, mac: macAddress);
                           String result = await helper.insertData(data);
                           setState(() {});
-
+                          Navigator.of(context).pop();
+                          print(result);
                           if (result == "請檢查資料") {
                             return showDialog(
                               context: context,
@@ -715,8 +740,8 @@ class PeopleScreenState extends State<PeopleScreen> {
           IconButton(
             icon: const Icon(Icons.person_add),
             tooltip: '新增人員',
-            onPressed: () async {
-              await createAddPeopleAlertDialog(context);
+            onPressed: () {
+              createAddPeopleAlertDialog(context);
             },
           ),
         ],
