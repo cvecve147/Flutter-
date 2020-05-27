@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'package:device_info/device_info.dart';
+import 'package:imei_plugin/imei_plugin.dart';
+
 class temperature {
   final int id;
   final String temp;
@@ -14,9 +18,28 @@ class temperature {
       'symptom': symptom,
     };
   }
-  Map<String, dynamic> toJson() {
+
+  Future<Map<String, dynamic>> toJson() async {
+    String uploadid = "";
+    String imei =
+        await ImeiPlugin.getImei(shouldShowRequestPermissionRationale: false);
+    String devicename = "";
+    DeviceInfoPlugin deviceInfo = new DeviceInfoPlugin();
+    try {
+      if (Platform.isAndroid) {
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        devicename = androidInfo.device;
+      } else if (Platform.isAndroid) {
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        devicename = iosInfo.name;
+      }
+      uploadid = imei + "_" + devicename + "_";
+      uploadid += this.id.toString();
+    } catch (e) {
+      print(e);
+    }
     return {
-      "id": id,
+      "id": uploadid,
       "temp": temp,
       "roomTemp": roomTemp,
       "time": time,

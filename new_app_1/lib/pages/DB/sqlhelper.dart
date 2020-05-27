@@ -44,7 +44,7 @@ class sqlhelper {
           headers: <String, String>{
             HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
           },
-          body: jsonEncode(data.toJson()));
+          body: jsonEncode(await data.toJson()));
     } catch (e) {
       print(e);
     }
@@ -57,7 +57,7 @@ class sqlhelper {
           headers: <String, String>{
             HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
           },
-          body: jsonEncode(data.toJson()));
+          body: jsonEncode(await data.toJson()));
     } catch (e) {
       print(e);
     }
@@ -70,7 +70,7 @@ class sqlhelper {
           headers: <String, String>{
             HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
           },
-          body: jsonEncode(data.toJson()));
+          body: jsonEncode(await data.toJson()));
     } catch (e) {
       print(e);
     }
