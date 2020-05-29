@@ -10,8 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import './widgets.dart';
 import './device.dart';
+import './canvas.dart';
 
 List<Device> device = new List<Device>();
+List<Device> nowPosition = new List<Device>();
 void main() {
   runApp(FlutterBlueApp());
 
@@ -57,6 +59,7 @@ class FlutterBlueApp extends StatelessWidget {
             }
             return BluetoothOffScreen(state: state);
           }),
+      routes: <String, WidgetBuilder>{'/map': (_) => new canvasRoute()},
     );
   }
 }
@@ -116,6 +119,11 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
           onChanged: _onSwitchChanged,
           value: switchOn,
         ),
+        IconButton(
+          icon: const Icon(Icons.add_location),
+          tooltip: "顯示地圖",
+          onPressed: () => {Navigator.of(context).pushNamed('/map')},
+        )
       ]),
       body: RefreshIndicator(
         onRefresh: () =>
@@ -209,6 +217,8 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                       }
                       X /= 3;
                       Y /= 3;
+                      nowPosition.clear();
+                      nowPosition.add(Device(mac: "", x: X, y: Y));
                       //設定顯示文字
                       showText = " 利用三角定位得出你現在的位子為 " +
                           X.toStringAsFixed(2) +
@@ -222,10 +232,6 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                     return Container(
                       child: Column(
                         children: <Widget>[
-                          Text(
-                            showText,
-                            style: TextStyle(fontSize: 18),
-                          ),
                           Text(
                             showText,
                             style: TextStyle(fontSize: 18),
