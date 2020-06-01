@@ -17,13 +17,13 @@ List<Device> nowPosition = new List<Device>();
 void main() {
   runApp(FlutterBlueApp());
 
-// 9704-1	MAC: D4:6C:51:7D:F8:DB	(12,14.4)
-// 9704-2	MAC: FE:42:E1:2F:42:77   (24,12)
-// 9704-3	MAC: EB:A7:C6:6A:7C:CD	(36,12)
-// 9704-4	MAC: DC:F6:28:8B:95:8E	(45,14.4)
-// 9704-5	MAC: CC:E1:BF:9D:6B:9C  (31.95,21)
-// 9704-6	MAC: CA:8F:29:16:7F:4A	(37.2,31.8)
-// 9704-7	MAC: F8:94:1E:4E:31:D3	(34.65,42)
+  // 9704-1	MAC: D4:6C:51:7D:F8:DB	(12,14.4)
+  // 9704-2	MAC: FE:42:E1:2F:42:77   (24,12)
+  // 9704-3	MAC: EB:A7:C6:6A:7C:CD	(36,12)
+  // 9704-4	MAC: DC:F6:28:8B:95:8E	(45,14.4)
+  // 9704-5	MAC: CC:E1:BF:9D:6B:9C  (31.95,21)
+  // 9704-6	MAC: CA:8F:29:16:7F:4A	(37.2,31.8)
+  // 9704-7	MAC: F8:94:1E:4E:31:D3	(34.65,42)
   //初始化
   Device temp = Device(mac: "D4:6C:51:7D:F8:DB", x: 12, y: 14.4);
   device.add(temp);
@@ -59,7 +59,6 @@ class FlutterBlueApp extends StatelessWidget {
             }
             return BluetoothOffScreen(state: state);
           }),
-      routes: <String, WidgetBuilder>{'/map': (_) => new canvasRoute()},
     );
   }
 }
@@ -112,6 +111,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool show_map = false;
     return Scaffold(
       appBar: AppBar(title: Text('Find Devices'), actions: [
         Switch(
@@ -122,7 +122,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
         IconButton(
           icon: const Icon(Icons.add_location),
           tooltip: "顯示地圖",
-          onPressed: () => {Navigator.of(context).pushNamed('/map')},
+          onPressed: () => {show_map = !show_map},
         )
       ]),
       body: RefreshIndicator(
@@ -147,11 +147,11 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                     }).toList();
                     for (var item in device) {
                       if (getmac.indexOf(item.mac) != -1) {
-                        selectDevice
-                            .add(snapshot.data[getmac.indexOf(item.mac)]);
-                        int rssi =
-                            snapshot.data[getmac.indexOf(item.mac)].rssi.abs();
-                        double power = (rssi - 70) / (10.0 * 3.3);
+                        var snapshotData =
+                            snapshot.data[getmac.indexOf(item.mac)];
+                        selectDevice.add(snapshotData);
+                        int rssi = snapshotData.rssi.abs();
+                        double power = (rssi - 60) / (10.0 * 3.3);
                         item.distance = pow(10, power);
                         point.add(item);
                       }
@@ -165,30 +165,31 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                             .map(
                               (r) => ScanResultTile(
                                 result: r,
-                                onTap: () => Navigator.of(context)
-                                    .push(MaterialPageRoute(builder: (context) {
-                                  r.device.connect();
-                                  return DeviceScreen(device: r.device);
-                                })),
                                 open: true,
                               ),
                             )
                             .toList(),
                       );
                     }
-                    //排列抓取到的Tag
-                    selectDevice.sort((a, b) {
-                      return a.rssi > b.rssi ? -1 : 1;
-                    });
+
                     //排列抓取到的點
                     point.sort((a, b) {
                       return a.distance > b.distance ? -1 : 1;
                     });
+                    //排列抓取到的Tag
+                    selectDevice.sort((a, b) {
+                      return a.rssi > b.rssi ? -1 : 1;
+                    });
                     double X = 0, Y = 0;
                     String showText = "";
                     if (switchOn && selectDevice.length >= 3) {
+                      //  0 0 1
+                      //  1 2 2
                       for (int i = 0; i < 2; i++) {
                         for (int j = i + 1; j < 3; j++) {
+                          if (point[i].distance < 0) {
+                            return Container(child: Text("系統錯誤"));
+                          }
                           double p2p = sqrt(pow(point[i].x - point[j].x, 2) +
                               pow(point[i].y - point[j].y, 2)); //圓心公式
                           //判斷两圆是否相交
@@ -198,12 +199,15 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                                 (point[j].x - point[i].x) *
                                     point[i].distance /
                                     (point[i].distance + point[j].distance);
+                            //x = x0+ (x1 - x0)*r0/(r0 + r1);
                             Y += point[i].y +
                                 (point[j].y - point[i].y) *
                                     point[i].distance /
                                     (point[i].distance + point[j].distance);
+                            //y = y0+ (y1- y0)*r0/(r0 + r1);
                           } else {
                             //相交则套用公式（上面推导出的）
+                            //(BE) =(AB) /2+((BQ) ^2-(AQ) ^2)/(2(AB)  )
                             double dr = p2p / 2 +
                                 (pow(point[i].distance, 2) -
                                         pow(point[j].distance, 2)) /
@@ -219,6 +223,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                       Y /= 3;
                       nowPosition.clear();
                       nowPosition.add(Device(mac: "", x: X, y: Y));
+                      print(nowPosition);
                       //設定顯示文字
                       showText = " 利用三角定位得出你現在的位子為 " +
                           X.toStringAsFixed(2) +
@@ -231,6 +236,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                     }
                     return Container(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Text(
                             showText,
@@ -241,16 +247,12 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                                 .map(
                                   (r) => ScanResultTile(
                                     result: r,
-                                    onTap: () => Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (context) {
-                                      r.device.connect();
-                                      return DeviceScreen(device: r.device);
-                                    })),
                                     open: true,
                                   ),
                                 )
                                 .toList(),
                           ),
+                          show_map == true ? canvasRoute(X, Y) : Column()
                         ],
                       ),
                     );
@@ -278,161 +280,6 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                 });
           }
         },
-      ),
-    );
-  }
-}
-
-class DeviceScreen extends StatelessWidget {
-  const DeviceScreen({Key key, this.device}) : super(key: key);
-
-  final BluetoothDevice device;
-
-  List<int> _getRandomBytes() {
-    final math = Random();
-    return [
-      math.nextInt(255),
-      math.nextInt(255),
-      math.nextInt(255),
-      math.nextInt(255)
-    ];
-  }
-
-  List<Widget> _buildServiceTiles(List<BluetoothService> services) {
-    return services
-        .map(
-          (s) => ServiceTile(
-            service: s,
-            characteristicTiles: s.characteristics
-                .map(
-                  (c) => CharacteristicTile(
-                    characteristic: c,
-                    onReadPressed: () => c.read(),
-                    onWritePressed: () async {
-                      await c.write(_getRandomBytes(), withoutResponse: true);
-                      await c.read();
-                    },
-                    onNotificationPressed: () async {
-                      await c.setNotifyValue(!c.isNotifying);
-                      await c.read();
-                    },
-                    descriptorTiles: c.descriptors
-                        .map(
-                          (d) => DescriptorTile(
-                            descriptor: d,
-                            onReadPressed: () => d.read(),
-                            onWritePressed: () => d.write(_getRandomBytes()),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                )
-                .toList(),
-          ),
-        )
-        .toList();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(device.name),
-        actions: <Widget>[
-          StreamBuilder<BluetoothDeviceState>(
-            stream: device.state,
-            initialData: BluetoothDeviceState.connecting,
-            builder: (c, snapshot) {
-              VoidCallback onPressed;
-              String text;
-              switch (snapshot.data) {
-                case BluetoothDeviceState.connected:
-                  onPressed = () => device.disconnect();
-                  text = 'DISCONNECT';
-                  break;
-                case BluetoothDeviceState.disconnected:
-                  onPressed = () => device.connect();
-                  text = 'CONNECT';
-                  break;
-                default:
-                  onPressed = null;
-                  text = snapshot.data.toString().substring(21).toUpperCase();
-                  break;
-              }
-              return FlatButton(
-                  onPressed: onPressed,
-                  child: Text(
-                    text,
-                    style: Theme.of(context)
-                        .primaryTextTheme
-                        .button
-                        .copyWith(color: Colors.white),
-                  ));
-            },
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            StreamBuilder<BluetoothDeviceState>(
-              stream: device.state,
-              initialData: BluetoothDeviceState.connecting,
-              builder: (c, snapshot) => ListTile(
-                leading: (snapshot.data == BluetoothDeviceState.connected)
-                    ? Icon(Icons.bluetooth_connected)
-                    : Icon(Icons.bluetooth_disabled),
-                title: Text(
-                    'Device is ${snapshot.data.toString().split('.')[1]}.'),
-                subtitle: Text('${device.id}'),
-                trailing: StreamBuilder<bool>(
-                  stream: device.isDiscoveringServices,
-                  initialData: false,
-                  builder: (c, snapshot) => IndexedStack(
-                    index: snapshot.data ? 1 : 0,
-                    children: <Widget>[
-                      IconButton(
-                        icon: Icon(Icons.refresh),
-                        onPressed: () => device.discoverServices(),
-                      ),
-                      IconButton(
-                        icon: SizedBox(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation(Colors.grey),
-                          ),
-                          width: 18.0,
-                          height: 18.0,
-                        ),
-                        onPressed: null,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            StreamBuilder<int>(
-              stream: device.mtu,
-              initialData: 0,
-              builder: (c, snapshot) => ListTile(
-                title: Text('MTU Size'),
-                subtitle: Text('${snapshot.data} bytes'),
-                trailing: IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () => device.requestMtu(223),
-                ),
-              ),
-            ),
-            StreamBuilder<List<BluetoothService>>(
-              stream: device.services,
-              initialData: [],
-              builder: (c, snapshot) {
-                return Column(
-                  children: _buildServiceTiles(snapshot.data),
-                );
-              },
-            ),
-          ],
-        ),
       ),
     );
   }
