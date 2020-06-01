@@ -37,9 +37,8 @@ void main() {
   device.add(temp);
   temp = Device(mac: "CA:8F:29:16:7F:4A", x: 37.2, y: 31.8);
   device.add(temp);
-  temp = Device(mac: "F8:94:1E:4E:31:D3", x: 34.65, y: 42);
-  device.add(temp);
-  print(device[0].mac);
+  // temp = Device(mac: "F8:94:1E:4E:31:D3", x: 34.65, y: 42);
+  // device.add(temp);
 }
 
 bool switchOn = false;
@@ -195,6 +194,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                           //判斷两圆是否相交
                           if (point[i].distance + point[j].distance <= p2p) {
                             //不相交，按比例求
+                            showText += "超過範圍\n";
                             X += point[i].x +
                                 (point[j].x - point[i].x) *
                                     point[i].distance /
@@ -225,12 +225,12 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                       nowPosition.add(Device(mac: "", x: X, y: Y));
                       print(nowPosition);
                       //設定顯示文字
-                      showText = " 利用三角定位得出你現在的位子為 " +
+                      showText += " 利用三角定位得出你現在的位子為 " +
                           X.toStringAsFixed(2) +
                           " , " +
                           Y.toStringAsFixed(2);
                     } else {
-                      showText = "掃描數量為 " +
+                      showText += "掃描數量為 " +
                           selectDevice.length.toString() +
                           " 無法計算三角定位";
                     }
