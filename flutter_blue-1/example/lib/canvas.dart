@@ -45,7 +45,7 @@ class _canvasRouteState extends State<canvasRoute> {
     return Container(
       child: CustomPaint(
         size: Size(400, 400),
-        painter: MyPainter(image: this.images),
+        painter: MyPainter(image: this.images, x: this.x, y: this.y),
       ),
     );
   }
@@ -54,7 +54,8 @@ class _canvasRouteState extends State<canvasRoute> {
 class MyPainter extends CustomPainter {
   ui.Image image;
   Paint painter;
-  MyPainter({this.image});
+  double x, y;
+  MyPainter({this.image, x, y});
   @override
   void paint(Canvas canvas, Size size) {
     painter = Paint();
@@ -72,13 +73,12 @@ class MyPainter extends CustomPainter {
     painter
       ..style = PaintingStyle.fill
       ..color = Colors.green;
-    for (var item in nowPosition) {
-      canvas.drawCircle(
-        Offset(item.x * 8.27, size.height - item.y * 7.7),
-        5,
-        painter,
-      );
-    }
+
+    canvas.drawCircle(
+      Offset(x * 8.27, size.height - y * 7.7),
+      5,
+      painter,
+    );
   }
 
   @override

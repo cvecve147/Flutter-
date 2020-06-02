@@ -13,7 +13,6 @@ import './device.dart';
 import './canvas.dart';
 
 List<Device> device = new List<Device>();
-List<Device> nowPosition = new List<Device>();
 void main() {
   runApp(FlutterBlueApp());
 
@@ -193,8 +192,11 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                               pow(point[i].y - point[j].y, 2)); //圓心公式
                           //判斷两圆是否相交
                           if (point[i].distance + point[j].distance <= p2p) {
+                            var overDisance =
+                                point[i].distance + point[j].distance;
                             //不相交，按比例求
-                            showText += "超過範圍\n";
+                            showText +=
+                                "超過範圍${i} , ${j} Distance:${overDisance} \n";
                             X += point[i].x +
                                 (point[j].x - point[i].x) *
                                     point[i].distance /
@@ -221,9 +223,6 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                       }
                       X /= 3;
                       Y /= 3;
-                      nowPosition.clear();
-                      nowPosition.add(Device(mac: "", x: X, y: Y));
-                      print(nowPosition);
                       //設定顯示文字
                       showText += " 利用三角定位得出你現在的位子為 " +
                           X.toStringAsFixed(2) +
