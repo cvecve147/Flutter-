@@ -736,8 +736,8 @@ class ScanResultTile extends State<Scan> {
         List<Widget> list = new List<Widget>();
         if (snapshot.hasData) {
           if (tagis(result.advertisementData.manufacturerData,
-                  result.advertisementData.serviceData, macList[0]) ==
-              true) {
+                  result.advertisementData.serviceData, macList[0]) &&
+              nameList.length > 0) {
             if (nameList[0] == macList[0]) {
               for (var i = 0; i < macList.length; i++) {
                 list.add(

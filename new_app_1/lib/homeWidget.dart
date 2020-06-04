@@ -3,6 +3,8 @@ import 'pages/scan_screen.dart';
 import 'pages/share_screen.dart';
 import 'pages/people_screen.dart';
 import 'pages/test.dart';
+import 'app_localizations.dart';
+
 
 
 
@@ -48,7 +50,10 @@ class _HomeState extends State<Home> {
             backgroundColor: Colors.green,
 
             icon: new Icon(Icons.people),
-            title: new Text('人員管理'),
+            title: new Text(
+//                '人員管理'
+              AppLocalizations.of(context).translate('staff_management'),
+            ),
           ),
           new BottomNavigationBarItem(
             icon: new Icon(Icons.track_changes),

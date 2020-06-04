@@ -8,9 +8,9 @@ import 'package:flutter/foundation.dart';
 import 'package:newapp1/pages/DB/sqlhelper.dart';
 import 'package:newapp1/pages/DB/employee_model.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:newapp1/pages/DB/temperature_model.dart';
 import 'package:newapp1/pages/bluetooth/package.dart';
 import 'package:newapp1/pages/scan_screen.dart';
+import 'package:newapp1/app_localizations.dart';
 
 Color appColor = Color(0xFF2A6FDB);
 Color cashColor = Color(0xFFFEFCBF);
@@ -21,9 +21,8 @@ int confirmPosition;
 getData() async {
   sqlhelper helper = new sqlhelper();
 //  employee data=new employee(employeeID: "12",name: "123");
-  // temperature data = new temperature(
-  //     id: 10, time: "2020-01-14", temp: "36.5", roomTemp: "25.6", symptom: "");
-  // helper.insertData(data);
+//  temperature data=new temperature(id:1,time: "2020-01-12",temp: "25.6");
+//  helper.insertData(data);
 //  print(await helper.showEmployee());
   return await helper.showEmployee();
 }
@@ -90,7 +89,8 @@ class ContentState extends State<Content> {
                   ),
                   secondaryActions: <Widget>[
                     IconSlideAction(
-                      caption: '修改',
+                      caption: AppLocalizations.of(context)
+                          .translate('alertDialog_update'), //'修改'
                       color: cashColor,
                       icon: Icons.edit,
                       onTap: () => createEditPeopleAlertDialog(
@@ -99,16 +99,20 @@ class ContentState extends State<Content> {
                       ),
                     ),
                     IconSlideAction(
-                        caption: '配對',
+                        caption: AppLocalizations.of(context)
+                            .translate('alertDialog_pair'), //'配對',
                         color: Colors.blue,
                         icon: Icons.bluetooth_connected,
                         onTap: () async {
+                          FlutterBlue.instance
+                              .startScan(timeout: Duration(seconds: 4));
                           await createPairPeopleAlertDialog(
                               context, data[i].name, i);
                           await setState(() {});
                         }),
                     IconSlideAction(
-                      caption: '刪除',
+                      caption: AppLocalizations.of(context)
+                          .translate('alertDialog_delete'), //'刪除',
                       color: Colors.red,
                       icon: Icons.delete,
                       onTap: () => createDeletePeopleAlertDialog(
@@ -155,7 +159,8 @@ class ContentState extends State<Content> {
                   ),
                   secondaryActions: <Widget>[
                     IconSlideAction(
-                      caption: '修改',
+                      caption: AppLocalizations.of(context)
+                          .translate('alertDialog_update'), //'修改'
                       color: cashColor,
                       icon: Icons.edit,
                       onTap: () => createEditPeopleAlertDialog(
@@ -164,7 +169,8 @@ class ContentState extends State<Content> {
                       ),
                     ),
                     IconSlideAction(
-                      caption: '取消配對',
+                      caption: AppLocalizations.of(context)
+                          .translate('alertDialog_cancel_pair'), //'取消配對',
                       color: Colors.pink,
                       icon: Icons.bluetooth_disabled,
                       onTap: () async {
@@ -178,13 +184,18 @@ class ContentState extends State<Content> {
                             mac: "");
                         await helpler.updateData(editData);
                         Scaffold.of(context).showSnackBar(SnackBar(
-                          content: Text(data[i].name + "已解除配對"),
+                          content: Text(data[i].name +
+                                  AppLocalizations.of(context).translate(
+                                      'alertDialog_remove_connection')
+//                              "已解除配對"
+                              ),
                         ));
                         setState(() {});
                       },
                     ),
                     IconSlideAction(
-                      caption: '刪除',
+                      caption: AppLocalizations.of(context)
+                          .translate('alertDialog_delete'), //'刪除',
                       color: Colors.red,
                       icon: Icons.delete,
                       onTap: () => createDeletePeopleAlertDialog(
@@ -201,7 +212,10 @@ class ContentState extends State<Content> {
           }
           return new Column(children: list);
         } else {
-          return Text('無資料');
+          return Text(
+            AppLocalizations.of(context).translate('alertDialog_no_data'),
+//              '無資料'
+          );
         }
       },
     );
@@ -213,7 +227,10 @@ class ContentState extends State<Content> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text("刪除確認"),
+            title: Text(
+              AppLocalizations.of(context)
+                  .translate('alertDialog_delete_confirm'), //"刪除確認"
+            ),
             content: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
@@ -221,7 +238,10 @@ class ContentState extends State<Content> {
                     padding: EdgeInsets.only(top: 16),
                     child: Row(
                       children: <Widget>[
-                        Text('確定要刪除此資料？'),
+                        Text(
+                          AppLocalizations.of(context)
+                              .translate('staff_delete_check'), //'確定要刪除此資料？'
+                        ),
                       ],
                     ),
                   ),
@@ -229,7 +249,10 @@ class ContentState extends State<Content> {
                     padding: EdgeInsets.only(top: 16),
                     child: Row(
                       children: <Widget>[
-                        Text('姓名：'),
+                        Text(AppLocalizations.of(context)
+                                    .translate('staff_name') +
+                                "：" //'姓名：'
+                            ),
                         Text(name),
                       ],
                     ),
@@ -238,7 +261,11 @@ class ContentState extends State<Content> {
                     padding: EdgeInsets.only(top: 16),
                     child: Row(
                       children: <Widget>[
-                        Text('編號：'),
+                        Text(AppLocalizations.of(context)
+                                    .translate('staff_num') +
+                                "："
+//                            '編號：'
+                            ),
                         Text(num),
                       ],
                     ),
@@ -247,7 +274,11 @@ class ContentState extends State<Content> {
                     padding: EdgeInsets.only(top: 16),
                     child: Row(
                       children: <Widget>[
-                        Text('MAC編碼：'),
+                        Text(AppLocalizations.of(context)
+                                    .translate('staff_address') +
+                                "："
+//                            'MAC編碼：'
+                            ),
                         Text(
                           mac,
                         ),
@@ -261,7 +292,11 @@ class ContentState extends State<Content> {
               new ButtonBar(
                 children: <Widget>[
                   new FlatButton(
-                    child: Text('確認'),
+                    child: Text(
+                      AppLocalizations.of(context)
+                          .translate('alertDialog_confirm'),
+//                        '確認'
+                    ),
                     // ignore: missing_return
                     onPressed: () async {
                       checkData.remove(mac);
@@ -274,7 +309,9 @@ class ContentState extends State<Content> {
                   ),
                   new FlatButton(
                     child: Text(
-                      '取消',
+                      AppLocalizations.of(context)
+                          .translate('alertDialog_cancel'),
+//                      '取消',
                       style: new TextStyle(color: appColor),
                     ),
                     onPressed: () {
@@ -335,7 +372,10 @@ class ContentState extends State<Content> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text("修改人員"),
+            title: Text(
+              AppLocalizations.of(context).translate('update_staff'),
+//                "修改人員"
+            ),
             content: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
@@ -346,10 +386,14 @@ class ContentState extends State<Content> {
                         new Flexible(
                           child: new TextField(
                             decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: '姓名',
-                            ),
-                            controller: editNameController,
+                                border: OutlineInputBorder(),
+                                labelText: AppLocalizations.of(context)
+                                        .translate('staff_num') +
+                                    "："
+//                              '編號',
+                                ),
+                            keyboardType: TextInputType.number,
+                            controller: editNumController,
                             style: Theme.of(context).textTheme.body1,
                           ),
                         ),
@@ -363,11 +407,13 @@ class ContentState extends State<Content> {
                         new Flexible(
                           child: new TextField(
                             decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: '編號',
-                            ),
-                            keyboardType: TextInputType.number,
-                            controller: editNumController,
+                                border: OutlineInputBorder(),
+                                labelText: AppLocalizations.of(context)
+                                        .translate('staff_name') +
+                                    "："
+//                              '姓名'
+                                ),
+                            controller: editNameController,
                             style: Theme.of(context).textTheme.body1,
                           ),
                         ),
@@ -384,8 +430,11 @@ class ContentState extends State<Content> {
               new ButtonBar(
                 children: <Widget>[
                   new FlatButton(
-                    child: Text('確認'),
-                    // ignore: missing_return
+                    child: Text(
+                      AppLocalizations.of(context)
+                          .translate('alertDialog_confirm'),
+//                        '確認'
+                    ),
                     onPressed: () async {
                       if (_editMaccontroller[0].text == "" ||
                           _editMaccontroller[1].text == "" ||
@@ -430,7 +479,9 @@ class ContentState extends State<Content> {
                   ),
                   new FlatButton(
                     child: Text(
-                      '取消',
+                      AppLocalizations.of(context)
+                          .translate('alertDialog_cancel'),
+//                      '取消',
                       style: new TextStyle(color: appColor),
                     ),
                     onPressed: () {
@@ -449,9 +500,12 @@ class ContentState extends State<Content> {
     return showDialog(
         context: context,
         builder: (context) {
-//          debugPrint("Press Pair button.");
           return AlertDialog(
-            title: Text("配對 " + name),
+            title:
+                Text(AppLocalizations.of(context).translate('alertDialog_pair')
+//                "配對 "
+                    +
+                    name),
             content: RefreshIndicator(
               onRefresh: () =>
                   FlutterBlue.instance.startScan(timeout: Duration(seconds: 4)),
@@ -559,7 +613,10 @@ class PeopleScreenState extends State<PeopleScreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text("新增人員"),
+            title: Text(
+              AppLocalizations.of(context).translate('insert_staff'),
+//                "新增人員"
+            ),
             content: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
@@ -571,9 +628,12 @@ class PeopleScreenState extends State<PeopleScreen> {
                         new Flexible(
                           child: new TextField(
                             decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: '編號',
-                            ),
+                                border: OutlineInputBorder(),
+                                labelText: AppLocalizations.of(context)
+                                        .translate('staff_num') +
+                                    "："
+//                              '編號'
+                                ),
                             keyboardType: TextInputType.number,
                             controller: numController,
                             style: Theme.of(context).textTheme.body1,
@@ -590,9 +650,12 @@ class PeopleScreenState extends State<PeopleScreen> {
                         new Flexible(
                           child: new TextField(
                             decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: '姓名',
-                            ),
+                                border: OutlineInputBorder(),
+                                labelText: AppLocalizations.of(context)
+                                        .translate('staff_name') +
+                                    "："
+//                              '姓名'
+                                ),
                             controller: nameController,
                             style: Theme.of(context).textTheme.body1,
                           ),
@@ -610,7 +673,11 @@ class PeopleScreenState extends State<PeopleScreen> {
               new ButtonBar(
                 children: <Widget>[
                   new FlatButton(
-                    child: Text('確認'),
+                    child: Text(
+                      AppLocalizations.of(context)
+                          .translate('alertDialog_confirm'),
+//                        '確認'
+                    ),
                     // ignore: missing_return
                     onPressed: () async {
                       sqlhelper helper = new sqlhelper();
@@ -645,16 +712,27 @@ class PeopleScreenState extends State<PeopleScreen> {
                           setState(() {});
                           Navigator.of(context).pop();
                           print(result);
-                          if (result == "請檢查資料") {
+                          if (result ==
+                                  AppLocalizations.of(context)
+                                      .translate('alertDialog_check_data')
+//                              "請檢查資料"
+                              ) {
                             return showDialog(
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
-                                  title: Text('新增人員失敗'),
+                                  title: Text(AppLocalizations.of(context)
+                                          .translate('toast_fail_add_staff')
+//                                      '新增人員失敗'
+                                      ),
                                   content: SingleChildScrollView(
                                     child: ListBody(
                                       children: <Widget>[
-                                        Text("人員編號重複，請重新新增"),
+                                        Text(
+                                          AppLocalizations.of(context).translate(
+                                              'toast_repeat_staff_num_or_name'),
+//                                            "人員編號重複，請重新新增"
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -666,13 +744,32 @@ class PeopleScreenState extends State<PeopleScreen> {
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
-                                  title: Text('新增人員成功'),
+                                  title: Text(
+                                    AppLocalizations.of(context)
+                                        .translate('toast_success_add_staff'),
+//                                      '新增人員成功'
+                                  ),
                                   content: SingleChildScrollView(
                                     child: ListBody(
                                       children: <Widget>[
-                                        Text("編號：" + num),
-                                        Text("姓名：" + name),
-                                        Text("Mac Address：" + macAddress),
+                                        Text(AppLocalizations.of(context)
+                                                .translate('staff_num') +
+                                            "："
+//                                            "編號："
+                                            +
+                                            num),
+                                        Text(AppLocalizations.of(context)
+                                                .translate('staff_name') +
+                                            "："
+//                                            "姓名："
+                                            +
+                                            name),
+                                        Text(AppLocalizations.of(context)
+                                                .translate('staff_address') +
+                                            "："
+//                                            "Mac Address："
+                                            +
+                                            macAddress),
                                       ],
                                     ),
                                   ),
@@ -689,7 +786,13 @@ class PeopleScreenState extends State<PeopleScreen> {
                                   content: SingleChildScrollView(
                                     child: ListBody(
                                       children: <Widget>[
-                                        Text("請輸入編號"),
+                                        Text(
+                                            AppLocalizations.of(context).translate(
+                                                    'alertDialog_please_insert') +
+                                                AppLocalizations.of(context)
+                                                    .translate('staff_num')
+//                                            "請輸入編號"
+                                            ),
                                       ],
                                     ),
                                   ),
@@ -705,7 +808,13 @@ class PeopleScreenState extends State<PeopleScreen> {
                                 content: SingleChildScrollView(
                                   child: ListBody(
                                     children: <Widget>[
-                                      Text("請輸入姓名"),
+                                      Text(
+                                          AppLocalizations.of(context).translate(
+                                                  'alertDialog_please_insert') +
+                                              AppLocalizations.of(context)
+                                                  .translate('staff_name')
+//                                          "請輸入姓名"
+                                          ),
                                     ],
                                   ),
                                 ),
@@ -717,7 +826,9 @@ class PeopleScreenState extends State<PeopleScreen> {
                   ),
                   new FlatButton(
                     child: Text(
-                      '取消',
+                      AppLocalizations.of(context)
+                          .translate('alertDialog_cancel'),
+//                      '取消',
                       style: new TextStyle(color: appColor),
                     ),
                     onPressed: () {
@@ -735,13 +846,18 @@ class PeopleScreenState extends State<PeopleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("人員管理"),
+        title: Text(
+          AppLocalizations.of(context).translate('staff_management'),
+//            "人員管理"
+        ),
         centerTitle: true,
         backgroundColor: appColor,
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.person_add),
-            tooltip: '新增人員',
+            tooltip: AppLocalizations.of(context).translate('insert_staff')
+//            '新增人員'
+            ,
             onPressed: () {
               createAddPeopleAlertDialog(context);
             },
@@ -749,7 +865,9 @@ class PeopleScreenState extends State<PeopleScreen> {
         ],
         leading: IconButton(
           icon: const Icon(Icons.input),
-          tooltip: '匯入人員資料',
+          tooltip: AppLocalizations.of(context)
+              .translate('import_staff_data_button'),
+//          '匯入人員資料',
           onPressed: () async {
             sqlhelper helpler = new sqlhelper();
 //            await helpler.readCsvToEmployee();
@@ -758,7 +876,13 @@ class PeopleScreenState extends State<PeopleScreen> {
             if (result == "匯入成功") {
               setState(() {});
               Scaffold.of(context).showSnackBar(SnackBar(
-                content: Text("人員資料匯入成功"),
+                content: Text(
+                  AppLocalizations.of(context)
+                          .translate('import_staff_data_button') +
+                      AppLocalizations.of(context)
+                          .translate('toast_alert_success'),
+//                    "人員資料匯入成功"
+                ),
               ));
             } else {
               setState(() {});

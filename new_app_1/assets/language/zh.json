@@ -1,0 +1,122 @@
+{
+  "app_name": "body_UI",
+  "title_home": "Home",
+  "title_dashboard": "Dashboard",
+  "title_notifications": "Notifications",
+
+  "hello_blank_fragment": "Hello blank fragment",
+
+  "language": "zh-CHT",
+
+  "tem_result": "體溫量測結果",
+  "staff_num": "編號",
+  "staff_name": "姓名",
+  "staff_tem": "體溫",
+  "staff_address": "模組編號：",
+  "staff_delete_check" : "確定要刪除此資料？",
+
+  "staff_management": "人員管理",
+  "tem_measure": "體溫測量",
+  "export_data": "匯出資料",
+
+  "import_staff_data_button": "人員匯入",
+
+  "update_staff": "人員修改",
+  "update_staff_num": "編號:",
+  "update_staff_name": "姓名:",
+
+  "insert_staff": "人員新增",
+
+  "export_date": "匯出日期",
+  "export_start_date": "起始日期",
+  "export_end_date": "結束日期",
+
+
+  "tem_mea": "        體溫測量",
+  "tem_tem": "體溫",
+  "tem_last_measure": "上次量測時間",
+  "tem_start_measure": "開始量測",
+  "tem_check_all": "批次確認",
+
+  "tem_check_tem": "溫度:",
+  "tem_check_remark": "備註:",
+  "tem_check_fever": "發燒",
+  "tem_check_short_breath": "呼吸急促",
+  "tem_check_chills": "發冷",
+  "tem_check_cough": "咳嗽",
+  "tem_check_muscle": "肌肉或關節痛",
+  "tem_check_nausea": "噁心想吐",
+  "tem_check_tired": "疲倦",
+  "tem_check_sore_throat": "喉嚨痛",
+  "tem_check_sputum": "有痰",
+  "tem_check_headache": "頭痛",
+
+  "alertDialog_delete_confirm": "刪除確認",
+  "alertDialog_confirm": "確認",
+  "alertDialog_cancel": "取消",
+  "alertDialog_cancel_allStaff_export": "已取消全員匯出",
+  "alertDialog_tem_measure": "量測結果",
+  "alertDialog_insert": "新增",
+  "alertDialog_update": "修改",
+  "alertDialog_delete": "刪除",
+  "alertDialog_pair": "配對",
+  "alertDialog_export": "匯出",
+  "alertDialog_cancel_pair": "取消配對",
+  "alertDialog_select_csv_file": "選擇csv檔案",
+  "alertDialog_nearby_tag": "附近可配對藍芽",
+  "alertDialog_check_pair1": "是否將與",
+  "alertDialog_check_pair2": "配對?",
+  "alertDialog_check_pair_ok": "是",
+  "alertDialog_check_pair_cancel": "否",
+  "alertDialog_select_tag": "搜尋配對裝置中...",
+  "alertDialog_check_data": "請檢查資料",
+  "alertDialog_no_data": "無資料",
+  "alertDialog_please_insert": "請輸入",
+
+  "alertDialog_remove_connection": "已解除配對",
+
+
+
+
+  "toast_export_one": "已匯出個人資料",
+  "toast_select_no_data": "所選的這段時間沒有資料喔",
+  "toast_check_tem_no_staff_data": "還沒紀錄到人員管理喔，所以溫度無法紀錄",
+  "toast_insert_staff_tem": "已新增員工溫度",
+  "toast_cancel_insert_staff_tem": "取消新增人員體溫",
+  "toast_tag_pair": "模組編號已經有人了喔",
+  "toast_rescan": "重新掃描",
+  "toast_no_last_date": "沒有上次開\n始量測時間",
+  "toast_wrong_staff_num_or_name": "新增編號或姓名不正確",
+  "toast_repeat_staff_num_or_name": "新增編號或姓名已經有人了喔",
+  "toast_repeat_tag": "模組編號有重複喔",
+  "toast_success_add_staff": "新增人員成功",
+
+  "toast_fail_add_staff": "新增人員失敗",
+
+  "toast_cancel_add_staff": "已取消新增人員",
+  "toast_import": "已匯入",
+  "toast_update_staff_name": "已修改人員姓名",
+  "toast_cancel_update_staff_name": "已取消修改人員姓名",
+  "toast_delete_staff": "已刪除人員",
+  "toast_pair": "已配對",
+  "toast_cancel_pair": "已取消配對",
+  "toast_import_no_staff1": "員工姓名：",
+  "toast_import_no_staff2": "沒匯進去喔",
+  "toast_data_not_exist": "點選的資料不存在",
+  "toast_deselect_file": "取消選擇檔案",
+  "toast_export_all_staff": "已匯出全體資料",
+  "toast_export_staff_no_data": "所選的這段時間沒有資料喔",
+  "toast_cancel_export_all_staff": "已取消全員匯出",
+  "toast_cancel_export_one_staff": "已取消該人員匯出",
+  "toast_no_staff_data": "還沒加入人員喔",
+  "toast_alert": "提示訊息",
+  "toast_alert_success": "成功",
+
+  "other_export_all": "員工編號,時間,姓名,體溫,模組溫度,備註",
+  "other_export_people": "時間,體溫,模組溫度,備註",
+
+  "------": "-----"
+
+
+
+}

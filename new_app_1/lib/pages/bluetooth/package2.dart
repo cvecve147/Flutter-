@@ -142,8 +142,8 @@ class ScanResultTile extends State<Scan> {
                   children: <Widget>[
                     new FlatButton(
                       child: Text('確認'),
-                      onPressed: () {
-                        insertData(macL, tempL, rssiL, i, statusList,getRoomTempData(result.advertisementData.manufacturerData),);
+                      onPressed: () async{
+                        await insertData(macL, tempL, rssiL, i, statusList,getRoomTempData(result.advertisementData.manufacturerData),);
                         Navigator.of(context).pop();
                         return showDialog(
                           context: context,
@@ -652,19 +652,21 @@ class ScanResultTile extends State<Scan> {
 
   Future<String> downloadData(macList) async {
     sqlhelper helper = new sqlhelper();
-    if (tagis(result.advertisementData.manufacturerData,
-            result.advertisementData.serviceData, macList[0]) ==
-        true) {
+//    if (tagis(result.advertisementData.manufacturerData,
+//            result.advertisementData.serviceData, macList[0]) ==
+//        true) {
       var a = await helper.searchEmployeeMAC(macList[0].toString());
-      //print(a);
+      print(a);
       if (a.length != 0) {
-        nameList.add(a[0].name.toString());
-        numList.add(a[0].employeeID);
+        await nameList.add(a[0].name.toString());
+        await numList.add(a[0].employeeID);
       } else {
-        nameList.add(macList[0].toString());
-        numList.add("0");
+        await nameList.add(macList[0].toString());
+        await numList.add("0");
       }
-    }
+//    }
+//    await nameList.add(macList[0].toString());
+//    await numList.add("0");
 //      print(macList);
     return Future.value("Get Data"); // return your response
   }
@@ -675,7 +677,7 @@ class ScanResultTile extends State<Scan> {
     List<String> rssiList = [];
     List<String> macList = [];
     List<String> m = [];
-    bool turn = true;
+    //bool turn = true;
 
     macList.add(result.device.id.toString());
     tempList.add(getTempData(result.advertisementData.manufacturerData,
@@ -739,11 +741,10 @@ class ScanResultTile extends State<Scan> {
                   children: <Widget>[
                     new FlatButton(
                       child: Text('確認'),
-                      onPressed: () {
-                        setState(() {});
+                      onPressed:  () async{
+                        //setState(){};
                         if (num != '0') {
-                          setState(() {});
-
+                          //setState(){};
                           for (var j = 0; j < macList.length; j++) {
                             if (checkData.length <= 0) {
                               checkData.add(macList[0]);
@@ -757,9 +758,10 @@ class ScanResultTile extends State<Scan> {
                               selectedStatus.add(statusList[n]);
                             }
                           }
-                          insertData(
+                          await insertData(
                               macList[i], tempList[i], num, i, selectedStatus,getRoomTempData(result.advertisementData.manufacturerData),);
                           Navigator.of(context).pop();
+                          setState((){});
                           return showDialog(
                             context: context,
                             builder: (context) {
@@ -854,18 +856,11 @@ class ScanResultTile extends State<Scan> {
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         // AsyncSnapshot<Your object type>
         List<Widget> list = new List<Widget>();
+        print(snapshot);
         if (snapshot.hasData) {
           if (tagis(result.advertisementData.manufacturerData,
-                  result.advertisementData.serviceData, macList[0]) ==
-              true) {
-//            for (var i = 0; i < macL.length; i++) {
-//              if (macL.length <= 0) {
-//                macL.add(macList[0]);
-//              } else if (macL[i] != macList[0]) {
-//                macL.add(macList[0]);
-//              }
-//            }
-            //print(macList);
+                  result.advertisementData.serviceData, macList[0])&& nameList.length>0) {
+            print(list);
             macL.clear();
             m.clear();
             for (var i = 0; i < macList.length; i++) {
@@ -879,79 +874,63 @@ class ScanResultTile extends State<Scan> {
                 }
               }
               if (checkData.length <= 0) {
-                list.add(
-                  new Slidable(
-                    actionPane: SlidableDrawerActionPane(),
-                    actionExtentRatio: 0.25,
-                    child: Container(
-                      color: Colors.white,
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.indigoAccent,
-                          child: Icon(Icons.person),
-                          foregroundColor: Colors.white,
-                        ),
-                        trailing: Text(
-                          tempList[i],
-                          style: TextStyle(
-                            fontSize: 24,
+                if(nameList[i] == macList[0]){
+                  list.add(
+                    new Slidable(
+                      actionPane: SlidableDrawerActionPane(),
+                      actionExtentRatio: 0.25,
+                      child: Container(
+                        color: Colors.white,
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.indigoAccent,
+                            child: Icon(Icons.person),
+                            foregroundColor: Colors.white,
                           ),
-                          textAlign: TextAlign.right,
-                        ),
-                        title: Text(
-                          nameList.length <= 0 ? "" : nameList[i],
+                          trailing: Text(
+                            tempList[i],
+                            style: TextStyle(
+                              fontSize: 24,
+                            ),
+                            textAlign: TextAlign.right,
+                          ),
+                          title: Text(
+                            nameList.length <= 0 ? "" : nameList[i],
 //                      title(allData[i].mac.toString(),macList[i],allData[i].name.toString()),
-                          style: TextStyle(
-                            fontSize: 20,
+                            style: TextStyle(
+                              fontSize: 20,
+                            ),
+                            textAlign: TextAlign.left,
                           ),
-                          textAlign: TextAlign.left,
-                        ),
-                        subtitle: Text(
-                          numList.length <= 0 ? "" : numList[i],
+                          subtitle: Text(
+                            numList.length <= 0 ? "" : numList[i],
 //                      id(allData[i].mac.toString(),macList[i],allData[i].employeeID.toString()),
-                          style: TextStyle(
-                            fontSize: 16,
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.left,
                           ),
-                          textAlign: TextAlign.left,
                         ),
                       ),
+                      secondaryActions: <Widget>[
+                        IconSlideAction(
+                            caption: '配對',
+                            color: Colors.blue,
+                            icon: Icons.settings_ethernet,
+                            onTap: () async => {
+                              await createConnectPeopleAlertDialog(
+                                  context,
+                                  nameList[i].toString(),
+                                  macList[0].toString(),
+                                  tempList[i].toString(),
+                                  numList[i].toString()),
+                              await print("lev"),
+                              await setState(() {}),
+                            }),
+                      ],
                     ),
-                    secondaryActions: <Widget>[
-                      IconSlideAction(
-                        caption: '確認',
-                        color: Color(0xFF81E9E6),
-                        icon: Icons.check_circle,
-                        onTap: () => createConfirmDataAlertDialog(
-                            context, nameList[i], tempList[i], numList[i], i),
-                      ),
-                      IconSlideAction(
-                          caption: '配對',
-                          color: Colors.blue,
-                          icon: Icons.settings_ethernet,
-                          onTap: () async => {
-                                await createConnectPeopleAlertDialog(
-                                    context,
-                                    nameList[i].toString(),
-                                    macList[i].toString(),
-                                    tempList[i].toString(),
-                                    numList[i].toString()),
-                                await print("lev"),
-                                await setState(() {}),
-                              }),
-                    ],
-                  ),
-                );
-              } else {
-                bool find = false;
-                print(checkData);
-                print(macList);
-                for (var j = 0; j < checkData.length; j++) {
-                  if (macList[0] == checkData[j]) {
-                    find = true;
-                    break;
-                  }
-                }
-                if (!find) {
+                  );
+                }else if(nameList[i] != macList[0]){
                   list.add(
                     new Slidable(
                       actionPane: SlidableDrawerActionPane(),
@@ -997,23 +976,189 @@ class ScanResultTile extends State<Scan> {
                           onTap: () => createConfirmDataAlertDialog(
                               context, nameList[i], tempList[i], numList[i], i),
                         ),
-                        IconSlideAction(
-                            caption: '配對',
-                            color: Colors.blue,
-                            icon: Icons.settings_ethernet,
-                            onTap: () async => {
-                                  await createConnectPeopleAlertDialog(
-                                      context,
-                                      nameList[i].toString(),
-                                      macList[i].toString(),
-                                      tempList[i].toString(),
-                                      numList[i].toString()),
-                                  await print("lev"),
-                                  await setState(() {}),
-                                }),
                       ],
                     ),
                   );
+                }
+              } else {
+                bool find = false;
+                print(checkData);
+                print(macList);
+                for (var j = 0; j < checkData.length; j++) {
+                  if (macList[0] == checkData[j]) {
+                    find = true;
+                    break;
+                  }
+                }
+                if (!find) {
+                  if(nameList[i] == macList[0]){
+                    list.add(
+                      new Slidable(
+                        actionPane: SlidableDrawerActionPane(),
+                        actionExtentRatio: 0.25,
+                        child: Container(
+                          color: Colors.white,
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.indigoAccent,
+                              child: Icon(Icons.person),
+                              foregroundColor: Colors.white,
+                            ),
+                            trailing: Text(
+                              tempList[i],
+                              style: TextStyle(
+                                fontSize: 24,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            title: Text(
+                              nameList.length <= 0 ? "" : nameList[i],
+//                      title(allData[i].mac.toString(),macList[i],allData[i].name.toString()),
+                              style: TextStyle(
+                                fontSize: 20,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                            subtitle: Text(
+                              numList.length <= 0 ? "" : numList[i],
+//                      id(allData[i].mac.toString(),macList[i],allData[i].employeeID.toString()),
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ),
+                        secondaryActions: <Widget>[
+                          IconSlideAction(
+                              caption: '配對',
+                              color: Colors.blue,
+                              icon: Icons.settings_ethernet,
+                              onTap: () async => {
+                                await createConnectPeopleAlertDialog(
+                                    context,
+                                    nameList[i].toString(),
+                                    macList[0].toString(),
+                                    tempList[i].toString(),
+                                    numList[i].toString()),
+                                await print("lev"),
+                                await setState(() {}),
+                              }),
+                        ],
+                      ),
+                    );
+                  }else if(nameList[i] != macList[0]){
+                    list.add(
+                      new Slidable(
+                        actionPane: SlidableDrawerActionPane(),
+                        actionExtentRatio: 0.25,
+                        child: Container(
+                          color: Colors.white,
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.indigoAccent,
+                              child: Icon(Icons.person),
+                              foregroundColor: Colors.white,
+                            ),
+                            trailing: Text(
+                              tempList[i],
+                              style: TextStyle(
+                                fontSize: 24,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            title: Text(
+                              nameList.length <= 0 ? "" : nameList[i],
+//                      title(allData[i].mac.toString(),macList[i],allData[i].name.toString()),
+                              style: TextStyle(
+                                fontSize: 20,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                            subtitle: Text(
+                              numList.length <= 0 ? "" : numList[i],
+//                      id(allData[i].mac.toString(),macList[i],allData[i].employeeID.toString()),
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ),
+                        secondaryActions: <Widget>[
+                          IconSlideAction(
+                            caption: '確認',
+                            color: Color(0xFF81E9E6),
+                            icon: Icons.check_circle,
+                            onTap: () => createConfirmDataAlertDialog(
+                                context, nameList[i], tempList[i], numList[i], i),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+//                  list.add(
+//                    new Slidable(
+//                      actionPane: SlidableDrawerActionPane(),
+//                      actionExtentRatio: 0.25,
+//                      child: Container(
+//                        color: Colors.white,
+//                        child: ListTile(
+//                          leading: CircleAvatar(
+//                            backgroundColor: Colors.indigoAccent,
+//                            child: Icon(Icons.person),
+//                            foregroundColor: Colors.white,
+//                          ),
+//                          trailing: Text(
+//                            tempList[i],
+//                            style: TextStyle(
+//                              fontSize: 24,
+//                            ),
+//                            textAlign: TextAlign.right,
+//                          ),
+//                          title: Text(
+//                            nameList.length <= 0 ? "" : nameList[i],
+////                      title(allData[i].mac.toString(),macList[i],allData[i].name.toString()),
+//                            style: TextStyle(
+//                              fontSize: 20,
+//                            ),
+//                            textAlign: TextAlign.left,
+//                          ),
+//                          subtitle: Text(
+//                            numList.length <= 0 ? "" : numList[i],
+////                      id(allData[i].mac.toString(),macList[i],allData[i].employeeID.toString()),
+//                            style: TextStyle(
+//                              fontSize: 16,
+//                            ),
+//                            textAlign: TextAlign.left,
+//                          ),
+//                        ),
+//                      ),
+//                      secondaryActions: <Widget>[
+//                        IconSlideAction(
+//                          caption: '確認',
+//                          color: Color(0xFF81E9E6),
+//                          icon: Icons.check_circle,
+//                          onTap: () => createConfirmDataAlertDialog(
+//                              context, nameList[i], tempList[i], numList[i], i),
+//                        ),
+//                        IconSlideAction(
+//                            caption: '配對',
+//                            color: Colors.blue,
+//                            icon: Icons.settings_ethernet,
+//                            onTap: () async => {
+//                                  await createConnectPeopleAlertDialog(
+//                                      context,
+//                                      nameList[i].toString(),
+//                                      macList[i].toString(),
+//                                      tempList[i].toString(),
+//                                      numList[i].toString()),
+//                                  await print("lev"),
+//                                  await setState(() {}),
+//                                }),
+//                      ],
+//                    ),
+//                  );
                 }
               }
             }
@@ -1091,7 +1236,7 @@ class ScanResultTile extends State<Scan> {
                         String editName = editNameController.text;
                         String editNumber = editNumController.text;
                         if (editName != "") {
-                          Navigator.of(context).pop();
+
                           debugPrint(name);
                           if (editNumber != "") {
                             employee data = new employee(
@@ -1103,7 +1248,7 @@ class ScanResultTile extends State<Scan> {
                             await numList.clear();
                             print("insert");
                             await setState(() {});
-
+                            Navigator.of(context).pop();
                             if (result == "請檢查資料") {
                               return showDialog(
                                 context: context,

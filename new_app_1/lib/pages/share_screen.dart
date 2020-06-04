@@ -471,7 +471,7 @@ getData() async {
   });
 }
 
-class content extends StatelessWidget {
+class dataContent extends StatelessWidget {
   List data;
 
   @override
@@ -551,23 +551,26 @@ class ShareScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("資料匯出"),
-        centerTitle: true,
-        backgroundColor: appColor,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.share),
-            tooltip: '全體匯出',
-            onPressed: () {
-              createSelectShareDateAlertDialog(context);
-            },
+        appBar: AppBar(
+          title: Text("資料匯出"),
+          centerTitle: true,
+          backgroundColor: appColor,
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.share),
+              tooltip: '全體匯出',
+              onPressed: () {
+                createSelectShareDateAlertDialog(context);
+              },
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              dataContent(),
+            ],
           ),
-        ],
-      ),
-      body: Column(
-        children: <Widget>[content()],
-      ),
-    );
+        ));
   }
 }

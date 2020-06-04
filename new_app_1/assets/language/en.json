@@ -1,0 +1,123 @@
+{
+  "app_name": "body_UI",
+  "title_home": "Home",
+  "title_dashboard": "Dashboard",
+  "title_notifications": "Notifications",
+
+  "hello_blank_fragment": "Hello blank fragment",
+
+  "language": "en",
+
+  "tem_result": "Measurement Result",
+  "staff_num": "Emp.",
+  "staff_name": "Name",
+  "staff_tem": "Body Temp.",
+  "staff_address": "MAC Address",
+
+  "staff_delete_check" : "Are you sure to delete this staff data?",
+
+
+  "staff_management": "Staff Management",
+  "tem_measure": "Temperature",
+  "export_data": "Data Export",
+
+  "import_staff_data_button": "Data Import",
+
+  "update_staff": "Staff Edit",
+  "update_staff_num": "Emp.:",
+  "update_staff_name": "Name:",
+
+  "insert_staff": "Staff addition",
+
+  "export_date": "Export Date",
+  "export_start_date": "Beginning Date",
+  "export_end_date": "Ending Date",
+
+
+  "tem_mea": "           Temperature",
+  "tem_tem": "Temperature",
+  "tem_last_measure": "Last Measurement Time",
+  "tem_start_measure": "Start",
+  "tem_check_all": " Total\nconfirmation",
+
+  "tem_check_tem": "Temperature:",
+  "tem_check_remark": "Remark:",
+  "tem_check_fever": "Fever",
+  "tem_check_short_breath": "Shortness of Breath",
+  "tem_check_chills": "Chills",
+  "tem_check_cough": "Cough",
+  "tem_check_muscle": "Muscle or Joint Pain",
+  "tem_check_nausea": "Nausea and Vomiting",
+  "tem_check_tired": "Tired",
+  "tem_check_sore_throat": "Sore throat",
+  "tem_check_sputum": "Sputum",
+  "tem_check_headache": "Headache",
+
+  "alertDialog_delete_confirm": "Delete Confirm",
+  "alertDialog_confirm": "Confirm",
+  "alertDialog_cancel": "Cancel",
+  "alertDialog_cancel_allStaff_export": "All Staff Export Canceled",
+  "alertDialog_tem_measure": "Measure result",
+  "alertDialog_insert": "Insert",
+  "alertDialog_update": "Update",
+  "alertDialog_delete": "Delete",
+  "alertDialog_pair": "Pair",
+  "alertDialog_export": "Export",
+  "alertDialog_cancel_pair": "Unpaired",
+  "alertDialog_select_csv_file": "Select csv File",
+  "alertDialog_nearby_tag": "The Pairable Bluetooth Nearby",
+  "alertDialog_check_pair1": "Will it be paired with",
+  "alertDialog_check_pair2": " ",
+  "alertDialog_check_pair_ok": "OK",
+  "alertDialog_check_pair_cancel": "Cancel",
+  "alertDialog_select_tag": "Searching for Paired Bluetooth...",
+  "alertDialog_check_data": "Please check data.",
+  "alertDialog_no_data": "No Data",
+  "alertDialog_please_insert": "Please insert",
+
+  "alertDialog_remove_connection": "Remove Connection Success",
+
+
+
+  "toast_export_one": "Staff Data Exported",
+  "toast_select_no_data": "No Data For the Selected Period",
+  "toast_check_tem_no_staff_data": "hasn\\'t been paired, so cannot record.",
+  "toast_insert_staff_tem": "Staff Temperature Added",
+  "toast_cancel_insert_staff_tem": "Staff Temperature Add Canceled",
+  "toast_tag_pair": "This tag has been paired",
+  "toast_rescan": "Rescan",
+  "toast_no_last_date": "No Last \nMeasurement Time",
+  "toast_wrong_staff_num_or_name": "The New Number or Name is Incorrect",
+  "toast_repeat_staff_num_or_name": "The New Number or Name already exists",
+  "toast_repeat_tag": "This Mac Address has duplicated",
+  "toast_success_add_staff": "Insert Successfully",
+
+  "toast_fail_add_staff": "Insert failed.",
+
+
+  "toast_cancel_add_staff": "Staff insert Canceled",
+  "toast_import": "Imported",
+  "toast_update_staff_name": "Staff Name Modified",
+  "toast_cancel_update_staff_name": "Staff Name Modify Canceled",
+  "toast_delete_staff": "Staff Deleted",
+  "toast_pair": "Paired",
+  "toast_cancel_pair": "Unpair",
+  "toast_import_no_staff1": "Staff",
+  "toast_import_no_staff2": "not imported",
+  "toast_data_not_exist": "Data doesn\\'t exist",
+  "toast_deselect_file": "Deselect File",
+  "toast_export_all_staff": "All Staff Data Exported",
+  "toast_export_staff_no_data": "No data for the selected period",
+  "toast_cancel_export_all_staff": "All Staff Export Canceled",
+  "toast_cancel_export_one_staff": "The Staff Export Canceled",
+  "toast_no_staff_data": "There isn\\'t have any staff here",
+  "toast_alert": "Alert",
+  "toast_alert_success": "Success",
+
+  "other_export_all": "Employee ID,Time,Name,Body Temp.,Device Temp.,Remark",
+  "other_export_people": "Time,Body Temp.,Device Temp.,Remark",
+
+  "------": "-----"
+
+
+}
