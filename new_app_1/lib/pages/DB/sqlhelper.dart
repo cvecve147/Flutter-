@@ -129,7 +129,7 @@ class sqlhelper {
 
   Future<List<employee>> showEmployee() async {
     await initDB();
-    final List<Map<String, dynamic>> maps = await _DB.query('employees');
+    final List<Map<String, dynamic>> maps = await _DB.rawQuery('select * from employees ORDER BY employeeID');
     return List.generate(maps.length, (i) {
       return employee(
         id: maps[i]['id'],
@@ -361,13 +361,13 @@ class sqlhelper {
     if (id != null) {
       try {
         data = await _DB.rawQuery('''
-                  select * from
+                  select * from(select * from
                   (select * from employees WHERE employees.id = ${id})
                   as employees
                   INNER JOIN temperatures
                   on temperatures.id= employees.id
-                  WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
-                  ordey by temperatures.time ASC
+                  WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}') as employeeandtime
+                  ORDER BY time ASC
                     ''');
         List<employee> searchData = await searchEmployee(id);
         idAndName = searchData[0].employeeID + "_" + searchData[0].name;
@@ -380,11 +380,11 @@ class sqlhelper {
       print(data);
     } else {
       try {
-        data = await _DB.rawQuery('''select * from employees 
+        data = await _DB.rawQuery('''select * from(select * from employees 
         INNER JOIN temperatures 
         on temperatures.id= employees.id
-        WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}'
-        ordey by employees.employeeID ,temperatures.time ASC
+        WHERE temperatures.time BETWEEN '${date[0]}' AND '${date[1]}')as employeeandtime
+        ORDER BY employeeID ,time ASC
         ''');
         print(data);
         fileName += (id != null) ? "_${idAndName}" : "";
