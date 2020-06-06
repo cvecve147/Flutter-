@@ -169,6 +169,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                         }
                       }
                     }
+                    preDevice = point;
                     if (!switchOn) {
                       haobear.sort((a, b) {
                         return a.rssi > b.rssi ? -1 : 1;
@@ -247,6 +248,9 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                       showText += "掃描數量為 " +
                           selectDevice.length.toString() +
                           " 無法計算三角定位";
+                    }
+                    if (switchOn) {
+                      selectDevice = selectDevice.sublist(0, 3);
                     }
                     return Container(
                       child: Column(
