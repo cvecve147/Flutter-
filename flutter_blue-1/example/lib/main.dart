@@ -159,7 +159,8 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                       for (var device in preDevice) {
                         for (var one_Point in point) {
                           if (device.mac == one_Point.mac &&
-                              device.distance - one_Point.distance > 2) {
+                              (device.distance - one_Point.distance).abs() >
+                                  2) {
                             one_Point = device;
                           }
                         }
