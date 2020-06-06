@@ -270,7 +270,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                                 )
                                 .toList(),
                           ),
-                          show_map == true ? canvasRoute(X, Y) : Column()
+                          show_map ? canvasRoute(X, Y) : Column()
                         ],
                       ),
                     );
