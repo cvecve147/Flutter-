@@ -110,6 +110,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
   @override
   Widget build(BuildContext context) {
     bool show_map = false;
+    List<Device> preDevice = List();
     return Scaffold(
       appBar: AppBar(title: Text('Find Devices'), actions: [
         Switch(
@@ -152,6 +153,20 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                         double power = (rssi - 60) / (10.0 * 3.3);
                         item.distance = pow(10, power);
                         point.add(item);
+                      }
+                    }
+
+                    /// 調整距離
+                    if (preDevice == null) {
+                      preDevice = point;
+                    } else {
+                      for (var device in preDevice) {
+                        for (var one_Point in point) {
+                          if (device.mac == one_Point.mac &&
+                              device.distance - one_Point.distance > 2) {
+                            one_Point = device;
+                          }
+                        }
                       }
                     }
                     if (!switchOn) {
