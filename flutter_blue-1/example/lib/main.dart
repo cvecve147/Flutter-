@@ -136,13 +136,9 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                   builder: (c, snapshot) {
                     List getmac = List(); //只抓取掃描到的id 利用此id 來判斷是否為7樓Tag
                     List selectDevice = List(); //抓到的所有在Device列表中的Tag
-                    List haobear = List(); //Tag name= Haobear
                     List<Device> point = List(); //抓取到的點
                     snapshot.data.map((r) {
                       getmac.add(r.device.id.toString());
-                      if (r.device.name == "HaoBear") {
-                        haobear.add(r);
-                      }
                     }).toList();
                     for (var item in device) {
                       if (getmac.indexOf(item.mac) != -1) {
@@ -170,21 +166,6 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                       }
                     }
                     preDevice = point;
-                    if (!switchOn) {
-                      haobear.sort((a, b) {
-                        return a.rssi > b.rssi ? -1 : 1;
-                      });
-                      return Column(
-                        children: haobear
-                            .map(
-                              (r) => ScanResultTile(
-                                result: r,
-                                open: true,
-                              ),
-                            )
-                            .toList(),
-                      );
-                    }
 
                     //排列抓取到的點
                     point.sort((a, b) {
