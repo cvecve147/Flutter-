@@ -1,6 +1,6 @@
 {
-  "app_name": "body_UI",
-  "title_home": "Home",
+  "app_name": "Tem-tracker",
+  "title_home": "Tem-tracker",
   "title_dashboard": "Dashboard",
   "title_notifications": "Notifications",
 
@@ -12,12 +12,12 @@
   "staff_num": "編號",
   "staff_name": "姓名",
   "staff_tem": "體溫",
-  "staff_address": "模組編號：",
+  "staff_address": "模組編號",
   "staff_delete_check" : "確定要刪除此資料？",
 
   "staff_management": "人員管理",
   "tem_measure": "體溫測量",
-  "export_data": "匯出資料",
+  "export_data": "資料匯出",
 
   "import_staff_data_button": "人員匯入",
 
@@ -32,7 +32,7 @@
   "export_end_date": "結束日期",
 
 
-  "tem_mea": "        體溫測量",
+  "tem_mea": "體溫測量",
   "tem_tem": "體溫",
   "tem_last_measure": "上次量測時間",
   "tem_start_measure": "開始量測",
@@ -115,8 +115,33 @@
   "other_export_all": "員工編號,時間,姓名,體溫,模組溫度,備註",
   "other_export_people": "時間,體溫,模組溫度,備註",
 
-  "------": "-----"
+  "------": "-----",
+  "scan_no_data": "尚未量測 無上次量測時間",
+  "scan_time": "測量時間",
 
-
+  "alertDialog_measurement_confirmation": "量測確認",
+  "alertDialog_measuring_temperature": "量測溫度",
+  "alertDialog_confirm_success": "確認成功",
+  "alertDialog_pairing_confirmation": "配對確認",
+  "alertDialog_matching_result": "配對結果",
+  "alertDialog_paired_success": "配對成功",
+  "alertDialog_person_pairing": "人員配對",
+  "alertDialog_please_enter_the_number": "請輸入編號",
+  "alertDialog_please_enter_your_name": "請輸入姓名",
+  "staff_status": "狀態",
+  "staff_no_status": "無狀態",
+  "alertDialog_unpaired": "未配對成功",
+  "alertDialog_not_paired_yet": "還並未配對",
+  "alertDialog_pairing_failed": "配對失敗",
+  "alertDialog_export_all": "全體匯出",
+  "alertDialog_are_you_sure_you_want_to_export_data": "確定要匯出資料嗎?",
+  "alertDialog_export_failed": "匯出失敗",
+  "alertDialog_export_success": "匯出成功",
+  "alertDialog_the_path_is": "路徑為",
+  "alertDialog_personal_export": "個人匯出",
+  "alertDialog_data": "的資料",
+  "alertDialog_confirmation_of_personal_export_date": "個人匯出日期確認",
+  "alertDialog_sure_to_export": "確定要匯出",
+  "alertDialog_data_export": "資料匯出"
 
 }

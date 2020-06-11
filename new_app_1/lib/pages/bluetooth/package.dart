@@ -12,6 +12,7 @@ import 'package:newapp1/pages/people_screen.dart';
 import '../DB/sqlhelper.dart';
 import '../DB/employee_model.dart';
 import '../DB/temperature_model.dart';
+import 'package:newapp1/app_localizations.dart';
 
 //List allData;
 
@@ -85,7 +86,9 @@ class ScanResultTile extends State<Scan> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text("量測確認"),
+              title: Text(AppLocalizations.of(context)
+                  .translate('alertDialog_update')//"量測確認"
+              ),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
@@ -93,7 +96,9 @@ class ScanResultTile extends State<Scan> {
                       padding: EdgeInsets.only(top: 16),
                       child: Row(
                         children: <Widget>[
-                          Text("編號：" + rssi),
+                          Text(AppLocalizations.of(context)
+                              .translate('staff_num') +//"編號："
+                              "："+ rssi),
                         ],
                       ),
                     ),
@@ -101,7 +106,9 @@ class ScanResultTile extends State<Scan> {
                       padding: EdgeInsets.only(top: 16),
                       child: Row(
                         children: <Widget>[
-                          Text("姓名：" + mac),
+                          Text(AppLocalizations.of(context)
+                              .translate('staff_name') +//"姓名："
+                              "：" + mac),
                         ],
                       ),
                     ),
@@ -109,7 +116,9 @@ class ScanResultTile extends State<Scan> {
                       padding: EdgeInsets.only(top: 16),
                       child: Row(
                         children: <Widget>[
-                          Text("量測溫度：" + temp),
+                          Text(AppLocalizations.of(context)
+                              .translate('alertDialog_measuring_temperature') +//"量測溫度："
+                              "：" + temp),
                         ],
                       ),
                     ),
@@ -120,7 +129,9 @@ class ScanResultTile extends State<Scan> {
                 new ButtonBar(
                   children: <Widget>[
                     new FlatButton(
-                      child: Text('確認'),
+                      child: Text(AppLocalizations.of(context)
+                          .translate('alertDialog_confirm')//'確認'
+                      ),
                       // ignore: missing_return
                       onPressed: () {
                         insertData(macL, tempL, rssiL, i);
@@ -129,7 +140,9 @@ class ScanResultTile extends State<Scan> {
                           context: context,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text('確認成功'),
+                              title: Text(AppLocalizations.of(context)
+                                .translate('alertDialog_confirm_success')//'確認成功'
+                              ),
                               content: SingleChildScrollView(
                                 child: ListBody(
                                   children: <Widget>[
@@ -137,7 +150,9 @@ class ScanResultTile extends State<Scan> {
                                       padding: EdgeInsets.only(top: 16),
                                       child: Row(
                                         children: <Widget>[
-                                          Text("編號：" + rssi),
+                                          Text(AppLocalizations.of(context)
+                                              .translate('staff_num') +//"編號："
+                                              "：" + rssi),
                                         ],
                                       ),
                                     ),
@@ -145,7 +160,9 @@ class ScanResultTile extends State<Scan> {
                                       padding: EdgeInsets.only(top: 16),
                                       child: Row(
                                         children: <Widget>[
-                                          Text("姓名：" + mac),
+                                          Text(AppLocalizations.of(context)
+                                              .translate('staff_name') +//"姓名："
+                                              "：" + mac),
                                         ],
                                       ),
                                     ),
@@ -153,7 +170,9 @@ class ScanResultTile extends State<Scan> {
                                       padding: EdgeInsets.only(top: 16),
                                       child: Row(
                                         children: <Widget>[
-                                          Text("量測溫度：" + temp),
+                                          Text(AppLocalizations.of(context)
+                                              .translate('alertDialog_measuring_temperature') +//"量測溫度："
+                                              "：" + temp),
                                         ],
                                       ),
                                     ),
@@ -664,7 +683,9 @@ class ScanResultTile extends State<Scan> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text("配對確認"),
+              title: Text(AppLocalizations.of(context)
+                  .translate('alertDialog_pairing_confirmation')//"配對確認"
+              ),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
@@ -672,8 +693,12 @@ class ScanResultTile extends State<Scan> {
                       padding: EdgeInsets.only(top: 16),
                       child: Column(
                         children: <Widget>[
-                          Text("編號：" + confirmEmployeeID),
-                          Text("姓名：" + confirmEmployeeName),
+                          Text(AppLocalizations.of(context)
+                              .translate('staff_num') +//"編號："
+                              "：" + confirmEmployeeID),
+                          Text(AppLocalizations.of(context)
+                              .translate('staff_name') +//"姓名："
+                              "：" + confirmEmployeeName),
                           Text("Mac：" + mac),
                         ],
                       ),
@@ -685,7 +710,9 @@ class ScanResultTile extends State<Scan> {
                 new ButtonBar(
                   children: <Widget>[
                     new FlatButton(
-                      child: Text('確認'),
+                      child: Text(AppLocalizations.of(context)
+                          .translate('alertDialog_confirm')//'確認'
+                          ),
                       onPressed: () async {
                         sqlhelper helper = new sqlhelper();
                         employee employeeData = new employee(
@@ -699,11 +726,15 @@ class ScanResultTile extends State<Scan> {
                           context: context,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text('配對結果'),
+                              title: Text(AppLocalizations.of(context)
+                                  .translate('alertDialog_matching_result')//'配對結果'
+                              ),
                               content: SingleChildScrollView(
                                 child: ListBody(
                                   children: <Widget>[
-                                    Text("配對成功"),
+                                    Text(AppLocalizations.of(context)
+                                        .translate('alertDialog_paired_success')//"配對成功"
+                                    ),
                                   ],
                                 ),
                               ),
@@ -715,8 +746,9 @@ class ScanResultTile extends State<Scan> {
                     ),
                     new FlatButton(
                       child: Text(
-                        '取消',
-                        style: new TextStyle(color: appColor),
+                        AppLocalizations.of(context)
+                            .translate('alertDialog_cancel')//'取消'
+                        , style: new TextStyle(color: appColor),
                       ),
                       onPressed: () {
                         Navigator.of(context).pop();
@@ -778,7 +810,8 @@ class ScanResultTile extends State<Scan> {
                     ),
                     secondaryActions: <Widget>[
                       IconSlideAction(
-                        caption: '確認',
+                        caption: AppLocalizations.of(context)
+                      .translate('alertDialog_confirm'),//'確認'
                         color: Color(0xFF81E9E6),
                         icon: Icons.check_circle,
                         onTap: () => createConfirmDataAlertDialog(
@@ -809,7 +842,9 @@ class ScanResultTile extends State<Scan> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text("人員配對"),
+            title: Text(AppLocalizations.of(context)
+                .translate('alertDialog_person_pairing')//"人員配對"
+            ),
             content: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
@@ -821,7 +856,8 @@ class ScanResultTile extends State<Scan> {
                           child: new TextField(
                             decoration: InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: '姓名',
+                              labelText: AppLocalizations.of(context)
+                                  .translate('staff_name'),//'姓名',
                             ),
                             controller: editNameController,
                             style: Theme.of(context).textTheme.body1,
@@ -838,7 +874,8 @@ class ScanResultTile extends State<Scan> {
                           child: new TextField(
                             decoration: InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: '編號',
+                              labelText: AppLocalizations.of(context)
+                                  .translate('staff_num'),//'編號',
                             ),
                             controller: editNumController,
                             style: Theme.of(context).textTheme.body1,
@@ -854,7 +891,9 @@ class ScanResultTile extends State<Scan> {
               new ButtonBar(
                 children: <Widget>[
                   new FlatButton(
-                    child: Text('確認'),
+                    child: Text(AppLocalizations.of(context)
+                        .translate('alertDialog_confirm')//'確認'
+                    ),
                     // ignore: missing_return
                     onPressed: () async {
                       sqlhelper helper = new sqlhelper();
@@ -876,8 +915,12 @@ class ScanResultTile extends State<Scan> {
                                 content: SingleChildScrollView(
                                   child: ListBody(
                                     children: <Widget>[
-                                      Text("姓名：" + n),
-                                      Text("編號：" + number),
+                                      Text(AppLocalizations.of(context)
+                                          .translate('staff_name') +//"姓名："
+                                          "：" + n),
+                                      Text(AppLocalizations.of(context)
+                                          .translate('staff_num') +//"編號："
+                                          "："  + number),
                                       Text("Mac Address：" + mac),
                                     ],
                                   ),
@@ -894,7 +937,9 @@ class ScanResultTile extends State<Scan> {
                                   content: SingleChildScrollView(
                                     child: ListBody(
                                       children: <Widget>[
-                                        Text("請輸入編號"),
+                                        Text(AppLocalizations.of(context)
+                                            .translate('alertDialog_please_enter_the_number')//"請輸入編號"
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -910,7 +955,9 @@ class ScanResultTile extends State<Scan> {
                                 content: SingleChildScrollView(
                                   child: ListBody(
                                     children: <Widget>[
-                                      Text("請輸入姓名"),
+                                      Text(AppLocalizations.of(context)
+                                          .translate('alertDialog_please_enter_your_name')//"請輸入姓名"
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -922,8 +969,9 @@ class ScanResultTile extends State<Scan> {
                   ),
                   new FlatButton(
                     child: Text(
-                      '取消',
-                      style: new TextStyle(color: appColor),
+                      AppLocalizations.of(context)
+                          .translate('alertDialog_cancel')//'取消'
+                      ,style: new TextStyle(color: appColor),
                     ),
                     onPressed: () {
                       Navigator.of(context).pop();
@@ -959,218 +1007,3 @@ class ScanResultTile extends State<Scan> {
     return unsigned;
   }
 }
-
-//getData() async {
-//  sqlhelper helper = new sqlhelper();
-//  print(await helper.showEmployee());
-//  return await helper.showLastTemp();
-//}
-
-//class _MyHomePageState extends State<ScanResultTile> {
-//  List<String> items;
-//
-//  _MyHomePageState(this.items);
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return new Scaffold(
-//      body: ListView.builder(
-//        itemCount: items.length,
-//        itemBuilder: (context, index) {
-//          final item = items[index];
-//          return GestureDetector(
-//              onTap: () {
-//                items.removeAt(index);
-//                setState(() {});
-//              },
-//              child: new ListTile(
-//                title: new Text("$item"),
-//              ));
-//        },
-//      ),
-//    );
-//  }
-//}
-
-/*
-class ServiceTile extends StatelessWidget {
-  final BluetoothService service;
-  final List<CharacteristicTile> characteristicTiles;
-
-  const ServiceTile({Key key, this.service, this.characteristicTiles})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    if (characteristicTiles.length > 0) {
-      return ExpansionTile(
-        title: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text('Service'),
-            Text('0x${service.uuid.toString().toUpperCase().substring(4, 8)}',
-                style: Theme.of(context)
-                    .textTheme
-                    .body1
-                    .copyWith(color: Theme.of(context).textTheme.caption.color))
-          ],
-        ),
-        children: characteristicTiles,
-      );
-    } else {
-      return ListTile(
-        title: Text('Service'),
-        subtitle:
-        Text('0x${service.uuid.toString().toUpperCase().substring(4, 8)}'),
-      );
-    }
-  }
-}
-
-class CharacteristicTile extends StatelessWidget {
-  final BluetoothCharacteristic characteristic;
-  final List<DescriptorTile> descriptorTiles;
-  final VoidCallback onReadPressed;
-  final VoidCallback onWritePressed;
-  final VoidCallback onNotificationPressed;
-
-  const CharacteristicTile(
-      {Key key,
-        this.characteristic,
-        this.descriptorTiles,
-        this.onReadPressed,
-        this.onWritePressed,
-        this.onNotificationPressed})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<List<int>>(
-      stream: characteristic.value,
-      initialData: characteristic.lastValue,
-      builder: (c, snapshot) {
-        final value = snapshot.data;
-        return ExpansionTile(
-          title: ListTile(
-            title: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text('Characteristic'),
-                Text(
-                    '0x${characteristic.uuid.toString().toUpperCase().substring(4, 8)}',
-                    style: Theme.of(context).textTheme.body1.copyWith(
-                        color: Theme.of(context).textTheme.caption.color))
-              ],
-            ),
-            subtitle: Text(value.toString()),
-            contentPadding: EdgeInsets.all(0.0),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.file_download,
-                  color: Theme.of(context).iconTheme.color.withOpacity(0.5),
-                ),
-                onPressed: onReadPressed,
-              ),
-              IconButton(
-                icon: Icon(Icons.file_upload,
-                    color: Theme.of(context).iconTheme.color.withOpacity(0.5)),
-                onPressed: onWritePressed,
-              ),
-              IconButton(
-                icon: Icon(
-                    characteristic.isNotifying
-                        ? Icons.sync_disabled
-                        : Icons.sync,
-                    color: Theme.of(context).iconTheme.color.withOpacity(0.5)),
-                onPressed: onNotificationPressed,
-              )
-            ],
-          ),
-          children: descriptorTiles,
-        );
-      },
-    );
-  }
-}
-
-class DescriptorTile extends StatelessWidget {
-  final BluetoothDescriptor descriptor;
-  final VoidCallback onReadPressed;
-  final VoidCallback onWritePressed;
-
-  const DescriptorTile(
-      {Key key, this.descriptor, this.onReadPressed, this.onWritePressed})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text('Descriptor'),
-          Text('0x${descriptor.uuid.toString().toUpperCase().substring(4, 8)}',
-              style: Theme.of(context)
-                  .textTheme
-                  .body1
-                  .copyWith(color: Theme.of(context).textTheme.caption.color))
-        ],
-      ),
-      subtitle: StreamBuilder<List<int>>(
-        stream: descriptor.value,
-        initialData: descriptor.lastValue,
-        builder: (c, snapshot) => Text(snapshot.data.toString()),
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.file_download,
-              color: Theme.of(context).iconTheme.color.withOpacity(0.5),
-            ),
-            onPressed: onReadPressed,
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.file_upload,
-              color: Theme.of(context).iconTheme.color.withOpacity(0.5),
-            ),
-            onPressed: onWritePressed,
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class AdapterStateTile extends StatelessWidget {
-  const AdapterStateTile({Key key, @required this.state}) : super(key: key);
-
-  final BluetoothState state;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.redAccent,
-      child: ListTile(
-        title: Text(
-          'Bluetooth adapter is ${state.toString().substring(15)}',
-          style: Theme.of(context).primaryTextTheme.subhead,
-        ),
-        trailing: Icon(
-          Icons.error,
-          color: Theme.of(context).primaryTextTheme.subhead.color,
-        ),
-      ),
-    );
-  }
-}
-*/

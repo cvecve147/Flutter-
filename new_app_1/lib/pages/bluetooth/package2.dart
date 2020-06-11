@@ -13,9 +13,40 @@ import 'package:newapp1/pages/people_screen.dart';
 import '../DB/sqlhelper.dart';
 import '../DB/employee_model.dart';
 import '../DB/temperature_model.dart';
+import 'package:newapp1/app_localizations.dart';
 
 List<Map<String, dynamic>> timesData = [{}];
-//timesData.add({"id":a[0],"temp":tempL,"time":getCurrentDate().toString()});
+List<String> statusList;
+
+listTranslate() {
+  if (currentLang == "zh") {
+    statusList = [
+      '發燒',
+      '乾咳',
+      '倦怠',
+      '有痰',
+      '呼吸急促',
+      '肌肉或關節痛',
+      '喉嚨痛',
+      '頭痛',
+      '發冷',
+      '噁心嘔吐'
+    ];
+  } else {
+    statusList = [
+      'Fever',
+      'Cough',
+      'Tired',
+      'Sputum',
+      'Shortness of Breath',
+      'Muscle or Joint Pain',
+      'Sore throat',
+      'Headache',
+      'Chills',
+      'Nausea and Vomiting'
+    ];
+  }
+}
 
 class Scan extends StatefulWidget {
   Scan({Key key, this.result, this.onTap}) : super(key: key);
@@ -88,13 +119,6 @@ class ScanResultTile extends State<Scan> {
 
   Widget getTempWidgets(
       context, List<String> macL, List<String> tempL, List<String> rssiL) {
-//    ListView.builder(
-//      itemCount:nameL.length,
-//      itemExtent: 50,
-//      itemBuilder: (BuildContext context, int index){
-//        return getTempWidgets(nameL,tempL,numberL);//ListTile(title:Text("$index"))
-//      },
-//    );
     createConfirmDataAlertDialog(
       BuildContext context,
       String mac,
@@ -106,7 +130,9 @@ class ScanResultTile extends State<Scan> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text("人員配對確認"),
+              title: Text(AppLocalizations.of(context)
+                      .translate('alertDialog_person_pairing') //"人員配對確認"
+                  ),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
@@ -114,7 +140,10 @@ class ScanResultTile extends State<Scan> {
                       padding: EdgeInsets.only(top: 16),
                       child: Row(
                         children: <Widget>[
-                          Text("編號：" + rssi),
+                          Text(AppLocalizations.of(context)
+                                  .translate('staff_num') + //"編號："
+                              "：" +
+                              rssi),
                         ],
                       ),
                     ),
@@ -122,7 +151,10 @@ class ScanResultTile extends State<Scan> {
                       padding: EdgeInsets.only(top: 16),
                       child: Row(
                         children: <Widget>[
-                          Text("姓名：" + mac),
+                          Text(AppLocalizations.of(context)
+                                  .translate('staff_name') + //"姓名："
+                              "：" +
+                              mac),
                         ],
                       ),
                     ),
@@ -130,7 +162,10 @@ class ScanResultTile extends State<Scan> {
                       padding: EdgeInsets.only(top: 16),
                       child: Row(
                         children: <Widget>[
-                          Text("量測溫度：" + data),
+                          Text(AppLocalizations.of(context).translate(
+                                  'alertDialog_measuring_temperature') + //"量測溫度："
+                              "：" +
+                              data),
                         ],
                       ),
                     ),
@@ -141,15 +176,28 @@ class ScanResultTile extends State<Scan> {
                 new ButtonBar(
                   children: <Widget>[
                     new FlatButton(
-                      child: Text('確認'),
-                      onPressed: () async{
-                        await insertData(macL, tempL, rssiL, i, statusList,getRoomTempData(result.advertisementData.manufacturerData),);
+                      child: Text(AppLocalizations.of(context)
+                              .translate('alertDialog_confirm') //'確認'
+                          ),
+                      onPressed: () async {
+                        await insertData(
+                          macL,
+                          tempL,
+                          rssiL,
+                          i,
+                          statusList,
+                          getRoomTempData(
+                              result.advertisementData.manufacturerData),
+                        );
                         Navigator.of(context).pop();
                         return showDialog(
                           context: context,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text('確認成功'),
+                              title: Text(
+                                  AppLocalizations.of(context).translate(
+                                      'alertDialog_confirm_success') //'確認成功'
+                                  ),
                               content: SingleChildScrollView(
                                 child: ListBody(
                                   children: <Widget>[
@@ -157,7 +205,11 @@ class ScanResultTile extends State<Scan> {
                                       padding: EdgeInsets.only(top: 16),
                                       child: Row(
                                         children: <Widget>[
-                                          Text("編號：" + rssi),
+                                          Text(AppLocalizations.of(context)
+                                                  .translate(
+                                                      'staff_num') + //"編號："
+                                              "：" +
+                                              rssi),
                                         ],
                                       ),
                                     ),
@@ -165,7 +217,11 @@ class ScanResultTile extends State<Scan> {
                                       padding: EdgeInsets.only(top: 16),
                                       child: Row(
                                         children: <Widget>[
-                                          Text("姓名：" + mac),
+                                          Text(AppLocalizations.of(context)
+                                                  .translate(
+                                                      'staff_name') + //"姓名："
+                                              "：" +
+                                              mac),
                                         ],
                                       ),
                                     ),
@@ -173,7 +229,11 @@ class ScanResultTile extends State<Scan> {
                                       padding: EdgeInsets.only(top: 16),
                                       child: Row(
                                         children: <Widget>[
-                                          Text("量測溫度：" + data),
+                                          Text(AppLocalizations.of(context)
+                                                  .translate(
+                                                      'alertDialog_measuring_temperature') + //"量測溫度："
+                                              "：" +
+                                              data),
                                         ],
                                       ),
                                     ),
@@ -188,7 +248,9 @@ class ScanResultTile extends State<Scan> {
                     ),
                     new FlatButton(
                       child: Text(
-                        '取消',
+                        AppLocalizations.of(context)
+                            .translate('alertDialog_cancel') //'取消'
+                        ,
                         style: new TextStyle(color: appColor),
                       ),
                       onPressed: () {
@@ -242,7 +304,9 @@ class ScanResultTile extends State<Scan> {
           ),
           secondaryActions: <Widget>[
             IconSlideAction(
-              caption: '確認',
+              caption: AppLocalizations.of(context)
+                  .translate('alertDialog_confirm') //'確認'
+              ,
               color: Color(0xFF81E9E6),
               icon: Icons.check_circle,
               onTap: () => createConfirmDataAlertDialog(
@@ -344,7 +408,7 @@ class ScanResultTile extends State<Scan> {
           .toString();
       double tem = bytesToFloat(toRadix(data1), toRadix(data2), toRadix(data3),
           toRadix(data4)); //decodeTempLevel(data,0);
-      return formatNum(tem,2); //+data2+data3+data4
+      return formatNum(tem, 2); //+data2+data3+data4
     } else {
       return correct;
     }
@@ -380,10 +444,6 @@ class ScanResultTile extends State<Scan> {
     data2 = data[1].trim();
     data3 = data[2].trim();
     data4 = data[3].trim();
-//    print(data1);
-//    print(data2);
-//    print(data3);
-//    print(data4);
     double tem = bytesToFloat(toRadix(data1), toRadix(data2), toRadix(data3),
         toRadix(data4)); //decodeTempLevel(data,0);
     return formatNum(tem, 2); //+data2+data3+data4
@@ -590,7 +650,7 @@ class ScanResultTile extends State<Scan> {
     return a[0].name;
   }
 
-  Future<void> insertData(macL, tempL, rssiL, int i, List s,roomTemp) async {
+  Future<void> insertData(macL, tempL, rssiL, int i, List s, roomTemp) async {
     //print(tempL);
     sqlhelper sqlhepler = new sqlhelper();
     var a = await sqlhepler.searchEmployeeMAC(macL.toString());
@@ -602,7 +662,7 @@ class ScanResultTile extends State<Scan> {
     });
     temperature data = new temperature(
         id: a[0].id,
-        roomTemp:roomTemp,
+        roomTemp: roomTemp,
         temp: tempL,
         time: getCurrentDate().toString(),
         symptom: s.join("、"));
@@ -655,15 +715,15 @@ class ScanResultTile extends State<Scan> {
 //    if (tagis(result.advertisementData.manufacturerData,
 //            result.advertisementData.serviceData, macList[0]) ==
 //        true) {
-      var a = await helper.searchEmployeeMAC(macList[0].toString());
-      print(a);
-      if (a.length != 0) {
-        await nameList.add(a[0].name.toString());
-        await numList.add(a[0].employeeID);
-      } else {
-        await nameList.add(macList[0].toString());
-        await numList.add("0");
-      }
+    var a = await helper.searchEmployeeMAC(macList[0].toString());
+    print(a);
+    if (a.length != 0) {
+      await nameList.add(a[0].name.toString());
+      await numList.add(a[0].employeeID);
+    } else {
+      await nameList.add(macList[0].toString());
+      await numList.add("0");
+    }
 //    }
 //    await nameList.add(macList[0].toString());
 //    await numList.add("0");
@@ -704,7 +764,9 @@ class ScanResultTile extends State<Scan> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text("量測確認"),
+              title: Text(AppLocalizations.of(context)
+                      .translate('alertDialog_update') //"量測確認"
+                  ),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
@@ -712,7 +774,10 @@ class ScanResultTile extends State<Scan> {
                       padding: EdgeInsets.only(top: 16),
                       child: Row(
                         children: <Widget>[
-                          Text("編號：" + num),
+                          Text(AppLocalizations.of(context)
+                                  .translate('staff_num') + //"編號："
+                              "：" +
+                              num),
                         ],
                       ),
                     ),
@@ -720,7 +785,10 @@ class ScanResultTile extends State<Scan> {
                       padding: EdgeInsets.only(top: 16),
                       child: Row(
                         children: <Widget>[
-                          Text("姓名：" + name),
+                          Text(AppLocalizations.of(context)
+                                  .translate('staff_name') + //"姓名："
+                              "：" +
+                              name),
                         ],
                       ),
                     ),
@@ -728,7 +796,10 @@ class ScanResultTile extends State<Scan> {
                       padding: EdgeInsets.only(top: 16),
                       child: Row(
                         children: <Widget>[
-                          Text("量測溫度：" + data),
+                          Text(AppLocalizations.of(context).translate(
+                                  'alertDialog_measuring_temperature') + //"量測溫度："
+                              "：" +
+                              data),
                         ],
                       ),
                     ),
@@ -740,8 +811,10 @@ class ScanResultTile extends State<Scan> {
                 new ButtonBar(
                   children: <Widget>[
                     new FlatButton(
-                      child: Text('確認'),
-                      onPressed:  () async{
+                      child: Text(AppLocalizations.of(context)
+                              .translate('alertDialog_confirm') //'確認'
+                          ),
+                      onPressed: () async {
                         //setState(){};
                         if (num != '0') {
                           //setState(){};
@@ -759,14 +832,24 @@ class ScanResultTile extends State<Scan> {
                             }
                           }
                           await insertData(
-                              macList[i], tempList[i], num, i, selectedStatus,getRoomTempData(result.advertisementData.manufacturerData),);
+                            macList[i],
+                            tempList[i],
+                            num,
+                            i,
+                            selectedStatus,
+                            getRoomTempData(
+                                result.advertisementData.manufacturerData),
+                          );
                           Navigator.of(context).pop();
-                          setState((){});
+                          setState(() {});
                           return showDialog(
                             context: context,
                             builder: (context) {
                               return AlertDialog(
-                                title: Text('確認成功'),
+                                title: Text(
+                                    AppLocalizations.of(context).translate(
+                                        'alertDialog_confirm_success') //'確認成功'
+                                    ),
                                 content: SingleChildScrollView(
                                   child: ListBody(
                                     children: <Widget>[
@@ -774,7 +857,11 @@ class ScanResultTile extends State<Scan> {
                                         padding: EdgeInsets.only(top: 16),
                                         child: Row(
                                           children: <Widget>[
-                                            Text("編號：" + num),
+                                            Text(AppLocalizations.of(context)
+                                                    .translate(
+                                                        'staff_num') + //"編號："
+                                                "：" +
+                                                num),
                                           ],
                                         ),
                                       ),
@@ -782,7 +869,11 @@ class ScanResultTile extends State<Scan> {
                                         padding: EdgeInsets.only(top: 16),
                                         child: Row(
                                           children: <Widget>[
-                                            Text("姓名：" + name),
+                                            Text(AppLocalizations.of(context)
+                                                    .translate(
+                                                        'staff_name') + //"姓名："
+                                                "：" +
+                                                name),
                                           ],
                                         ),
                                       ),
@@ -790,7 +881,11 @@ class ScanResultTile extends State<Scan> {
                                         padding: EdgeInsets.only(top: 16),
                                         child: Row(
                                           children: <Widget>[
-                                            Text("量測溫度：" + data),
+                                            Text(AppLocalizations.of(context)
+                                                    .translate(
+                                                        'alertDialog_measuring_temperature') + //"量測溫度："
+                                                "：" +
+                                                data),
                                           ],
                                         ),
                                       ),
@@ -798,14 +893,26 @@ class ScanResultTile extends State<Scan> {
                                         Padding(
                                           padding: EdgeInsets.only(top: 16),
                                           child: Text(
-                                            "狀態：" + selectedStatus.join(","),
+                                            AppLocalizations.of(context)
+                                                    .translate(
+                                                        'staff_status') //"狀態："
+                                                +
+                                                ":" +
+                                                selectedStatus.join(", "),
                                           ),
                                         ),
                                       if (selectedStatus.length == 0)
                                         Padding(
                                           padding: EdgeInsets.only(top: 16),
                                           child: Text(
-                                            "狀態：無狀態",
+                                            AppLocalizations.of(context)
+                                                    .translate(
+                                                        'staff_status') //"狀態："
+                                                +
+                                                ":" +
+                                                AppLocalizations.of(context)
+                                                    .translate(
+                                                        'staff_no_status'), //無狀態
                                           ),
                                         )
                                     ],
@@ -821,11 +928,17 @@ class ScanResultTile extends State<Scan> {
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
-                                  title: Text('未配對成功'),
+                                  title: Text(
+                                      AppLocalizations.of(context).translate(
+                                          'alertDialog_person_pairing') //'未配對成功'
+                                      ),
                                   content: SingleChildScrollView(
                                     child: ListBody(
                                       children: <Widget>[
-                                        Text("還並未配對"),
+                                        Text(
+                                            AppLocalizations.of(context).translate(
+                                                'alertDialog_not_paired_yet') //"還並未配對"
+                                            ),
                                       ],
                                     ),
                                   ),
@@ -837,7 +950,9 @@ class ScanResultTile extends State<Scan> {
                     ),
                     new FlatButton(
                       child: Text(
-                        '取消',
+                        AppLocalizations.of(context)
+                            .translate('alertDialog_cancel') //'取消'
+                        ,
                         style: new TextStyle(color: appColor),
                       ),
                       onPressed: () {
@@ -859,7 +974,8 @@ class ScanResultTile extends State<Scan> {
         print(snapshot);
         if (snapshot.hasData) {
           if (tagis(result.advertisementData.manufacturerData,
-                  result.advertisementData.serviceData, macList[0])&& nameList.length>0) {
+                  result.advertisementData.serviceData, macList[0]) &&
+              nameList.length > 0) {
             print(list);
             macL.clear();
             m.clear();
@@ -874,7 +990,7 @@ class ScanResultTile extends State<Scan> {
                 }
               }
               if (checkData.length <= 0) {
-                if(nameList[i] == macList[0]){
+                if (nameList[i] == macList[0]) {
                   list.add(
                     new Slidable(
                       actionPane: SlidableDrawerActionPane(),
@@ -914,23 +1030,24 @@ class ScanResultTile extends State<Scan> {
                       ),
                       secondaryActions: <Widget>[
                         IconSlideAction(
-                            caption: '配對',
+                            caption: AppLocalizations.of(context)
+                                .translate('alertDialog_pair'), //'配對',
                             color: Colors.blue,
                             icon: Icons.settings_ethernet,
                             onTap: () async => {
-                              await createConnectPeopleAlertDialog(
-                                  context,
-                                  nameList[i].toString(),
-                                  macList[0].toString(),
-                                  tempList[i].toString(),
-                                  numList[i].toString()),
-                              await print("lev"),
-                              await setState(() {}),
-                            }),
+                                  await createConnectPeopleAlertDialog(
+                                      context,
+                                      nameList[i].toString(),
+                                      macList[0].toString(),
+                                      tempList[i].toString(),
+                                      numList[i].toString()),
+                                  await print("lev"),
+                                  await setState(() {}),
+                                }),
                       ],
                     ),
                   );
-                }else if(nameList[i] != macList[0]){
+                } else if (nameList[i] != macList[0]) {
                   list.add(
                     new Slidable(
                       actionPane: SlidableDrawerActionPane(),
@@ -970,7 +1087,8 @@ class ScanResultTile extends State<Scan> {
                       ),
                       secondaryActions: <Widget>[
                         IconSlideAction(
-                          caption: '確認',
+                          caption: AppLocalizations.of(context)
+                              .translate('alertDialog_confirm'), //'確認',
                           color: Color(0xFF81E9E6),
                           icon: Icons.check_circle,
                           onTap: () => createConfirmDataAlertDialog(
@@ -991,7 +1109,7 @@ class ScanResultTile extends State<Scan> {
                   }
                 }
                 if (!find) {
-                  if(nameList[i] == macList[0]){
+                  if (nameList[i] == macList[0]) {
                     list.add(
                       new Slidable(
                         actionPane: SlidableDrawerActionPane(),
@@ -1031,23 +1149,24 @@ class ScanResultTile extends State<Scan> {
                         ),
                         secondaryActions: <Widget>[
                           IconSlideAction(
-                              caption: '配對',
+                              caption: AppLocalizations.of(context)
+                                  .translate('alertDialog_pair'), //'配對',
                               color: Colors.blue,
                               icon: Icons.settings_ethernet,
                               onTap: () async => {
-                                await createConnectPeopleAlertDialog(
-                                    context,
-                                    nameList[i].toString(),
-                                    macList[0].toString(),
-                                    tempList[i].toString(),
-                                    numList[i].toString()),
-                                await print("lev"),
-                                await setState(() {}),
-                              }),
+                                    await createConnectPeopleAlertDialog(
+                                        context,
+                                        nameList[i].toString(),
+                                        macList[0].toString(),
+                                        tempList[i].toString(),
+                                        numList[i].toString()),
+                                    await print("lev"),
+                                    await setState(() {}),
+                                  }),
                         ],
                       ),
                     );
-                  }else if(nameList[i] != macList[0]){
+                  } else if (nameList[i] != macList[0]) {
                     list.add(
                       new Slidable(
                         actionPane: SlidableDrawerActionPane(),
@@ -1087,78 +1206,17 @@ class ScanResultTile extends State<Scan> {
                         ),
                         secondaryActions: <Widget>[
                           IconSlideAction(
-                            caption: '確認',
+                            caption: AppLocalizations.of(context)
+                                .translate('alertDialog_confirm'), //'確認',
                             color: Color(0xFF81E9E6),
                             icon: Icons.check_circle,
-                            onTap: () => createConfirmDataAlertDialog(
-                                context, nameList[i], tempList[i], numList[i], i),
+                            onTap: () => createConfirmDataAlertDialog(context,
+                                nameList[i], tempList[i], numList[i], i),
                           ),
                         ],
                       ),
                     );
                   }
-//                  list.add(
-//                    new Slidable(
-//                      actionPane: SlidableDrawerActionPane(),
-//                      actionExtentRatio: 0.25,
-//                      child: Container(
-//                        color: Colors.white,
-//                        child: ListTile(
-//                          leading: CircleAvatar(
-//                            backgroundColor: Colors.indigoAccent,
-//                            child: Icon(Icons.person),
-//                            foregroundColor: Colors.white,
-//                          ),
-//                          trailing: Text(
-//                            tempList[i],
-//                            style: TextStyle(
-//                              fontSize: 24,
-//                            ),
-//                            textAlign: TextAlign.right,
-//                          ),
-//                          title: Text(
-//                            nameList.length <= 0 ? "" : nameList[i],
-////                      title(allData[i].mac.toString(),macList[i],allData[i].name.toString()),
-//                            style: TextStyle(
-//                              fontSize: 20,
-//                            ),
-//                            textAlign: TextAlign.left,
-//                          ),
-//                          subtitle: Text(
-//                            numList.length <= 0 ? "" : numList[i],
-////                      id(allData[i].mac.toString(),macList[i],allData[i].employeeID.toString()),
-//                            style: TextStyle(
-//                              fontSize: 16,
-//                            ),
-//                            textAlign: TextAlign.left,
-//                          ),
-//                        ),
-//                      ),
-//                      secondaryActions: <Widget>[
-//                        IconSlideAction(
-//                          caption: '確認',
-//                          color: Color(0xFF81E9E6),
-//                          icon: Icons.check_circle,
-//                          onTap: () => createConfirmDataAlertDialog(
-//                              context, nameList[i], tempList[i], numList[i], i),
-//                        ),
-//                        IconSlideAction(
-//                            caption: '配對',
-//                            color: Colors.blue,
-//                            icon: Icons.settings_ethernet,
-//                            onTap: () async => {
-//                                  await createConnectPeopleAlertDialog(
-//                                      context,
-//                                      nameList[i].toString(),
-//                                      macList[i].toString(),
-//                                      tempList[i].toString(),
-//                                      numList[i].toString()),
-//                                  await print("lev"),
-//                                  await setState(() {}),
-//                                }),
-//                      ],
-//                    ),
-//                  );
                 }
               }
             }
@@ -1183,7 +1241,9 @@ class ScanResultTile extends State<Scan> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text("人員配對"),
+              title: Text(AppLocalizations.of(context)
+                      .translate('alertDialog_person_pairing') //"人員配對"
+                  ),
               content: SingleChildScrollView(
                 child: Column(
                   children: <Widget>[
@@ -1195,7 +1255,8 @@ class ScanResultTile extends State<Scan> {
                             child: new TextField(
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: '編號',
+                                labelText: AppLocalizations.of(context)
+                                    .translate('staff_num'), //'編號',
                               ),
                               keyboardType: TextInputType.number,
                               controller: editNumController,
@@ -1213,7 +1274,8 @@ class ScanResultTile extends State<Scan> {
                             child: new TextField(
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: '姓名',
+                                labelText: AppLocalizations.of(context)
+                                    .translate('staff_name'), //'姓名',
                               ),
                               controller: editNameController,
                               style: Theme.of(context).textTheme.body1,
@@ -1229,14 +1291,15 @@ class ScanResultTile extends State<Scan> {
                 new ButtonBar(
                   children: <Widget>[
                     new FlatButton(
-                      child: Text('確認'),
+                      child: Text(AppLocalizations.of(context)
+                              .translate('alertDialog_confirm') //'確認'
+                          ),
                       // ignore: missing_return
                       onPressed: () async {
                         sqlhelper helper = new sqlhelper();
                         String editName = editNameController.text;
                         String editNumber = editNumController.text;
                         if (editName != "") {
-
                           debugPrint(name);
                           if (editNumber != "") {
                             employee data = new employee(
@@ -1254,11 +1317,17 @@ class ScanResultTile extends State<Scan> {
                                 context: context,
                                 builder: (context) {
                                   return AlertDialog(
-                                    title: Text('配對失敗'),
+                                    title: Text(
+                                        AppLocalizations.of(context).translate(
+                                            'alertDialog_pairing_failed') //'配對失敗'
+                                        ),
                                     content: SingleChildScrollView(
                                       child: ListBody(
                                         children: <Widget>[
-                                          Text("人員編號重複，請重新新增"),
+                                          Text(AppLocalizations.of(context)
+                                                  .translate(
+                                                      'toast_repeat_tag') //"人員編號重複，請重新新增"
+                                              ),
                                         ],
                                       ),
                                     ),
@@ -1270,12 +1339,23 @@ class ScanResultTile extends State<Scan> {
                                 context: context,
                                 builder: (context) {
                                   return AlertDialog(
-                                    title: Text('配對成功'),
+                                    title: Text(
+                                        AppLocalizations.of(context).translate(
+                                            'alertDialog_paired_success') //'配對成功'
+                                        ),
                                     content: SingleChildScrollView(
                                       child: ListBody(
                                         children: <Widget>[
-                                          Text("姓名：" + editName),
-                                          Text("編號：" + editNumber),
+                                          Text(AppLocalizations.of(context)
+                                                  .translate(
+                                                      'staff_name') + //"姓名："
+                                              "：" +
+                                              editName),
+                                          Text(AppLocalizations.of(context)
+                                                  .translate(
+                                                      'staff_num') + //"編號："
+                                              "：" +
+                                              editNumber),
                                           Text("MAC Address：" + mac),
                                         ],
                                       ),
@@ -1293,7 +1373,10 @@ class ScanResultTile extends State<Scan> {
                                     content: SingleChildScrollView(
                                       child: ListBody(
                                         children: <Widget>[
-                                          Text("請輸入編號"),
+                                          Text(AppLocalizations.of(context)
+                                                  .translate(
+                                                      'alertDialog_please_enter_the_number') //"請輸入編號"
+                                              ),
                                         ],
                                       ),
                                     ),
@@ -1309,7 +1392,10 @@ class ScanResultTile extends State<Scan> {
                                   content: SingleChildScrollView(
                                     child: ListBody(
                                       children: <Widget>[
-                                        Text("請輸入姓名"),
+                                        Text(
+                                            AppLocalizations.of(context).translate(
+                                                'alertDialog_please_enter_your_name') //"請輸入姓名"
+                                            ),
                                       ],
                                     ),
                                   ),
@@ -1321,7 +1407,9 @@ class ScanResultTile extends State<Scan> {
                     ),
                     new FlatButton(
                       child: Text(
-                        '取消',
+                        AppLocalizations.of(context)
+                            .translate('alertDialog_cancel') //'取消'
+                        ,
                         style: new TextStyle(color: appColor),
                       ),
                       onPressed: () {
@@ -1339,11 +1427,15 @@ class ScanResultTile extends State<Scan> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text('人員已配對'),
+              title: Text(
+                  AppLocalizations.of(context).translate('toast_pair') //'人員已配對'
+                  ),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
-                    Text("已配對"),
+                    Text(AppLocalizations.of(context)
+                            .translate('toast_pair') //"已配對"
+                        ),
                   ],
                 ),
               ),
@@ -1397,18 +1489,6 @@ List<bool> _value = [
   false,
   false
 ];
-List<String> statusList = [
-  '發燒',
-  '乾咳',
-  '倦怠',
-  '有痰',
-  '呼吸急促',
-  '肌肉或關節痛',
-  '喉嚨痛',
-  '頭痛',
-  '發冷',
-  '噁心嘔吐'
-];
 
 class StatusBoxState extends State<StatusBox> {
   @override
@@ -1416,6 +1496,7 @@ class StatusBoxState extends State<StatusBox> {
     WidgetsFlutterBinding.ensureInitialized();
 
     List<Widget> list = new List<Widget>();
+    listTranslate();
 
     for (var i = 0; i < statusList.length; i++) {
       _valueChanged(bool value) {
@@ -1440,218 +1521,3 @@ class StatusBoxState extends State<StatusBox> {
     return new Column(children: list);
   }
 }
-
-//getData() async {
-//  sqlhelper helper = new sqlhelper();
-//  print(await helper.showEmployee());
-//  return await helper.showLastTemp();
-//}
-
-//class _MyHomePageState extends State<ScanResultTile> {
-//  List<String> items;
-//
-//  _MyHomePageState(this.items);
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return new Scaffold(
-//      body: ListView.builder(
-//        itemCount: items.length,
-//        itemBuilder: (context, index) {
-//          final item = items[index];
-//          return GestureDetector(
-//              onTap: () {
-//                items.removeAt(index);
-//                setState(() {});
-//              },
-//              child: new ListTile(
-//                title: new Text("$item"),
-//              ));
-//        },
-//      ),
-//    );
-//  }
-//}
-
-/*
-class ServiceTile extends StatelessWidget {
-  final BluetoothService service;
-  final List<CharacteristicTile> characteristicTiles;
-
-  const ServiceTile({Key key, this.service, this.characteristicTiles})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    if (characteristicTiles.length > 0) {
-      return ExpansionTile(
-        title: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text('Service'),
-            Text('0x${service.uuid.toString().toUpperCase().substring(4, 8)}',
-                style: Theme.of(context)
-                    .textTheme
-                    .body1
-                    .copyWith(color: Theme.of(context).textTheme.caption.color))
-          ],
-        ),
-        children: characteristicTiles,
-      );
-    } else {
-      return ListTile(
-        title: Text('Service'),
-        subtitle:
-        Text('0x${service.uuid.toString().toUpperCase().substring(4, 8)}'),
-      );
-    }
-  }
-}
-
-class CharacteristicTile extends StatelessWidget {
-  final BluetoothCharacteristic characteristic;
-  final List<DescriptorTile> descriptorTiles;
-  final VoidCallback onReadPressed;
-  final VoidCallback onWritePressed;
-  final VoidCallback onNotificationPressed;
-
-  const CharacteristicTile(
-      {Key key,
-        this.characteristic,
-        this.descriptorTiles,
-        this.onReadPressed,
-        this.onWritePressed,
-        this.onNotificationPressed})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<List<int>>(
-      stream: characteristic.value,
-      initialData: characteristic.lastValue,
-      builder: (c, snapshot) {
-        final value = snapshot.data;
-        return ExpansionTile(
-          title: ListTile(
-            title: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text('Characteristic'),
-                Text(
-                    '0x${characteristic.uuid.toString().toUpperCase().substring(4, 8)}',
-                    style: Theme.of(context).textTheme.body1.copyWith(
-                        color: Theme.of(context).textTheme.caption.color))
-              ],
-            ),
-            subtitle: Text(value.toString()),
-            contentPadding: EdgeInsets.all(0.0),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.file_download,
-                  color: Theme.of(context).iconTheme.color.withOpacity(0.5),
-                ),
-                onPressed: onReadPressed,
-              ),
-              IconButton(
-                icon: Icon(Icons.file_upload,
-                    color: Theme.of(context).iconTheme.color.withOpacity(0.5)),
-                onPressed: onWritePressed,
-              ),
-              IconButton(
-                icon: Icon(
-                    characteristic.isNotifying
-                        ? Icons.sync_disabled
-                        : Icons.sync,
-                    color: Theme.of(context).iconTheme.color.withOpacity(0.5)),
-                onPressed: onNotificationPressed,
-              )
-            ],
-          ),
-          children: descriptorTiles,
-        );
-      },
-    );
-  }
-}
-
-class DescriptorTile extends StatelessWidget {
-  final BluetoothDescriptor descriptor;
-  final VoidCallback onReadPressed;
-  final VoidCallback onWritePressed;
-
-  const DescriptorTile(
-      {Key key, this.descriptor, this.onReadPressed, this.onWritePressed})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text('Descriptor'),
-          Text('0x${descriptor.uuid.toString().toUpperCase().substring(4, 8)}',
-              style: Theme.of(context)
-                  .textTheme
-                  .body1
-                  .copyWith(color: Theme.of(context).textTheme.caption.color))
-        ],
-      ),
-      subtitle: StreamBuilder<List<int>>(
-        stream: descriptor.value,
-        initialData: descriptor.lastValue,
-        builder: (c, snapshot) => Text(snapshot.data.toString()),
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.file_download,
-              color: Theme.of(context).iconTheme.color.withOpacity(0.5),
-            ),
-            onPressed: onReadPressed,
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.file_upload,
-              color: Theme.of(context).iconTheme.color.withOpacity(0.5),
-            ),
-            onPressed: onWritePressed,
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class AdapterStateTile extends StatelessWidget {
-  const AdapterStateTile({Key key, @required this.state}) : super(key: key);
-
-  final BluetoothState state;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.redAccent,
-      child: ListTile(
-        title: Text(
-          'Bluetooth adapter is ${state.toString().substring(15)}',
-          style: Theme.of(context).primaryTextTheme.subhead,
-        ),
-        trailing: Icon(
-          Icons.error,
-          color: Theme.of(context).primaryTextTheme.subhead.color,
-        ),
-      ),
-    );
-  }
-}
-*/

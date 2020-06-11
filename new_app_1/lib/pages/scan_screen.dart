@@ -111,7 +111,7 @@ class _ScanScreenState extends State<statefulScanScreen> {
                 onPressed: () {
 //                  showCurrentDate(context);
                   FlutterBlue.instance
-                      .startScan(timeout: Duration(seconds: 10));
+                      .startScan(timeout: Duration(seconds: 5));
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -230,7 +230,7 @@ class BluetoothOffScreen extends StatelessWidget {
             icon: const Icon(Icons.search),
             tooltip: '重新掃描',
             onPressed: () =>
-                FlutterBlue.instance.startScan(timeout: Duration(seconds: 10)),
+                FlutterBlue.instance.startScan(timeout: Duration(seconds: 5)),
           ),
         ],
       ),
@@ -271,7 +271,7 @@ class FindDevicesScreen extends StatelessWidget {
             icon: const Icon(Icons.search),
             tooltip: '重新掃描',
             onPressed: () =>
-                FlutterBlue.instance.startScan(timeout: Duration(seconds: 10)),
+                FlutterBlue.instance.startScan(timeout: Duration(seconds: 5)),
           ),
         ],
       ),

@@ -5,16 +5,12 @@ import 'pages/people_screen.dart';
 import 'pages/test.dart';
 import 'app_localizations.dart';
 
-
-
-
 class Home extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return _HomeState();
   }
 }
-
 
 class _HomeState extends State<Home> {
   int _currentIndex = 0;
@@ -31,7 +27,6 @@ class _HomeState extends State<Home> {
     setState(() {
       _currentIndex = index;
     });
-
   }
 
   @override
@@ -48,7 +43,6 @@ class _HomeState extends State<Home> {
         items: [
           new BottomNavigationBarItem(
             backgroundColor: Colors.green,
-
             icon: new Icon(Icons.people),
             title: new Text(
 //                '人員管理'
@@ -57,12 +51,17 @@ class _HomeState extends State<Home> {
           ),
           new BottomNavigationBarItem(
             icon: new Icon(Icons.track_changes),
-            title: new Text('體溫量測'),
+            title: new Text(
+              AppLocalizations.of(context).translate('tem_mea'),
+//                '體溫量測'
+            ),
           ),
           new BottomNavigationBarItem(
               icon: Icon(Icons.share),
-              title: Text('資料匯出')
-          ),
+              title: Text(
+                AppLocalizations.of(context).translate('export_data'),
+//              '資料匯出'
+              )),
         ],
       ),
     );

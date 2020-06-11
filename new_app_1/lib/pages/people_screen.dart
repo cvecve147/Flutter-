@@ -229,7 +229,7 @@ class ContentState extends State<Content> {
           return AlertDialog(
             title: Text(
               AppLocalizations.of(context)
-                  .translate('alertDialog_delete_confirm'), //"刪除確認"
+                  .translate('alertDialog_delete_confirm'), //刪除確認
             ),
             content: SingleChildScrollView(
               child: Column(
@@ -238,10 +238,12 @@ class ContentState extends State<Content> {
                     padding: EdgeInsets.only(top: 16),
                     child: Row(
                       children: <Widget>[
-                        Text(
-                          AppLocalizations.of(context)
-                              .translate('staff_delete_check'), //'確定要刪除此資料？'
-                        ),
+                        Expanded(
+                          child: Text(
+                            AppLocalizations.of(context)
+                                .translate('staff_delete_check'), //'確定要刪除此資料？'
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -274,14 +276,16 @@ class ContentState extends State<Content> {
                     padding: EdgeInsets.only(top: 16),
                     child: Row(
                       children: <Widget>[
-                        Text(AppLocalizations.of(context)
+                        Expanded(
+                          child: Text(
+                            AppLocalizations.of(context)
                                     .translate('staff_address') +
-                                "："
+                                "：" +
+                                mac,
+                            softWrap: true,
 //                            'MAC編碼：'
-                            ),
-                        Text(
-                          mac,
-                        ),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -887,7 +891,13 @@ class PeopleScreenState extends State<PeopleScreen> {
             } else {
               setState(() {});
               Scaffold.of(context).showSnackBar(SnackBar(
-                content: Text("人員資料匯入失敗"),
+                content: Text(
+                  AppLocalizations.of(context)
+                          .translate('import_staff_data_button') +
+                      AppLocalizations.of(context)
+                          .translate('toast_alert_success'),
+//                    "人員資料匯入失敗"
+                ),
               ));
             }
           },
@@ -910,34 +920,6 @@ class PeopleScreenState extends State<PeopleScreen> {
   }
 }
 
-//class FlutterBlueApp extends StatelessWidget {
-//  @override
-//  Widget build(BuildContext context) {
-//    //確認是否開啟藍芽，若未開顯示藍芽未開的畫面
-//    return MaterialApp(
-//      color: Colors.white,
-//      //StreamBuilder本身是一個Widget，會監聽一個Stream，只要這個Stream有數據變化，
-//      //它內部的UI就會根據這個新的數據進行變化，完全不需要setState((){})
-//      home: StreamBuilder<BluetoothState>(
-//          //負責監聽的Stream
-//          stream: FlutterBlue.instance.state,
-//          //初始化值
-//          initialData: BluetoothState.unknown,
-//          //根據Stream變化進行修改的UI
-//          builder: (context, snapshot) {
-//            final state = snapshot.data;
-//            if (state == BluetoothState.on) {
-//              //藍芽已開，進入搜尋畫面
-//              return FindDevicesScreen();
-//            }
-//            //藍芽未開
-//            return BluetoothOffScreen(state: state);
-//          }),
-//    );
-//  }
-//}
-
-//藍芽未開的畫面
 class BluetoothOffScreen extends StatelessWidget {
   const BluetoothOffScreen({Key key, this.state}) : super(key: key);
 
@@ -969,122 +951,6 @@ class BluetoothOffScreen extends StatelessWidget {
     );
   }
 }
-
-//初始首頁
-//class FindDevicesScreen extends StatelessWidget {
-//  @override
-//  Widget build(BuildContext context) {
-//    return Scaffold(
-//      appBar: AppBar(
-//        title: Text("量測結果"),
-//        backgroundColor: Color(0xFF2A6FDB),
-//        actions: <Widget>[
-//          IconButton(
-//            icon: const Icon(Icons.search),
-//            tooltip: '重新掃描',
-//            onPressed: () =>
-//                FlutterBlue.instance.startScan(timeout: Duration(seconds: 10)),
-//          ),
-//        ],
-//      ),
-//
-////      body: Center(child: getTempWidgets(nameList, tempList, numList)),
-//      body: RefreshIndicator(
-//        onRefresh: () =>
-//            FlutterBlue.instance.startScan(timeout: Duration(seconds: 4)),
-//        child: SingleChildScrollView(
-//          //SingleChildScrollView滾動條
-//          child: Column(
-//            children: <Widget>[
-//              //當已經connect上後才顯示的部分，少了RSSI與詳細資訊，多了open按鍵//
-//              StreamBuilder<List<BluetoothDevice>>(
-//                //用于創建一个周期性發送事件的串流Stream.periodic //asyncMap異步
-//                stream: Stream.periodic(Duration(seconds: 2))
-//                    .asyncMap((_) => FlutterBlue.instance.connectedDevices),
-//                //initialData初始資料為空
-//                initialData: [],
-//                builder: (c, snapshot) => Column(
-//                  //ListTile 通常用於在 Flutter 中填充 ListView
-//                  children: snapshot.data
-//                      .map((d) =>
-////                      getTempWidgets(nameList, tempList, numList)
-//                          ListTile(
-//                            //名稱
-//                            title: Text(d.name),
-//                            //mac
-//                            subtitle: Text(d.id.toString()),
-//
-//                            //trailing設置拖尾將在列表的末尾放置一個圖像
-//                            trailing: StreamBuilder<BluetoothDeviceState>(
-//                              stream: d.state,
-//                              //預設未連接
-//                              initialData: BluetoothDeviceState.disconnected,
-//                              builder: (c, snapshot) {
-//                                if (snapshot.data ==
-//                                    BluetoothDeviceState.connected) {
-//                                  return RaisedButton(
-//                                    child: Text('OPEN'),
-//                                    //跳頁
-//                                    onPressed: () => Navigator.of(context).push(
-//                                        //跳頁到DeviceScreen並攜帶device
-//                                        MaterialPageRoute(
-////                                    builder: (context) =>
-////                                        DeviceScreen(device: d)
-//                                            )),
-//                                  );
-//                                }
-//                                //如果未連線，則顯示未連線資訊
-//                                return Text(snapshot.data.toString());
-//                              },
-//                            ),
-//                          ))
-//                      .toList(),
-//                ),
-//              ),
-//
-////              所有搜尋到的結果列表
-//              StreamBuilder<List<ScanResult>>(
-//                stream: FlutterBlue.instance.scanResults,
-//                initialData: [],
-//                builder: (c, snapshot) => Column(
-//                  children: snapshot.data
-//                      .map(
-//                        (r) => Scan(
-//                          result: r,
-//                        ),
-//                      )
-//                      .toList(),
-//                ),
-//              ),
-//            ],
-//          ),
-//        ),
-//      ),
-//
-//      //改變按鈕
-////      floatingActionButton: StreamBuilder<bool>(
-////        stream: FlutterBlue.instance.isScanning,
-////        initialData: false,
-////        builder: (c, snapshot) {
-////          if (snapshot.data) {
-////            //當在掃描中就改變icon為stop，要是被按下就執行stopScan()，背景是紅色停止鍵
-////            return FloatingActionButton(
-////              child: Icon(Icons.stop),
-////              onPressed: () => FlutterBlue.instance.stopScan(),
-////              backgroundColor: Colors.red,
-////            );
-////          } else {
-////            //不在掃描中就icon為search，要是被按下就開始掃10秒
-////            return FloatingActionButton(
-////                child: Icon(Icons.search),
-////                onPressed: () => FlutterBlue.instance
-////                    .startScan(timeout: Duration(seconds:10)));
-////          }
-////        },
-////      ),
-//    );
-//  }
-//}
 
 class People extends StatefulWidget {
   @override

@@ -1,6 +1,6 @@
 {
-  "app_name": "body_UI",
-  "title_home": "Home",
+  "app_name": "Tem-tracker",
+  "title_home": "Tem-tracker",
   "title_dashboard": "Dashboard",
   "title_notifications": "Notifications",
 
@@ -18,7 +18,7 @@
 
 
   "staff_management": "Staff Management",
-  "tem_measure": "Temperature",
+  "tem_measure": "Temperature Measurement",
   "export_data": "Data Export",
 
   "import_staff_data_button": "Data Import",
@@ -34,7 +34,7 @@
   "export_end_date": "Ending Date",
 
 
-  "tem_mea": "           Temperature",
+  "tem_mea": "Temp. Measure",
   "tem_tem": "Temperature",
   "tem_last_measure": "Last Measurement Time",
   "tem_start_measure": "Start",
@@ -57,14 +57,14 @@
   "alertDialog_confirm": "Confirm",
   "alertDialog_cancel": "Cancel",
   "alertDialog_cancel_allStaff_export": "All Staff Export Canceled",
-  "alertDialog_tem_measure": "Measure result",
+  "alertDialog_tem_measure": "Measure Result",
   "alertDialog_insert": "Insert",
   "alertDialog_update": "Update",
   "alertDialog_delete": "Delete",
   "alertDialog_pair": "Pair",
   "alertDialog_export": "Export",
   "alertDialog_cancel_pair": "Unpaired",
-  "alertDialog_select_csv_file": "Select csv File",
+  "alertDialog_select_csv_file": "Select .csv File",
   "alertDialog_nearby_tag": "The Pairable Bluetooth Nearby",
   "alertDialog_check_pair1": "Will it be paired with",
   "alertDialog_check_pair2": " ",
@@ -73,7 +73,7 @@
   "alertDialog_select_tag": "Searching for Paired Bluetooth...",
   "alertDialog_check_data": "Please check data.",
   "alertDialog_no_data": "No Data",
-  "alertDialog_please_insert": "Please insert",
+  "alertDialog_please_insert": "Please Insert",
 
   "alertDialog_remove_connection": "Remove Connection Success",
 
@@ -84,7 +84,7 @@
   "toast_check_tem_no_staff_data": "hasn\\'t been paired, so cannot record.",
   "toast_insert_staff_tem": "Staff Temperature Added",
   "toast_cancel_insert_staff_tem": "Staff Temperature Add Canceled",
-  "toast_tag_pair": "This tag has been paired",
+  "toast_tag_pair": "This tag has been paired.",
   "toast_rescan": "Rescan",
   "toast_no_last_date": "No Last \nMeasurement Time",
   "toast_wrong_staff_num_or_name": "The New Number or Name is Incorrect",
@@ -117,7 +117,34 @@
   "other_export_all": "Employee ID,Time,Name,Body Temp.,Device Temp.,Remark",
   "other_export_people": "Time,Body Temp.,Device Temp.,Remark",
 
-  "------": "-----"
+  "------": "-----",
 
+  "scan_no_data": "No Data",
+  "scan_time": "Scan Time",
+
+  "alertDialog_measurement_confirmation": "Measurement Confirm",
+  "alertDialog_measuring_temperature": "Measuring Temperature",
+  "alertDialog_confirm_success": "Confirm Success",
+  "alertDialog_pairing_confirmation": "Pairing Confirm",
+  "alertDialog_matching_result": "Matching Result",
+  "alertDialog_paired_success": "Paired Success",
+  "alertDialog_person_pairing": "Person Pairing",
+  "alertDialog_please_enter_the_number": "Please enter the number.",
+  "alertDialog_please_enter_your_name": "Please enter your name.",
+  "staff_status": "Status",
+  "staff_no_status": "No Status",
+  "alertDialog_unpaired": "Unpaired",
+  "alertDialog_not_paired_yet": "Not Paired Yet",
+  "alertDialog_pairing_failed": "Pairing Failed",
+  "alertDialog_export_all": "Export all",
+  "alertDialog_are_you_sure_you_want_to_export_data": "Are you sure you want to export data?",
+  "alertDialog_export_failed": "Export Failed",
+  "alertDialog_export_success": "Export Success",
+  "alertDialog_the_path_is": "The Path is",
+  "alertDialog_personal_export": "Personal Export",
+  "alertDialog_data": "'s Data",
+  "alertDialog_confirmation_of_personal_export_date": "Confirm personal export date.",
+  "alertDialog_sure_to_export": "Sure To Export",
+  "alertDialog_data_export": "Data Export"
 
 }

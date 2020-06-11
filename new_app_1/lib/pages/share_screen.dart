@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:newapp1/pages/DB/sqlhelper.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:newapp1/app_localizations.dart';
 
 import 'DB/AllJoin_model.dart';
 
@@ -25,7 +26,9 @@ createSelectShareDateAlertDialog(BuildContext context) {
         startDate = "";
         endDate = "";
         return AlertDialog(
-          title: Text("全體匯出"),
+          title: Text(AppLocalizations.of(context)
+                  .translate('alertDialog_export_all') //"全體匯出"
+              ),
           content: SingleChildScrollView(
             child: Column(
               children: <Widget>[
@@ -37,7 +40,10 @@ createSelectShareDateAlertDialog(BuildContext context) {
                       child: Container(
                           padding: const EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 40.0),
-                          child: const Text('設定起始日期',
+                          child: Text(
+                              AppLocalizations.of(context)
+                                  .translate('export_start_date') //'起始日期'
+                              ,
                               style: TextStyle(
                                   color: Colors.white, fontSize: 20))),
                       onPressed: () {
@@ -63,7 +69,10 @@ createSelectShareDateAlertDialog(BuildContext context) {
                       child: Container(
                           padding: const EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 40.0),
-                          child: const Text('設定結束日期',
+                          child: Text(
+                              AppLocalizations.of(context)
+                                  .translate('export_end_date') //'結束日期'
+                              ,
                               style: TextStyle(
                                   color: Colors.white, fontSize: 20))),
                       onPressed: () {
@@ -88,7 +97,9 @@ createSelectShareDateAlertDialog(BuildContext context) {
             new ButtonBar(
               children: <Widget>[
                 new FlatButton(
-                  child: Text('確認'),
+                  child: Text(AppLocalizations.of(context)
+                          .translate('alertDialog_confirm') //'確認'
+                      ),
                   // ignore: missing_return
                   onPressed: () {
                     print("startDate:" + startDate);
@@ -97,22 +108,39 @@ createSelectShareDateAlertDialog(BuildContext context) {
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            title: Text("匯出日期確認"),
+                            title: Text(AppLocalizations.of(context)
+                                        .translate('export_date') //"匯出日期"
+                                    +
+                                    " " +
+                                    AppLocalizations.of(context)
+                                        .translate('alertDialog_confirm') //確認
+                                ),
                             content: SingleChildScrollView(
                               child: Column(
                                 children: <Widget>[
                                   Padding(
                                       padding: EdgeInsets.only(top: 16),
-                                      child: Text("確定要匯出資料嗎？")),
+                                      child: Text(
+                                          AppLocalizations.of(context).translate(
+                                              'alertDialog_are_you_sure_you_want_to_export_data') //"確定要匯出資料嗎？"
+                                          )),
                                   Padding(
                                       padding: EdgeInsets.only(top: 16),
-                                      child: Text("起始日期:" + startDate)),
+                                      child: Text(AppLocalizations.of(context)
+                                              .translate(
+                                                  'export_start_date') + //"起始日期："
+                                          "：" +
+                                          startDate)),
                                   Padding(
                                       padding: EdgeInsets.only(top: 16),
                                       child: Text('|')),
                                   Padding(
                                       padding: EdgeInsets.only(top: 16),
-                                      child: Text("結束日期:" + endDate)),
+                                      child: Text(AppLocalizations.of(context)
+                                              .translate(
+                                                  'export_end_date') + //"結束日期："
+                                          "：" +
+                                          endDate)),
                                 ],
                               ),
                             ),
@@ -120,7 +148,10 @@ createSelectShareDateAlertDialog(BuildContext context) {
                               new ButtonBar(
                                 children: <Widget>[
                                   new FlatButton(
-                                    child: Text('確認'),
+                                    child: Text(AppLocalizations.of(context)
+                                            .translate(
+                                                'alertDialog_confirm') //'確認'
+                                        ),
                                     // ignore: missing_return
                                     onPressed: () async {
                                       Navigator.of(context).pop();
@@ -131,14 +162,18 @@ createSelectShareDateAlertDialog(BuildContext context) {
                                       String result = await helpler
                                           .writeEmployeeToCsv(data);
                                       print(result);
-                                      Navigator.of(context).pop();
+                                      await Navigator.of(context).pop();
                                       if (result == "匯出失敗") {
                                         print("匯出失敗");
                                         return showDialog(
                                           context: context,
                                           builder: (context) {
                                             return SimpleDialog(
-                                              title: Text("匯出失敗"),
+                                              title: Text(
+                                                  AppLocalizations.of(context)
+                                                      .translate(
+                                                          'alertDialog_export_failed') //"匯出失敗"
+                                                  ),
                                               children: <Widget>[
                                                 Column(
                                                   children: <Widget>[
@@ -146,7 +181,12 @@ createSelectShareDateAlertDialog(BuildContext context) {
                                                         padding:
                                                             EdgeInsets.only(
                                                                 top: 16),
-                                                        child: Text("匯出失敗")),
+                                                        child: Text(
+                                                            AppLocalizations.of(
+                                                                    context)
+                                                                .translate(
+                                                                    'alertDialog_export_failed') //"匯出失敗"
+                                                            )),
                                                   ],
                                                 ),
                                               ],
@@ -159,7 +199,11 @@ createSelectShareDateAlertDialog(BuildContext context) {
                                           context: context,
                                           builder: (context) {
                                             return SimpleDialog(
-                                              title: Text("匯出成功"),
+                                              title: Text(
+                                                  AppLocalizations.of(context)
+                                                      .translate(
+                                                          'alertDialog_export_success') //"匯出成功"
+                                                  ),
                                               children: <Widget>[
                                                 Column(
                                                   children: <Widget>[
@@ -167,8 +211,16 @@ createSelectShareDateAlertDialog(BuildContext context) {
                                                         padding:
                                                             EdgeInsets.only(
                                                                 top: 16),
-                                                        child:
-                                                            Text("匯出成功 路徑為")),
+                                                        child: Text(AppLocalizations
+                                                                    .of(context)
+                                                                .translate(
+                                                                    'alertDialog_export_success') //"匯出成功 路徑為"
+                                                            +
+                                                            " " +
+                                                            AppLocalizations.of(
+                                                                    context)
+                                                                .translate(
+                                                                    'alertDialog_the_path_is'))),
                                                     Padding(
                                                         padding:
                                                             EdgeInsets.only(
@@ -189,7 +241,9 @@ createSelectShareDateAlertDialog(BuildContext context) {
                                   ),
                                   new FlatButton(
                                     child: Text(
-                                      '取消',
+                                      AppLocalizations.of(context).translate(
+                                          'alertDialog_cancel') //'取消'
+                                      ,
                                       style: new TextStyle(color: appColor),
                                     ),
                                     onPressed: () {
@@ -206,7 +260,9 @@ createSelectShareDateAlertDialog(BuildContext context) {
                 ),
                 new FlatButton(
                   child: Text(
-                    '取消',
+                    AppLocalizations.of(context)
+                        .translate('alertDialog_cancel') //'取消'
+                    ,
                     style: new TextStyle(color: appColor),
                   ),
                   onPressed: () {
@@ -228,13 +284,22 @@ createSelectPersonalShareDateAlertDialog(
         startDate = "";
         endDate = "";
         return AlertDialog(
-          title: Text("個人匯出"),
+          title: Text(AppLocalizations.of(context)
+                  .translate('alertDialog_personal_export') //"個人匯出"
+              ),
           content: SingleChildScrollView(
             child: Column(
               children: <Widget>[
                 Padding(
                     padding: EdgeInsets.only(top: 16),
-                    child: Text("匯出" + name + "的資料")),
+                    child: Text(AppLocalizations.of(context)
+                                .translate('alertDialog_export') //"匯出"
+                            +
+                            " " +
+                            name +
+                            AppLocalizations.of(context)
+                                .translate('alertDialog_data') //"的資料"
+                        )),
                 Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: RaisedButton(
@@ -243,7 +308,10 @@ createSelectPersonalShareDateAlertDialog(
                       child: Container(
                           padding: const EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 40.0),
-                          child: const Text('設定起始日期',
+                          child: Text(
+                              AppLocalizations.of(context)
+                                  .translate('export_start_date') //'起始日期'
+                              ,
                               style: TextStyle(
                                   color: Colors.white, fontSize: 20))),
                       onPressed: () {
@@ -269,7 +337,10 @@ createSelectPersonalShareDateAlertDialog(
                       child: Container(
                           padding: const EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 40.0),
-                          child: const Text('設定結束日期',
+                          child: Text(
+                              AppLocalizations.of(context)
+                                  .translate('export_end_date') //'結束日期'
+                              ,
                               style: TextStyle(
                                   color: Colors.white, fontSize: 20))),
                       onPressed: () {
@@ -293,7 +364,9 @@ createSelectPersonalShareDateAlertDialog(
             new ButtonBar(
               children: <Widget>[
                 new FlatButton(
-                  child: Text('確認'),
+                  child: Text(AppLocalizations.of(context)
+                          .translate('alertDialog_confirm') //'確認'
+                      ),
                   // ignore: missing_return
                   onPressed: () {
                     print("startDate:" + startDate);
@@ -302,22 +375,40 @@ createSelectPersonalShareDateAlertDialog(
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            title: Text("個人匯出日期確認"),
+                            title: Text(AppLocalizations.of(context).translate(
+                                    'alertDialog_confirmation_of_personal_export_date') //"個人匯出日期確認"
+                                ),
                             content: SingleChildScrollView(
                               child: Column(
                                 children: <Widget>[
                                   Padding(
                                       padding: EdgeInsets.only(top: 16),
-                                      child: Text("確定要匯出" + name + "的資料嗎？")),
+                                      child: Text(
+                                          AppLocalizations.of(context).translate(
+                                                  'alertDialog_sure_to_export') //"確定要匯出"
+                                              +
+                                              name +
+                                              AppLocalizations.of(context)
+                                                  .translate(
+                                                      'alertDialog_data') //"的資料嗎？"
+                                          )),
                                   Padding(
                                       padding: EdgeInsets.only(top: 16),
-                                      child: Text("起始日期:" + startDate)),
+                                      child: Text(AppLocalizations.of(context)
+                                              .translate(
+                                                  'export_start_date') + //"起始日期:"
+                                          "：" +
+                                          startDate)),
                                   Padding(
                                       padding: EdgeInsets.only(top: 16),
                                       child: Text('|')),
                                   Padding(
                                       padding: EdgeInsets.only(top: 16),
-                                      child: Text("結束日期:" + endDate)),
+                                      child: Text(AppLocalizations.of(context)
+                                              .translate(
+                                                  'export_end_date') + //"結束日期:"
+                                          "：" +
+                                          endDate)),
                                 ],
                               ),
                             ),
@@ -325,7 +416,10 @@ createSelectPersonalShareDateAlertDialog(
                               new ButtonBar(
                                 children: <Widget>[
                                   new FlatButton(
-                                    child: Text('確認'),
+                                    child: Text(AppLocalizations.of(context)
+                                            .translate(
+                                                'alertDialog_confirm') //'確認'
+                                        ),
                                     // ignore: missing_return
                                     onPressed: () async {
                                       Navigator.of(context).pop();
@@ -345,7 +439,11 @@ createSelectPersonalShareDateAlertDialog(
                                           context: context,
                                           builder: (context) {
                                             return SimpleDialog(
-                                              title: Text("匯出失敗"),
+                                              title: Text(
+                                                  AppLocalizations.of(context)
+                                                      .translate(
+                                                          'alertDialog_export_failed') //"匯出失敗"
+                                                  ),
                                               children: <Widget>[
                                                 Column(
                                                   children: <Widget>[
@@ -353,7 +451,12 @@ createSelectPersonalShareDateAlertDialog(
                                                         padding:
                                                             EdgeInsets.only(
                                                                 top: 16),
-                                                        child: Text("匯出失敗")),
+                                                        child: Text(
+                                                            AppLocalizations.of(
+                                                                    context)
+                                                                .translate(
+                                                                    'alertDialog_export_failed') //"匯出失敗"
+                                                            )),
                                                   ],
                                                 ),
                                               ],
@@ -366,7 +469,11 @@ createSelectPersonalShareDateAlertDialog(
                                           context: context,
                                           builder: (context) {
                                             return SimpleDialog(
-                                              title: Text("匯出成功"),
+                                              title: Text(
+                                                  AppLocalizations.of(context)
+                                                      .translate(
+                                                          'alertDialog_export_success') //"匯出成功"
+                                                  ),
                                               children: <Widget>[
                                                 Column(
                                                   children: <Widget>[
@@ -374,8 +481,15 @@ createSelectPersonalShareDateAlertDialog(
                                                         padding:
                                                             EdgeInsets.only(
                                                                 top: 16),
-                                                        child:
-                                                            Text("匯出成功 路徑為")),
+                                                        child: Text(AppLocalizations
+                                                                    .of(context)
+                                                                .translate(
+                                                                    'alertDialog_export_success') //"匯出成功 路徑為"
+                                                            +
+                                                            AppLocalizations.of(
+                                                                    context)
+                                                                .translate(
+                                                                    'alertDialog_the_path_is'))),
                                                     Padding(
                                                         padding:
                                                             EdgeInsets.only(
@@ -396,7 +510,9 @@ createSelectPersonalShareDateAlertDialog(
                                   ),
                                   new FlatButton(
                                     child: Text(
-                                      '取消',
+                                      AppLocalizations.of(context).translate(
+                                          'alertDialog_cancel') //'取消'
+                                      ,
                                       style: new TextStyle(color: appColor),
                                     ),
                                     onPressed: () {
@@ -413,7 +529,9 @@ createSelectPersonalShareDateAlertDialog(
                 ),
                 new FlatButton(
                   child: Text(
-                    '取消',
+                    AppLocalizations.of(context)
+                        .translate('alertDialog_cancel') //'取消'
+                    ,
                     style: new TextStyle(color: appColor),
                   ),
                   onPressed: () {
@@ -522,7 +640,9 @@ class dataContent extends StatelessWidget {
                 ),
                 secondaryActions: <Widget>[
                   IconSlideAction(
-                    caption: '匯出',
+                    caption: AppLocalizations.of(context)
+                        .translate('alertDialog_export') //'匯出'
+                    ,
                     color: Color(0xFFFEFCBF),
                     icon: Icons.share,
                     onTap: () => createSelectPersonalShareDateAlertDialog(
@@ -534,7 +654,9 @@ class dataContent extends StatelessWidget {
           }
           return new Column(children: list);
         } else {
-          return Text('無資料');
+          return Text(AppLocalizations.of(context)
+                  .translate('alertDialog_no_data') //'無資料'
+              );
         }
       },
     );
@@ -552,13 +674,17 @@ class ShareScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("資料匯出"),
+          title: Text(AppLocalizations.of(context)
+                  .translate('alertDialog_data_export') //"資料匯出"
+              ),
           centerTitle: true,
           backgroundColor: appColor,
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.share),
-              tooltip: '全體匯出',
+              tooltip: AppLocalizations.of(context)
+                  .translate('alertDialog_export_all') //'全體匯出'
+              ,
               onPressed: () {
                 createSelectShareDateAlertDialog(context);
               },

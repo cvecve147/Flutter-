@@ -11,11 +11,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
 import 'dart:convert' show utf8;
 import 'dart:io';
-
 import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 import 'employee_model.dart';
 
+import 'package:newapp1/main.dart';
 import 'package:excel/excel.dart';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
@@ -130,7 +130,8 @@ class sqlhelper {
 
   Future<List<employee>> showEmployee() async {
     await initDB();
-    final List<Map<String, dynamic>> maps = await _DB.rawQuery('select * from employees ORDER BY employeeID');
+    final List<Map<String, dynamic>> maps =
+        await _DB.rawQuery('select * from employees ORDER BY employeeID');
     return List.generate(maps.length, (i) {
       return employee(
         id: maps[i]['id'],
@@ -373,8 +374,15 @@ class sqlhelper {
         List<employee> searchData = await searchEmployee(id);
         idAndName = searchData[0].employeeID + "_" + searchData[0].name;
         fileName += (id != null) ? "_${idAndName}" : "";
-        List<String> csvFormat2 = ["時間", "體溫", "模組溫度", "備註"];
-        createExcelfiles(directory.path, fileName, csvFormat2, data, true);
+        List<String> csvFormat2;
+        if(currentLang == "zh"){
+          csvFormat2 = ["員工編號", "時間", "姓名", "體溫", "模組溫度", "備註"];
+        }else{
+          csvFormat2 = ["Employee ID", "Time", "Name", "Body Temp.", "Device Temp.", "Remark"];
+//          "other_export_all": "Employee ID,Time,Name,Body Temp.,Device Temp.,Remark",
+        }
+        await createExcelfiles(directory.path, fileName, csvFormat2, data, true);
+        return "${directory.path}/${fileName}.xlsx";
       } catch (e) {
         return "${e}匯出失敗";
       }
@@ -389,23 +397,25 @@ class sqlhelper {
         ''');
         print(data);
         fileName += (id != null) ? "_${idAndName}" : "";
-        List<String> csvFormat2 = ["員工編號", "時間", "姓名", "體溫", "模組溫度", "備註"];
-        createExcelfiles(directory.path, fileName, csvFormat2, data, false);
+        List<String> csvFormat2;
+        if(currentLang == "zh"){
+          csvFormat2 = ["員工編號", "時間", "姓名", "體溫", "模組溫度", "備註"];
+        }else{
+          csvFormat2 = ["Employee ID", "Time", "Name", "Body Temp.", "Device Temp.", "Remark"];
+//          "other_export_all": "Employee ID,Time,Name,Body Temp.,Device Temp.,Remark",
+        }
+        await createExcelfiles(directory.path, fileName, csvFormat2, data, false);
+        return "${directory.path}/${fileName}.xlsx";
       } catch (e) {
         return "${e}匯出失敗";
       }
     }
-    try {
-      return "${directory.path}/${fileName}.csv";
-    } catch (e) {
-      return "${e}匯出失敗";
-    }
   }
 
   createExcelfiles(String directory, String fileName, List<String> header,
-      List<Map<String, dynamic>> data, bool person) {
+      List<Map<String, dynamic>> data, bool person) async {
     var excel = Excel.createExcel();
-    final File file = new File('${directory}/${fileName}.xlsx');
+    final File file =await new File('${directory}/${fileName}.xlsx');
 
     var sheet = 'Sheet1';
     var sheetcol = ["A", "B", "C", "D", "E", "F"];
@@ -458,8 +468,8 @@ class sqlhelper {
     }
 
     String outputFile = "${directory}/${fileName}.xlsx";
-    excel.encode().then((onValue) {
-      File(join(outputFile))
+    excel.encode().then((onValue)async {
+      await File(join(outputFile))
         ..createSync(recursive: true)
         ..writeAsBytesSync(onValue);
     });

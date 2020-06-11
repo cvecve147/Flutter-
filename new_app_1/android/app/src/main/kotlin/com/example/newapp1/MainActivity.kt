@@ -1,4 +1,4 @@
-package com.example.newapp1
+package com.sinopulsar.temtracker
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
