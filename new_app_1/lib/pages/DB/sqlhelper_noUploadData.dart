@@ -253,7 +253,7 @@ class sqlhelper {
     if (data is employee) {
       await _DB.update("employees", data.toMap(),
           where: "id=?", whereArgs: [data.id]);
-      await editServerData(data);
+      // await editServerData(data);
     }
   }
 
@@ -489,7 +489,7 @@ class sqlhelper {
   deleteEmployee(int id) async {
     await initDB();
     await _DB.delete('employees', where: "id=?", whereArgs: [id]);
-    await deleteServerData(id);
+    // await deleteServerData(id);
   }
 
   dropEmployee() async {
