@@ -13,6 +13,7 @@ import './device.dart';
 import './canvas.dart';
 
 List<Device> device = new List<Device>();
+double caX,caY;
 void main() {
   runApp(FlutterBlueApp());
 
@@ -221,6 +222,8 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                       }
                       X /= 3;
                       Y /= 3;
+                      caX=X;
+                      caY=Y;
                       //設定顯示文字
                       showText += " 利用三角定位得出你現在的位子為 " +
                           X.toStringAsFixed(2) +
@@ -231,7 +234,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                           selectDevice.length.toString() +
                           " 無法計算三角定位";
                     }
-                    if (switchOn) {
+                    if (switchOn &&selectDevice.length>3) {
                       selectDevice = selectDevice.sublist(0, 3);
                     }
                     return Container(
@@ -252,7 +255,7 @@ class _FindDevicesScreenState extends State<FindDevicesScreen> {
                                 )
                                 .toList(),
                           ),
-                          show_map ? canvasRoute(X, Y) : Column()
+                          show_map ? canvasRoute() : Column()
                         ],
                       ),
                     );

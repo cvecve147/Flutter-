@@ -5,16 +5,12 @@ import './main.dart';
 import 'dart:ui' as ui;
 
 class canvasRoute extends StatefulWidget {
-  double x, y;
-  canvasRoute(this.x, this.y);
   @override
-  _canvasRouteState createState() => _canvasRouteState(x, y);
+  _canvasRouteState createState() => _canvasRouteState();
 }
 
 class _canvasRouteState extends State<canvasRoute> {
   ui.Image images;
-  double x, y;
-  _canvasRouteState(this.x, this.y);
   @override
   void initState() {
     super.initState();
@@ -45,7 +41,7 @@ class _canvasRouteState extends State<canvasRoute> {
     return Container(
       child: CustomPaint(
         size: Size(400, 400),
-        painter: MyPainter(image: this.images, x: this.x, y: this.y),
+        painter: MyPainter(image: this.images),
       ),
     );
   }
@@ -54,8 +50,7 @@ class _canvasRouteState extends State<canvasRoute> {
 class MyPainter extends CustomPainter {
   ui.Image image;
   Paint painter;
-  double x, y;
-  MyPainter({this.image, x, y});
+  MyPainter({this.image});
   @override
   void paint(Canvas canvas, Size size) {
     painter = Paint();
@@ -75,7 +70,7 @@ class MyPainter extends CustomPainter {
       ..color = Colors.green;
 
     canvas.drawCircle(
-      Offset(x * 8.27, size.height - y * 7.7),
+      Offset(caX * 8.27, size.height - caY * 7.7),
       5,
       painter,
     );
