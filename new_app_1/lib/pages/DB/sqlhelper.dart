@@ -94,7 +94,7 @@ class sqlhelper {
   Future<String> insertData(dynamic data) async {
     await initDB();
     if (data is employee) {
-      List searchData = await searchEmployeeID(data.employeeID);
+      List searchData = await searchEmployeeID(data.employeeID.trim());
       if (data.id == 0 || searchData.length > 0) {
         return "請檢查資料";
       }
@@ -278,7 +278,7 @@ class sqlhelper {
           employee data = employee(
               name: fields[i][1].toString(),
               employeeID: fields[i][0].toString(),
-              mac: fields[i].length > 2 ? fields[i][2].toString() : null);
+              mac: fields[i].length > 2 ? fields[i][2].toString() : "");
           await insertData(data);
         }
       }
@@ -375,13 +375,14 @@ class sqlhelper {
         idAndName = searchData[0].employeeID + "_" + searchData[0].name;
         fileName += (id != null) ? "_${idAndName}" : "";
         List<String> csvFormat2;
-        if(currentLang == "zh"){
-          csvFormat2 = ["員工編號", "時間", "姓名", "體溫", "模組溫度", "備註"];
-        }else{
-          csvFormat2 = ["Employee ID", "Time", "Name", "Body Temp.", "Device Temp.", "Remark"];
+        if (currentLang == "zh") {
+          csvFormat2 = ["時間", "體溫", "模組溫度", "備註"];
+        } else {
+          csvFormat2 = ["Time", "Body Temp.", "Device Temp.", "Remark"];
 //          "other_export_all": "Employee ID,Time,Name,Body Temp.,Device Temp.,Remark",
         }
-        await createExcelfiles(directory.path, fileName, csvFormat2, data, true);
+        await createExcelfiles(
+            directory.path, fileName, csvFormat2, data, true);
         return "${directory.path}/${fileName}.xlsx";
       } catch (e) {
         return "${e}匯出失敗";
@@ -398,13 +399,21 @@ class sqlhelper {
         print(data);
         fileName += (id != null) ? "_${idAndName}" : "";
         List<String> csvFormat2;
-        if(currentLang == "zh"){
+        if (currentLang == "zh") {
           csvFormat2 = ["員工編號", "時間", "姓名", "體溫", "模組溫度", "備註"];
-        }else{
-          csvFormat2 = ["Employee ID", "Time", "Name", "Body Temp.", "Device Temp.", "Remark"];
+        } else {
+          csvFormat2 = [
+            "Employee ID",
+            "Time",
+            "Name",
+            "Body Temp.",
+            "Device Temp.",
+            "Remark"
+          ];
 //          "other_export_all": "Employee ID,Time,Name,Body Temp.,Device Temp.,Remark",
         }
-        await createExcelfiles(directory.path, fileName, csvFormat2, data, false);
+        await createExcelfiles(
+            directory.path, fileName, csvFormat2, data, false);
         return "${directory.path}/${fileName}.xlsx";
       } catch (e) {
         return "${e}匯出失敗";
@@ -415,7 +424,7 @@ class sqlhelper {
   createExcelfiles(String directory, String fileName, List<String> header,
       List<Map<String, dynamic>> data, bool person) async {
     var excel = Excel.createExcel();
-    final File file =await new File('${directory}/${fileName}.xlsx');
+    final File file = await new File('${directory}/${fileName}.xlsx');
 
     var sheet = 'Sheet1';
     var sheetcol = ["A", "B", "C", "D", "E", "F"];
@@ -468,7 +477,7 @@ class sqlhelper {
     }
 
     String outputFile = "${directory}/${fileName}.xlsx";
-    excel.encode().then((onValue)async {
+    excel.encode().then((onValue) async {
       await File(join(outputFile))
         ..createSync(recursive: true)
         ..writeAsBytesSync(onValue);
