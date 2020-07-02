@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:newapp1/main.dart';
+import 'package:Tem_Tracker/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:newapp1/pages/DB/sqlhelper.dart';
-import 'package:newapp1/pages/DB/employee_model.dart';
+import 'package:Tem_Tracker/pages/DB/sqlhelper.dart';
+import 'package:Tem_Tracker/pages/DB/employee_model.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:newapp1/pages/bluetooth/package.dart';
-import 'package:newapp1/pages/scan_screen.dart';
-import 'package:newapp1/app_localizations.dart';
+import 'package:Tem_Tracker/pages/bluetooth/package.dart';
+import 'package:Tem_Tracker/pages/scan_screen.dart';
+import 'package:Tem_Tracker/app_localizations.dart';
 
 Color appColor = Color(0xFF2A6FDB);
 Color cashColor = Color(0xFFFEFCBF);
@@ -49,7 +49,6 @@ class ContentState extends State<Content> {
           for (var i = 0; i < data.length; i++) {
             if (data[i].mac.toString() == ":::::" ||
                 data[i].mac.toString() == "") {
-//              print(data[i].id.toString() + "," + data[i].mac.toString() + "未配對");
               list.add(
                 new Slidable(
                   actionPane: SlidableDrawerActionPane(),
@@ -126,7 +125,6 @@ class ContentState extends State<Content> {
                 ),
               );
             } else {
-//              print(data[i].id.toString() + "已配對");
               list.add(
                 new Slidable(
                   actionPane: SlidableDrawerActionPane(),
@@ -159,15 +157,16 @@ class ContentState extends State<Content> {
                   ),
                   secondaryActions: <Widget>[
                     IconSlideAction(
-                      caption: AppLocalizations.of(context)
-                          .translate('alertDialog_update'), //'修改'
-                      color: cashColor,
-                      icon: Icons.edit,
-                      onTap: () => createEditPeopleAlertDialog(
-                        context,
-                        data[i],
-                      ),
-                    ),
+                        caption: AppLocalizations.of(context)
+                            .translate('alertDialog_update'), //'修改'
+                        color: cashColor,
+                        icon: Icons.edit,
+                        onTap: () {
+                          createEditPeopleAlertDialog(
+                            context,
+                            data[i],
+                          );
+                        }),
                     IconSlideAction(
                       caption: AppLocalizations.of(context)
                           .translate('alertDialog_cancel_pair'), //'取消配對',
@@ -185,6 +184,7 @@ class ContentState extends State<Content> {
                         await helpler.updateData(editData);
                         Scaffold.of(context).showSnackBar(SnackBar(
                           content: Text(data[i].name +
+                                  " " +
                                   AppLocalizations.of(context).translate(
                                       'alertDialog_remove_connection')
 //                              "已解除配對"
@@ -509,7 +509,7 @@ class ContentState extends State<Content> {
                 Text(AppLocalizations.of(context).translate('alertDialog_pair')
 //                "配對 "
                     +
-                    name),
+                    " " + name),
             content: RefreshIndicator(
               onRefresh: () =>
                   FlutterBlue.instance.startScan(timeout: Duration(seconds: 4)),
@@ -883,6 +883,7 @@ class PeopleScreenState extends State<PeopleScreen> {
                 content: Text(
                   AppLocalizations.of(context)
                           .translate('import_staff_data_button') +
+                      " " +
                       AppLocalizations.of(context)
                           .translate('toast_alert_success'),
 //                    "人員資料匯入成功"
@@ -894,8 +895,9 @@ class PeopleScreenState extends State<PeopleScreen> {
                 content: Text(
                   AppLocalizations.of(context)
                           .translate('import_staff_data_button') +
+                      " " +
                       AppLocalizations.of(context)
-                          .translate('toast_alert_success'),
+                          .translate('toast_alert_fail'),
 //                    "人員資料匯入失敗"
                 ),
               ));

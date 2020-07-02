@@ -4,16 +4,16 @@
 
 import 'dart:math';
 
-import 'package:newapp1/main.dart';
+import 'package:Tem_Tracker/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:newapp1/pages/people_screen.dart';
+import 'package:Tem_Tracker/pages/people_screen.dart';
 import '../DB/sqlhelper.dart';
 import '../DB/employee_model.dart';
 import '../DB/temperature_model.dart';
-import 'package:newapp1/app_localizations.dart';
+import 'package:Tem_Tracker/app_localizations.dart';
 
 List<Map<String, dynamic>> timesData = [{}];
 List<String> statusList;
@@ -722,7 +722,7 @@ class ScanResultTile extends State<Scan> {
       await numList.add(a[0].employeeID);
     } else {
       await nameList.add(macList[0].toString());
-      await numList.add("0");
+      await numList.add("");
     }
 //    }
 //    await nameList.add(macList[0].toString());
@@ -816,7 +816,7 @@ class ScanResultTile extends State<Scan> {
                           ),
                       onPressed: () async {
                         //setState(){};
-                        if (num != '0') {
+                        if (name != '') {
                           //setState(){};
                           for (var j = 0; j < macList.length; j++) {
                             if (checkData.length <= 0) {
@@ -1138,7 +1138,7 @@ class ScanResultTile extends State<Scan> {
                               textAlign: TextAlign.left,
                             ),
                             subtitle: Text(
-                              numList.length <= 0 ? "" : numList[i],
+                              numList.length <= 0 ? "hh" : numList[i],
 //                      id(allData[i].mac.toString(),macList[i],allData[i].employeeID.toString()),
                               style: TextStyle(
                                 fontSize: 16,
@@ -1236,7 +1236,7 @@ class ScanResultTile extends State<Scan> {
     TextEditingController editNumController = new TextEditingController();
 //    editNameController.text = name;
 //    editNumController.text = num;
-    if (num == '0') {
+    if (num == '') {
       return showDialog(
           context: context,
           builder: (context) {

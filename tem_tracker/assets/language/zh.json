@@ -116,6 +116,9 @@
   "other_export_people": "時間,體溫,模組溫度,備註",
 
   "------": "-----",
+
+  "toast_alert_fail": "失敗",
+
   "scan_no_data": "尚未量測 無上次量測時間",
   "scan_time": "測量時間",
 

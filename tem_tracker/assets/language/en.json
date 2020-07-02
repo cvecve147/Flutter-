@@ -119,6 +119,9 @@
 
   "------": "-----",
 
+  "toast_alert_fail": "Failed",
+
+
   "scan_no_data": "No Data",
   "scan_time": "Scan Time",
 

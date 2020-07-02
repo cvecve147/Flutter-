@@ -1,10 +1,10 @@
-import 'package:newapp1/main.dart';
+import 'package:Tem_Tracker/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:newapp1/pages/DB/sqlhelper.dart';
+import 'package:Tem_Tracker/pages/DB/sqlhelper.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:newapp1/app_localizations.dart';
+import 'package:Tem_Tracker/app_localizations.dart';
 
 import 'DB/AllJoin_model.dart';
 

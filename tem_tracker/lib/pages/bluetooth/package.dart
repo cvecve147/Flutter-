@@ -8,11 +8,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:newapp1/pages/people_screen.dart';
+import 'package:Tem_Tracker/pages/people_screen.dart';
 import '../DB/sqlhelper.dart';
 import '../DB/employee_model.dart';
 import '../DB/temperature_model.dart';
-import 'package:newapp1/app_localizations.dart';
+import 'package:Tem_Tracker/app_localizations.dart';
 
 //List allData;
 
@@ -714,6 +714,7 @@ class ScanResultTile extends State<Scan> {
                           .translate('alertDialog_confirm')//'確認'
                           ),
                       onPressed: () async {
+                        Navigator.of(context).pop();
                         sqlhelper helper = new sqlhelper();
                         employee employeeData = new employee(
                             id: data[confirmPosition].id,
