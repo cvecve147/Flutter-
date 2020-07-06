@@ -183,7 +183,8 @@ class sqlhelper {
         (select * from temperatures
           ORDER BY temperatures.time DESC)          
           GROUP BY  id      ) as temperatures
-      ON temperatures.id = employees.id;
+      ON temperatures.id = employees.id
+      ORDER BY employeeID;
     ''');
 
     return List.generate(maps.length, (i) {
