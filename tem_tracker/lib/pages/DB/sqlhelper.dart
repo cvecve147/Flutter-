@@ -175,7 +175,30 @@ class sqlhelper {
       );
     });
   }
+  showLastTempDate() async{
+    await initDB();
+    final List<Map<String, dynamic>> maps = await _DB.rawQuery('''
+      select employees.id,employeeID,name,time,mac,roomTemp,temp,symptom from employees  LEFT  JOIN
+      (select * from
+        (select * from temperatures
+          ORDER BY temperatures.time DESC)          
+          GROUP BY  id      ) as temperatures
+      ON temperatures.id = employees.id;
+    ''');
 
+    return List.generate(maps.length, (i) {
+      return AllJoinTable(
+        id: maps[i]['id'],
+        employeeID: maps[i]['employeeID'],
+        name: maps[i]['name'],
+        mac: maps[i]['mac'],
+        roomTemp: maps[i]['roomTemp'],
+        temp: maps[i]['temp'],
+        time: maps[i]['time'],
+        symptom: maps[i]['symptom'],
+      );
+    });
+  }
   showLastDate() async {
     await initDB();
     final List<Map<String, dynamic>> maps = await _DB.rawQuery('''

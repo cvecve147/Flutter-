@@ -1,4 +1,6 @@
 import 'package:Tem_Tracker/main.dart';
+import 'package:Tem_Tracker/pages/DB/employee_model.dart';
+import 'package:Tem_Tracker/pages/DB/temperature_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -547,46 +549,11 @@ createSelectPersonalShareDateAlertDialog(
 
 getData() async {
   sqlhelper helper = new sqlhelper();
-  // employee data = new employee(employeeID: "12", name: "123");
-  // temperature data = new temperature(id: 1, time: "2020-05-04", temp: "25.6");
-  print(await helper.showtemperature());
-  List templist = await helper.showLastTemp();
-  List<Map<String, dynamic>> newList = new List();
-  for (int i = 0; i < templist.length; i++) {
-    bool find = false;
-    for (int j = 0; j < checkListData.length; j++) {
-      if (checkListData[j]['id'] == templist[i].id) {
-        print(templist[i].id);
-        find = true;
-        newList.add({
-          "id": templist[i].id,
-          "employeeID": templist[i].employeeID.toString(),
-          "name": templist[i].name,
-          "temp": checkListData[j]['temp'],
-          "time": checkListData[j]['time']
-        });
-        break;
-      }
-    }
-    if (!find) {
-      newList.add({
-        "id": templist[i].id,
-        "employeeID": templist[i].employeeID,
-        "name": templist[i].name,
-        "temp": "",
-        "time": ""
-      });
-    }
-  }
-  return List.generate(newList.length, (i) {
-    return AllJoinTable(
-      id: newList[i]['id'],
-      employeeID: newList[i]['employeeID'],
-      name: newList[i]['name'],
-      temp: newList[i]['temp'],
-      time: newList[i]['time'],
-    );
-  });
+  // temperature data2 = new temperature(id: 1, time: "2020-05-04", temp: "25.6");
+  // helper.insertData(data2);
+  print(await helper.showLastTempDate());
+  return await helper.showLastTempDate(); //這個是整理過後的資料 可以直接使用
+
 }
 
 class dataContent extends StatelessWidget {
