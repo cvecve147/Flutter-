@@ -11,6 +11,7 @@ import 'package:Tem_Tracker/app_localizations.dart';
 import 'DB/AllJoin_model.dart';
 
 Color appColor = Color(0xFF2A6FDB);
+//Color appColor = Color(0xff00aaa5);
 Color primaryColor = Color(0xFF122C91);
 
 String startDate;
@@ -27,6 +28,7 @@ createSelectShareDateAlertDialog(BuildContext context) {
       builder: (context) {
         startDate = "";
         endDate = "";
+
         return AlertDialog(
           title: Text(AppLocalizations.of(context)
                   .translate('alertDialog_export_all') //"全體匯出"
@@ -549,8 +551,8 @@ createSelectPersonalShareDateAlertDialog(
 
 getData() async {
   sqlhelper helper = new sqlhelper();
-  temperature data2 = new temperature(id: 2, time: "2020-06-10", temp: "25.6");
-  helper.insertData(data2);
+  // temperature data2 = new temperature(id: 1, time: "2020-05-04", temp: "25.6");
+  // helper.insertData(data2);
   print(await helper.showLastTempDate());
   return await helper.showLastTempDate(); //這個是整理過後的資料 可以直接使用
 }
@@ -568,56 +570,170 @@ class dataContent extends StatelessWidget {
         if (snapshot.hasData) {
           list = new List<Widget>();
           for (var i = 0; i < data.length; i++) {
-            list.add(
-              new Slidable(
-                actionPane: SlidableDrawerActionPane(),
-                actionExtentRatio: 0.25,
-                child: Container(
-                  color: Colors.white,
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.indigoAccent,
+            if (data[i].temp.toString() != "null" ||
+                data[i].time.toString() != "null") {
+              DateTime now = new DateTime.now();
+              String allTime = data[i].time;
+              var arr = allTime.split(' ');
+              var date = arr[0].split('-');
+              int day = int.parse(date[2]);
+              var time = arr[1].split(':');
+              int hour = int.parse(time[0]);
+              if (now.hour - hour > 1 || now.day - day == 1) {
+                list.add(
+                  new Slidable(
+                    actionPane: SlidableDrawerActionPane(),
+                    actionExtentRatio: 0.25,
+                    child: Container(
+                      color: Colors.white,
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.indigoAccent,
 //                      child: Icon(Icons.person),
-                      child: Text(data[i].employeeID.toString()),
-                      foregroundColor: Colors.white,
-                    ),
-                    trailing: Text(
-                      data[i].temp.toString(),
-                      style: TextStyle(
-                        fontSize: 32,
+                          child: Text(data[i].employeeID.toString()),
+                          foregroundColor: Colors.white,
+                        ),
+                        trailing: Text(
+                          data[i].temp.toString(),
+                          style: TextStyle(
+                            fontSize: 32,
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
+                        title: Text(
+                          data[i].name.toString(),
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                        subtitle: Text(
+                          data[i].time.toString(),
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
                       ),
-                      textAlign: TextAlign.right,
                     ),
-                    title: Text(
-                      data[i].name.toString(),
-                      style: TextStyle(
-                        fontSize: 20,
+                    secondaryActions: <Widget>[
+                      IconSlideAction(
+                        caption: AppLocalizations.of(context)
+                            .translate('alertDialog_export') //'匯出'
+                        ,
+                        color: Color(0xFFFEFCBF),
+                        icon: Icons.share,
+                        onTap: () => createSelectPersonalShareDateAlertDialog(
+                            context, data[i].id, data[i].name.toString()),
                       ),
-                      textAlign: TextAlign.left,
+                    ],
+                  ),
+                );
+              } else {
+                list.add(
+                  new Slidable(
+                    actionPane: SlidableDrawerActionPane(),
+                    actionExtentRatio: 0.25,
+                    child: Container(
+                      color: Colors.white,
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.indigoAccent,
+//                      child: Icon(Icons.person),
+                          child: Text(data[i].employeeID.toString()),
+                          foregroundColor: Colors.white,
+                        ),
+                        trailing: Text(
+                          data[i].temp.toString(),
+                          style: TextStyle(
+                            fontSize: 32,
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
+                        title: Text(
+                          data[i].name.toString(),
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                        subtitle: Text(
+                          data[i].time.toString(),
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
                     ),
-                    subtitle: Text(
-                      data[i].time.toString(),
-                      style: TextStyle(
-                        fontSize: 16,
+                    secondaryActions: <Widget>[
+                      IconSlideAction(
+                        caption: AppLocalizations.of(context)
+                            .translate('alertDialog_export') //'匯出'
+                        ,
+                        color: Color(0xFFFEFCBF),
+                        icon: Icons.share,
+                        onTap: () => createSelectPersonalShareDateAlertDialog(
+                            context, data[i].id, data[i].name.toString()),
                       ),
-                      textAlign: TextAlign.left,
+                    ],
+                  ),
+                );
+              }
+            } else {
+              list.add(
+                new Slidable(
+                  actionPane: SlidableDrawerActionPane(),
+                  actionExtentRatio: 0.25,
+                  child: Container(
+                    color: Colors.white,
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.indigoAccent,
+//                      child: Icon(Icons.person),
+                        child: Text(data[i].employeeID.toString()),
+                        foregroundColor: Colors.white,
+                      ),
+                      trailing: Text(
+                        "",
+                        style: TextStyle(
+                          fontSize: 32,
+                        ),
+                        textAlign: TextAlign.right,
+                      ),
+                      title: Text(
+                        data[i].name.toString(),
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      subtitle: Text(
+                        "",
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
                     ),
                   ),
+                  secondaryActions: <Widget>[
+                    IconSlideAction(
+                      caption: AppLocalizations.of(context)
+                          .translate('alertDialog_export') //'匯出'
+                      ,
+                      color: Color(0xFFFEFCBF),
+                      icon: Icons.share,
+                      onTap: () => createSelectPersonalShareDateAlertDialog(
+                          context, data[i].id, data[i].name.toString()),
+                    ),
+                  ],
                 ),
-                secondaryActions: <Widget>[
-                  IconSlideAction(
-                    caption: AppLocalizations.of(context)
-                        .translate('alertDialog_export') //'匯出'
-                    ,
-                    color: Color(0xFFFEFCBF),
-                    icon: Icons.share,
-                    onTap: () => createSelectPersonalShareDateAlertDialog(
-                        context, data[i].id, data[i].name.toString()),
-                  ),
-                ],
-              ),
-            );
+              );
+            }
           }
+
           return new Column(children: list);
         } else {
           return Text(AppLocalizations.of(context)
